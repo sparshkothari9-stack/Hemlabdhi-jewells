@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - HemLabdhi jewells</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="shortcut icon" href="../images/product83.jpeg" type="image/x-icon">
+  <script>if (!localStorage.getItem('pa_token')) { window.location.replace('../login.html'); }</script>
+</head>
+<body>
+
+<div class="announcement-bar">
+  <div class="announcement-slider">
+    <div class="announcement-slide">Premium Necklace Collection - Shop Now</div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <a href="../index.html" style="font-size:13px;color:var(--text-secondary);"><i class="fas fa-chevron-left"></i> Back to Home</a>
+    </div>
+    <div class="logo">
+      <a href="../index.html"><img src="../images/logo.svg" alt="HemLabdhi jewells" class="logo-img"></a>
+    </div>
+    <div class="header-right">
+      <span style="font-size:13px;color:var(--text-secondary);">Secure Checkout</span>
+    </div>
+  </div>
+</header>
+
+<section class="section" style="padding-top:20px;">
+  <div class="container">
+    <div class="checkout-layout">
+      <div>
+        <div class="checkout-section">
+          <h2>Phone Verification</h2>
+          <div class="form-group">
+            <label>Phone Number *</label>
+            <input type="tel" id="checkoutPhone" placeholder="+91 9876543210">
+          </div>
+          <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;">
+            <button class="btn" type="button" onclick="requestCheckoutOtp()" style="white-space:nowrap;">Send OTP</button>
+            <div class="form-group" style="flex:1;min-width:180px;margin-bottom:0;">
+              <label>OTP *</label>
+              <input type="text" id="checkoutOtp" placeholder="6-digit OTP" inputmode="numeric" maxlength="6">
+            </div>
+            <button class="btn btn-dark" type="button" onclick="verifyCheckoutOtp()" style="white-space:nowrap;">Verify OTP</button>
+          </div>
+          <div id="otpMessage" style="font-size:13px;margin-top:10px;color:var(--text-secondary);"></div>
+        </div>
+
+        <div class="checkout-section">
+          <h2>Shipping Address</h2>
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="checkoutName" placeholder="Enter your full name">
+          </div>
+          <div class="form-group">
+            <label>Address *</label>
+            <textarea id="checkoutAddress" rows="3" placeholder="Street address, apartment, building"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>City *</label>
+              <input type="text" id="checkoutCity" placeholder="City">
+            </div>
+            <div class="form-group">
+              <label>Pincode *</label>
+              <input type="text" id="checkoutPincode" placeholder="6-digit pincode">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>State</label>
+              <input type="text" id="checkoutState" placeholder="State">
+            </div>
+            <div class="form-group">
+              <label>Country</label>
+              <input type="text" value="India" readonly>
+            </div>
+          </div>
+        </div>
+
+        <div class="checkout-section">
+          <h2>Coupon Code</h2>
+          <div style="display:flex;gap:10px;">
+            <input type="text" id="couponInput" placeholder="Enter coupon code" style="flex:1;padding:12px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:14px;text-transform:uppercase;">
+            <button class="btn" onclick="applyCoupon()" style="white-space:nowrap;">Apply</button>
+          </div>
+          <div id="couponMessage" style="font-size:13px;margin-top:6px;"></div>
+        </div>
+
+        <div class="checkout-section">
+          <h2>Payment Method</h2>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--border-color);cursor:pointer;">
+              <input type="radio" name="payment" checked> <strong>Cash on Delivery (COD)</strong>
+            </label>
+            <label style="display:flex;align-items:center;gap:10px;padding:12px;border:1px solid var(--border-color);cursor:pointer;">
+              <input type="radio" name="payment"> <strong>UPI / Card / Net Banking</strong>
+            </label>
+          </div>
+        </div>
+
+        <button class="btn" id="placeOrderBtn" style="width:100%;padding:18px;font-size:16px;" onclick="placeOrder()">Place Order</button>
+      </div>
+
+      <div>
+        <div class="order-summary">
+          <h3>Order Items</h3>
+          <div id="checkoutOrderItems"></div>
+          <p style="font-size:12px;color:var(--text-secondary);margin-top:10px;">
+            <i class="fas fa-shield-alt" style="color:var(--gold);"></i> Your information is secure
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="video-call-float">
+  <a href="javascript:videoCall()" aria-label="Video Call">
+    <i class="fas fa-video"></i>
+    <span class="tooltip">Video Call</span>
+  </a>
+</div>
+
+<div class="whatsapp-float">
+  <a href="https://wa.me/919321671416" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+</div>
+
+<script>var IMG_PREFIX = '../images/';</script>
+<script src="../js/products.js"></script>
+<script src="../js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof renderCheckoutOrderTotal === 'function') {
+    renderCheckoutOrderTotal();
+  }
+});
+</script>
+</body>
+</html>

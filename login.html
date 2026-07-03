@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Login - HemLabdhi jewells</title>
+  <meta name="description" content="B2B client login for HemLabdhi jewells wholesale jewellery pricing">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="shortcut icon" href="images/product83.jpeg" type="image/x-icon">
+  <style>
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--off-white) 0%, var(--white) 100%);
+      padding: 40px 20px;
+    }
+    .login-card {
+      background: var(--white);
+      padding: 50px 40px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    .login-card .logo {
+      margin-bottom: 30px;
+    }
+    .login-card .logo a {
+      display: inline-block;
+    }
+    .login-card .logo .logo-img {
+      height: 55px;
+    }
+    .login-card .logo a {
+      font-family: var(--font-heading);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--black);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .login-card .logo span {
+      color: var(--gold);
+    }
+    .login-card h2 {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      margin-bottom: 6px;
+    }
+    .login-card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 25px;
+    }
+    .login-card .form-group {
+      text-align: left;
+    }
+    .login-card .btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    .login-error {
+      color: var(--red);
+      font-size: 13px;
+      margin-bottom: 15px;
+      display: none;
+    }
+    .login-error.show {
+      display: block;
+    }
+    .login-card a.back-link {
+      display: inline-block;
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+    .login-card a.back-link:hover {
+      color: var(--gold);
+    }
+    .login-loading {
+      display: none;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 10px;
+    }
+    .login-loading.show {
+      display: block;
+    }
+    .login-card .form-group label i {
+      margin-right: 6px;
+      color: var(--gold);
+    }
+    .login-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .login-tab {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: var(--white);
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--text-secondary);
+    }
+    .login-tab.active {
+      background: var(--gold);
+      color: var(--black);
+    }
+    .login-tab:not(.active):hover {
+      background: var(--light-gray);
+    }
+    @media (max-width: 480px) {
+      .login-card { padding: 30px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-page">
+  <div class="login-card">
+    <div class="logo">
+      <a href="index.html"><img src="images/logo.svg" alt="HemLabdhi jewells" class="logo-img"></a>
+    </div>
+    <h2>Sign In</h2>
+    <p id="loginSubtitle">Enter your phone number to receive a one-time password</p>
+
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('otp')">Phone OTP</button>
+      <button class="login-tab" onclick="switchLoginTab('email')">Email Login</button>
+    </div>
+
+    <div class="login-error" id="loginError"></div>
+
+    <!-- Tab 1: Phone OTP Login -->
+    <div id="loginTabOTP">
+      <div id="stepPhone">
+        <div class="form-group">
+          <label for="loginPhone"><i class="fas fa-phone"></i> Phone Number</label>
+          <input type="tel" id="loginPhone" placeholder="+91 9876543210" autocomplete="tel">
+        </div>
+        <button class="btn" onclick="sendOTP()">Send OTP</button>
+        <div class="login-loading" id="otpSending">Sending OTP...</div>
+      </div>
+
+      <div id="stepOTP" style="display:none;">
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:15px;">
+          OTP sent to <strong id="otpPhoneDisplay"></strong>
+          <a href="#" onclick="resetLogin()" style="color:var(--gold);margin-left:6px;">Change</a>
+        </div>
+        <div id="otpDevDisplay" style="display:none;background:var(--light-gray);padding:8px;border-radius:6px;font-size:20px;font-weight:700;letter-spacing:6px;text-align:center;margin-bottom:12px;font-family:monospace;"></div>
+        <div class="form-group">
+          <label for="loginOTP"><i class="fas fa-key"></i> Enter OTP</label>
+          <input type="text" id="loginOTP" placeholder="6-digit OTP" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+        </div>
+        <div class="form-group">
+          <label for="loginName"><i class="fas fa-user"></i> Your Name <span style="font-weight:400;color:var(--text-secondary);">(only if new)</span></label>
+          <input type="text" id="loginName" placeholder="Enter your name for first-time signup" autocomplete="name">
+        </div>
+        <button class="btn" onclick="verifyOTP()">Verify & Sign In</button>
+        <div class="login-loading" id="otpVerifying">Verifying...</div>
+        <div style="margin-top:12px;font-size:13px;">
+          <a href="#" onclick="resendOTP()" id="resendLink" style="color:var(--gold);">Resend OTP</a>
+          <span id="resendCooldown" style="color:var(--text-secondary);display:none;"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Email/Password Login (Admin) -->
+    <div id="loginTabEmail" style="display:none;">
+      <div class="form-group">
+        <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password">
+      </div>
+      <button class="btn" onclick="handleEmailLogin()">Sign In</button>
+      <div class="login-loading" id="emailLoggingIn">Signing in...</div>
+    </div>
+
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Store</a>
+  </div>
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+let currentPhone = '';
+let otpCooldown = 0;
+
+function showError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function hideError() {
+  document.getElementById('loginError').classList.remove('show');
+}
+
+function switchLoginTab(tab) {
+  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.login-tab[onclick*="' + tab + '"]').classList.add('active');
+  document.getElementById('loginTabOTP').style.display = tab === 'otp' ? 'block' : 'none';
+  document.getElementById('loginTabEmail').style.display = tab === 'email' ? 'block' : 'none';
+  document.getElementById('loginSubtitle').textContent = tab === 'otp'
+    ? 'Enter your phone number to receive a one-time password'
+    : 'Sign in with your email and password for admin access';
+  hideError();
+}
+
+// === Phone OTP ===
+
+async function sendOTP() {
+  const phone = document.getElementById('loginPhone').value.trim();
+  if (!phone || phone.length < 10) {
+    showError('Please enter a valid phone number');
+    return;
+  }
+  hideError();
+  document.getElementById('otpSending').classList.add('show');
+  try {
+    const res = await fetch(API_BASE + '/api/auth/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone })
+    });
+    const data = await res.json();
+    document.getElementById('otpSending').classList.remove('show');
+    if (data.success) {
+      currentPhone = phone;
+      document.getElementById('stepPhone').style.display = 'none';
+      document.getElementById('stepOTP').style.display = 'block';
+      document.getElementById('otpPhoneDisplay').textContent = phone;
+      if (data.dev && data.otp) {
+        const devEl = document.getElementById('otpDevDisplay');
+        devEl.textContent = data.otp;
+        devEl.style.display = 'block';
+      }
+      startResendCooldown();
+    } else {
+      showError(data.error || 'Failed to send OTP');
+    }
+  } catch (err) {
+    document.getElementById('otpSending').classList.remove('show');
+    showError('Could not connect to server. Please try again.');
+  }
+}
+
+async function verifyOTP() {
+  const otp = document.getElementById('loginOTP').value.trim();
+  if (!otp || otp.length < 4) {
+    showError('Please enter the OTP');
+    return;
+  }
+  hideError();
+  document.getElementById('otpVerifying').classList.add('show');
+  try {
+    const body = { phone: currentPhone, otp };
+    const nameInput = document.getElementById('loginName');
+    if (nameInput && nameInput.value.trim()) {
+      body.name = nameInput.value.trim();
+    }
+    const res = await fetch(API_BASE + '/api/auth/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    document.getElementById('otpVerifying').classList.remove('show');
+    if (data.token) {
+      localStorage.setItem('pa_token', data.token);
+      localStorage.setItem('pa_client', JSON.stringify(data.client));
+      window.location.href = 'index.html';
+    } else {
+      showError(data.error || 'Verification failed');
+    }
+  } catch (err) {
+    document.getElementById('otpVerifying').classList.remove('show');
+    showError('Could not connect to server. Please try again.');
+  }
+}
+
+function resetLogin() {
+  document.getElementById('stepPhone').style.display = 'block';
+  document.getElementById('stepOTP').style.display = 'none';
+  document.getElementById('loginOTP').value = '';
+  document.getElementById('otpDevDisplay').style.display = 'none';
+  hideError();
+}
+
+async function resendOTP() {
+  if (otpCooldown > 0) return;
+  document.getElementById('loginOTP').value = '';
+  document.getElementById('otpDevDisplay').style.display = 'none';
+  hideError();
+  await sendOTP();
+}
+
+function startResendCooldown() {
+  otpCooldown = 30;
+  const link = document.getElementById('resendLink');
+  const cd = document.getElementById('resendCooldown');
+  link.style.display = 'none';
+  cd.style.display = 'inline';
+  const interval = setInterval(() => {
+    otpCooldown--;
+    cd.textContent = 'Resend in ' + otpCooldown + 's';
+    if (otpCooldown <= 0) {
+      clearInterval(interval);
+      link.style.display = 'inline';
+      cd.style.display = 'none';
+    }
+  }, 1000);
+}
+
+// === Email/Password Login ===
+
+async function handleEmailLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) {
+    showError('Email and password required');
+    return;
+  }
+  hideError();
+  document.getElementById('emailLoggingIn').classList.add('show');
+  try {
+    const res = await fetch(API_BASE + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    document.getElementById('emailLoggingIn').classList.remove('show');
+    if (data.token) {
+      localStorage.setItem('pa_token', data.token);
+      localStorage.setItem('pa_client', JSON.stringify(data.client));
+      window.location.href = data.client.is_admin ? 'admin.html' : 'index.html';
+    } else {
+      showError(data.error || 'Login failed');
+    }
+  } catch (err) {
+    document.getElementById('emailLoggingIn').classList.remove('show');
+    showError('Could not connect to server. Please try again.');
+  }
+}
+
+
+</script>
+
+</body>
+</html>

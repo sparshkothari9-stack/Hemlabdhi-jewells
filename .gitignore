@@ -1,0 +1,8 @@
+node_modules/
+server/node_modules/
+server/pavanart.db
+.env
+.local
+*.log
+.DS_Store
+Thumbs.db

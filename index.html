@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HemLabdhi jewells - High-end Fashion Jewellery Brand</title>
+  <meta name="description" content="Discover the greatest selections of jewellery designs. Shop mangalsutra, kada, earrings, necklace sets and more at HemLabdhi jewells.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="shortcut icon" href="images/product83.jpeg" type="image/x-icon">
+  <script>if (!localStorage.getItem('pa_token')) { window.location.replace('login.html'); }</script>
+</head>
+<body>
+
+<div class="announcement-bar">
+  <div class="announcement-slider" id="announcementSlider">
+    <div class="announcement-slide">Premium Necklace Collection - Shop Now</div>
+    <div class="announcement-slide">New Collection 2026</div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+    </div>
+    <div class="logo">
+      <a href="index.html"><img src="images/logo.svg" alt="HemLabdhi jewells" class="logo-img"></a>
+    </div>
+    <div class="header-right">
+      <button class="header-icon" id="searchIcon" aria-label="Search"><i class="fas fa-search"></i></button>
+      <button class="header-icon" id="wishlistIcon" aria-label="Wishlist" style="position:relative">
+        <i class="far fa-heart"></i>
+        <span class="cart-count wishlist-count" style="display:none">0</span>
+      </button>
+      <button class="header-icon" id="cartIcon" aria-label="Cart">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-item">
+      <a href="index.html" class="nav-link active">Home</a>
+    </div>
+    <div class="nav-item">
+      <a href="pages/products.html?category=Necklace" class="nav-link">Necklace</a>
+    </div>
+    <div class="nav-item">
+      <a href="pages/products.html?category=Crowns" class="nav-link">Crowns</a>
+    </div>
+    <div class="nav-item">
+      <a href="pages/products.html?category=Brooch" class="nav-link">Brooch</a>
+    </div>
+    <div class="nav-item">
+      <a href="pages/products.html?category=Earring" class="nav-link">Earring</a>
+    </div>
+    <div class="nav-item">
+      <a href="pages/products.html?category=Kada" class="nav-link">Kada</a>
+    </div>
+    <div class="nav-item">
+      <a href="pages/products.html?category=Bracelet" class="nav-link">Bracelet</a>
+    </div>
+    <div class="nav-item">
+      <a href="pages/products.html" class="nav-link">All Products</a>
+    </div>
+    <div class="nav-item">
+      <a href="pages/about.html" class="nav-link">About Us</a>
+    </div>
+    <div class="nav-item">
+      <a href="/login.html" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+    </div>
+  </div>
+</nav>
+
+<section class="brand-hero">
+  <div class="brand-hero-bg"></div>
+  <div class="container">
+    <div class="brand-hero-content">
+      <div class="brand-hero-text">
+        <span class="brand-badge">Premium Fashion Jewellery</span>
+        <h1>HemLabdhi<br>jewells</h1>
+        <p>Handcrafted elegance for every occasion. Discover our exclusive collection of 169+ designer pieces.</p>
+        <div class="brand-hero-actions">
+          <a href="pages/products.html" class="btn btn-gold">Explore Collection</a>
+          <a href="pages/enquiry.html" class="btn btn-outline">Bulk Enquiry</a>
+        </div>
+      </div>
+      <div class="brand-hero-visual">
+        <div class="brand-hero-grid">
+          <div class="brand-grid-item brand-grid-main">
+            <img src="images/product83.jpeg" alt="HemLabdhi jewells Crown">
+          </div>
+          <div class="brand-grid-item">
+            <img src="images/product99.jpeg" alt="HemLabdhi jewells Brooch">
+          </div>
+          <div class="brand-grid-item">
+            <img src="images/product335.jpeg" alt="HemLabdhi jewells Earring">
+          </div>
+          <div class="brand-grid-item">
+            <img src="images/product444.jpeg" alt="HemLabdhi jewells Kada">
+          </div>
+        </div>
+        <div class="brand-hero-ornament"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header animate-on-scroll">
+      <div class="section-tag">Categories</div>
+      <h2 class="section-title">Shop by Category</h2>
+      <p class="section-subtitle">Browse our complete collection with 169 unique designs.</p>
+    </div>
+    <div class="category-grid" id="categoryGrid"></div>
+  </div>
+</section>
+
+<section class="section" style="background: var(--white);">
+  <div class="container">
+    <div class="section-header animate-on-scroll">
+      <div class="section-tag">Featured Products</div>
+      <h2 class="section-title">Best Sellers</h2>
+      <p class="section-subtitle">Browse all 169 designs from our collection.</p>
+    </div>
+    <div class="product-grid" id="featuredProducts"></div>
+    <div style="text-align:center;margin-top:40px;">
+      <a href="pages/products.html" class="btn btn-dark">View All 169 Products</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="recentlyViewed" style="display:none;">
+  <div class="container">
+    <div class="section-header animate-on-scroll">
+      <div class="section-tag">Recently Viewed</div>
+      <h2 class="section-title">Your Recent Items</h2>
+    </div>
+    <div class="product-grid recent-grid"></div>
+  </div>
+</section>
+
+<section class="newsletter animate-on-scroll">
+  <div class="container">
+    <h2>Stay in the Loop</h2>
+    <p>Subscribe to receive updates on new collections and exclusive offers.</p>
+    <form class="newsletter-form" onsubmit="event.preventDefault(); subscribeNewsletter(this);">
+      <input type="email" placeholder="Enter your email" required>
+      <button type="submit" class="btn">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<section class="features-bar">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-item animate-on-scroll">
+        <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+        <h4>Secure Payment</h4>
+        <p>100% secure checkout</p>
+      </div>
+      <div class="feature-item animate-on-scroll">
+        <div class="feature-icon"><i class="fas fa-headset"></i></div>
+        <h4>24/7 Support</h4>
+        <p>Dedicated customer care</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>HemLabdhi jewells</h3>
+        <p>We craft each piece with current trends in mind, ensuring our jewellery reflects our customers' unique style. We aim to inspire and empower individuals, believing jewellery should express one's personality.</p>
+        <div class="footer-social">
+          <a href="https://facebook.com/pavanart" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://instagram.com/pavanart" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/919321671416" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="https://youtube.com/@pavanart" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-title">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="pages/about.html">About Us</a></li>
+          <li><a href="pages/contact.html">Contact Us</a></li>
+          <li><a href="pages/cart.html">Cart</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Categories</h4>
+        <ul class="footer-links">
+          <li><a href="pages/products.html?category=Necklace">Necklace</a></li>
+          <li><a href="pages/products.html?category=Crowns">Crowns</a></li>
+          <li><a href="pages/products.html?category=Brooch">Brooch</a></li>
+          <li><a href="pages/products.html?category=Earring">Earring</a></li>
+          <li><a href="pages/products.html?category=Kada">Kada</a></li>
+          <li><a href="pages/products.html?category=Bracelet">Bracelet</a></li>
+          <li><a href="pages/products.html">All Products</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Customer Care</h4>
+        <div class="footer-contact">
+          <p><i class="fas fa-phone" style="color:var(--gold);margin-right:8px;"></i> +91 9321671416</p>
+          <p><i class="fas fa-envelope" style="color:var(--gold);margin-right:8px;"></i> support@pavanart.com</p>
+          <p><i class="fas fa-clock" style="color:var(--gold);margin-right:8px;"></i> Mon-Sat: 10 AM - 6 PM</p>
+          <p><i class="fas fa-map-marker-alt" style="color:var(--gold);margin-right:8px;"></i> Mumbai, Maharashtra, India</p>
+          <br>
+          <a href="https://wa.me/919321671416" target="_blank"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 - HemLabdhi jewells. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="pages/contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-overlay-header">
+    <button class="search-close" id="searchClose">&times;</button>
+  </div>
+  <div class="search-input-wrap">
+    <input type="text" id="searchInput" placeholder="Search products..." autocomplete="off">
+    <button><i class="fas fa-search"></i></button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</div>
+
+<div class="wishlist-drawer" id="wishlistDrawer">
+  <div class="cart-drawer-header">
+    <h3>Wishlist</h3>
+    <button class="cart-drawer-close" id="wishlistDrawerClose">&times;</button>
+  </div>
+  <div class="cart-drawer-items" id="wishlistDrawerItems">
+    <div class="cart-drawer-empty"><div class="empty-icon">&#10084;</div><p>Your wishlist is empty</p></div>
+  </div>
+</div>
+
+<div class="overlay" id="wishlistOverlay"></div>
+
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-drawer-header">
+    <h3>Shopping Cart</h3>
+    <button class="cart-drawer-close" id="cartDrawerClose">&times;</button>
+  </div>
+  <div class="cart-drawer-items" id="cartDrawerItems">
+    <div class="cart-drawer-empty">
+      <div class="empty-icon">&#128722;</div>
+      <p>Your cart is empty</p>
+    </div>
+  </div>
+  <div class="cart-drawer-footer" id="cartDrawerFooter" style="display:none;">
+    <div id="cartDrawerTotal"></div>
+    <a href="pages/cart.html" class="btn btn-dark">View Cart</a>
+    <a href="pages/checkout.html" class="btn">Checkout</a>
+  </div>
+</div>
+
+<div class="overlay" id="cartOverlay"></div>
+
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-header">
+    <span style="font-family:'Jost',sans-serif;font-weight:600;font-size:18px;">Menu</span>
+    <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
+  </div>
+  <div class="mobile-nav-links" id="mobileNavLinks"></div>
+</div>
+
+<div class="overlay" id="navOverlay"></div>
+
+<div class="video-call-float">
+  <a href="javascript:videoCall()" aria-label="Video Call">
+    <i class="fas fa-video"></i>
+    <span class="tooltip">Video Call</span>
+  </a>
+</div>
+
+<div class="whatsapp-float">
+  <a href="https://wa.me/919321671416" target="_blank" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+</div>
+
+<div class="quick-view-overlay" id="quickViewOverlay" onclick="closeQuickView()"></div>
+<div class="quick-view-modal" id="quickViewModal"></div>
+
+<script src="js/products.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

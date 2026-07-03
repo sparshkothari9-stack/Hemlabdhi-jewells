@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders - HemLabdhi jewells</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="shortcut icon" href="../images/product83.jpeg" type="image/x-icon">
+  <script>if (!localStorage.getItem('pa_token')) { window.location.replace('../login.html'); }</script>
+</head>
+<body>
+
+<div class="announcement-bar">
+  <div class="announcement-slider">
+    <div class="announcement-slide">Premium Necklace Collection - Shop Now</div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <a href="../index.html" style="font-size:13px;color:var(--text-secondary);"><i class="fas fa-arrow-left"></i> Back to Store</a>
+    </div>
+    <div class="logo">
+      <a href="../index.html"><img src="../images/logo.svg" alt="HemLabdhi jewells" class="logo-img"></a>
+    </div>
+    <div class="header-right">
+      <span style="font-size:13px;color:var(--text-secondary);" id="userDisplay"></span>
+    </div>
+  </div>
+</header>
+
+<div class="container" style="padding:40px 20px;">
+  <h1 style="font-family:var(--font-heading);font-size:24px;margin-bottom:25px;">My Orders</h1>
+  <div id="ordersContainer">
+    <p style="color:var(--text-secondary);">Loading...</p>
+  </div>
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+function getToken() { return localStorage.getItem('pa_token'); }
+function getClientInfo() { try { return JSON.parse(localStorage.getItem('pa_client')); } catch { return null; } }
+
+function escapeHtml(v) {
+  const d = document.createElement('div'); d.textContent = v == null ? '' : String(v); return d.innerHTML;
+}
+
+function statusClass(s) { return s || 'pending'; }
+
+async function loadMyOrders() {
+  const container = document.getElementById('ordersContainer');
+  const client = getClientInfo();
+  if (!getToken() || !client) {
+    container.innerHTML = '<p style="color:var(--text-secondary);">Please <a href="../login.html" style="color:var(--gold);">login</a> to view your orders.</p>';
+    return;
+  }
+  document.getElementById('userDisplay').textContent = client.name || client.email;
+  try {
+    const res = await fetch(API_BASE + '/api/orders/my', {
+      headers: { 'Authorization': 'Bearer ' + getToken() }
+    });
+    if (!res.ok) throw new Error('Failed to load');
+    const data = await res.json();
+    const orders = data.orders || [];
+    if (orders.length === 0) {
+      container.innerHTML = '<p style="color:var(--text-secondary);">No orders yet. <a href="products.html" style="color:var(--gold);">Start shopping</a></p>';
+      return;
+    }
+    container.innerHTML = orders.map(o => {
+      const itemsHtml = (o.items || []).map(i => `
+        <tr><td>${escapeHtml(i.product_name)}</td><td>\u20B9${Number(i.price).toLocaleString()}</td><td>${i.qty}</td><td>\u20B9${(i.price * i.qty).toLocaleString()}</td></tr>
+      `).join('');
+      const trackingHtml = o.tracking_number ? `<div style="margin-top:8px;padding:8px 12px;background:#f5f5f5;border-radius:4px;font-size:13px;"><strong>Tracking:</strong> ${escapeHtml(o.tracking_number)}</div>` : '';
+      return `
+        <div class="order-card" style="margin-bottom:15px;">
+          <div class="order-card-header">
+            <div>
+              <span class="order-id">#${o.id}</span>
+              <span class="order-date">${escapeHtml(o.created_at)}</span>
+            </div>
+            <span class="order-status ${statusClass(o.status)}">${escapeHtml(o.status)}</span>
+          </div>
+          <div class="order-card-body">
+            <div class="info-row"><span>${escapeHtml(o.shipping_address || '')}, ${escapeHtml(o.shipping_city || '')}, ${escapeHtml(o.shipping_state || '')} ${escapeHtml(o.shipping_pincode || '')}</span></div>
+            ${trackingHtml}
+            <table class="order-items-table">
+              <thead><tr><th>Item</th><th>Price</th><th>Qty</th><th>Total</th></tr></thead>
+              <tbody>${itemsHtml}</tbody>
+            </table>
+            <div style="text-align:right;margin-top:10px;font-size:18px;font-weight:700;font-family:var(--font-heading);">Total: \u20B9${Number(o.total).toLocaleString()}</div>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:10px;">
+            <a href="../api/orders/${o.id}/invoice" target="_blank" class="btn" style="font-size:12px;padding:8px 16px;text-decoration:none;"><i class="fas fa-file-invoice"></i> Invoice</a>
+            <a href="https://wa.me/919321671416?text=${encodeURIComponent('Hi, I have a question about order #' + o.id)}" target="_blank" class="btn" style="font-size:12px;padding:8px 16px;text-decoration:none;"><i class="fab fa-whatsapp"></i> Support</a>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    container.innerHTML = '<p style="color:var(--red);">Failed to load orders: ' + escapeHtml(err.message) + '</p>';
+  }
+}
+
+loadMyOrders();
+</script>
+</body>
+</html>

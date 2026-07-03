@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Products - HemLabdhi jewells</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="shortcut icon" href="../images/product83.jpeg" type="image/x-icon">
+  <script>if (!localStorage.getItem('pa_token')) { window.location.replace('../login.html'); }</script>
+</head>
+<body>
+
+<div class="announcement-bar">
+  <div class="announcement-slider" id="announcementSlider">
+    <div class="announcement-slide">Buy 1 Get 1 Free on Mangalsutra, Shop Now</div>
+    <div class="announcement-slide">Premium Necklace Collection - Shop Now</div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+      <a href="../index.html" style="font-size:13px;color:var(--text-secondary);"><i class="fas fa-chevron-left"></i> Home</a>
+    </div>
+    <div class="logo">
+      <a href="../index.html"><img src="../images/logo.svg" alt="HemLabdhi jewells" class="logo-img"></a>
+    </div>
+    <div class="header-right">
+      <button class="header-icon" id="searchIcon" aria-label="Search"><i class="fas fa-search"></i></button>
+      <button class="header-icon" id="wishlistIcon" aria-label="Wishlist" style="position:relative">
+        <i class="far fa-heart"></i>
+        <span class="cart-count wishlist-count" style="display:none">0</span>
+      </button>
+      <button class="header-icon" id="cartIcon" aria-label="Cart">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-item"><a href="../index.html" class="nav-link">Home</a></div>
+    <div class="nav-item"><a href="products.html?category=Necklace" class="nav-link">Necklace</a></div>
+    <div class="nav-item"><a href="products.html?category=Crowns" class="nav-link">Crowns</a></div>
+    <div class="nav-item"><a href="products.html?category=Brooch" class="nav-link">Brooch</a></div>
+    <div class="nav-item"><a href="products.html?category=Earring" class="nav-link">Earring</a></div>
+    <div class="nav-item"><a href="products.html?category=Kada" class="nav-link">Kada</a></div>
+    <div class="nav-item"><a href="products.html?category=Bracelet" class="nav-link">Bracelet</a></div>
+    <div class="nav-item"><a href="products.html" class="nav-link active">All Products</a></div>
+    <div class="nav-item"><a href="../login.html" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a></div>
+  </div>
+</nav>
+
+<div class="page-header animate-on-scroll">
+  <h1>Our Collection</h1>
+  <p>Explore our complete collection with 34 necklaces, 16 crowns, 18 brooches, 70 earrings, 21 kada and 10 bracelets</p>
+</div>
+
+<section class="section" style="padding-top:0;">
+  <div class="container">
+    <div class="breadcrumbs">
+      <a href="../index.html">Home</a> / <span>Products</span>
+    </div>
+    <div class="product-layout">
+      <aside class="filter-sidebar">
+        <h3 class="filter-title">Filters</h3>
+        <div class="filter-group">
+          <h4>Category</h4>
+          <label class="filter-option"><input type="checkbox" data-category="Necklace" onchange="filterByCategory(this)"> Necklace</label>
+          <label class="filter-option"><input type="checkbox" data-category="Crowns" onchange="filterByCategory(this)"> Crowns</label>
+          <label class="filter-option"><input type="checkbox" data-category="Brooch" onchange="filterByCategory(this)"> Brooch</label>
+          <label class="filter-option"><input type="checkbox" data-category="Earring" onchange="filterByCategory(this)"> Earring</label>
+          <label class="filter-option"><input type="checkbox" data-category="Kada" onchange="filterByCategory(this)"> Kada</label>
+          <label class="filter-option"><input type="checkbox" data-category="Bracelet" onchange="filterByCategory(this)"> Bracelet</label>
+        </div>
+
+        <button class="btn btn-dark" style="width:100%;margin-top:10px;" onclick="showAll()">Clear Filters</button>
+      </aside>
+      <div>
+        <div class="product-header">
+          <span class="product-count" id="productCount">Showing all products</span>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn btn-filter-mobile" onclick="toggleMobileFilter()" aria-label="Filters"><i class="fas fa-filter"></i> Filters</button>
+            <select class="sort-select" onchange="sortProducts(this.value)">
+              <option value="featured">Featured</option>
+              <option value="name">Name: A-Z</option>
+            </select>
+          </div>
+        </div>
+        <div class="product-grid" id="allProducts"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="filter-drawer-overlay" id="filterDrawerOverlay" onclick="toggleMobileFilter()"></div>
+<div class="filter-drawer" id="filterDrawer">
+  <div class="filter-drawer-header">
+    <h3>Filters</h3>
+    <button class="filter-drawer-close" onclick="toggleMobileFilter()">&times;</button>
+  </div>
+  <div class="filter-drawer-body">
+    <div class="filter-group">
+      <h4>Category</h4>
+      <label class="filter-option"><input type="checkbox" data-category="Necklace" onchange="filterByCategory(this)"> Necklace</label>
+      <label class="filter-option"><input type="checkbox" data-category="Crowns" onchange="filterByCategory(this)"> Crowns</label>
+      <label class="filter-option"><input type="checkbox" data-category="Brooch" onchange="filterByCategory(this)"> Brooch</label>
+      <label class="filter-option"><input type="checkbox" data-category="Earring" onchange="filterByCategory(this)"> Earring</label>
+      <label class="filter-option"><input type="checkbox" data-category="Kada" onchange="filterByCategory(this)"> Kada</label>
+      <label class="filter-option"><input type="checkbox" data-category="Bracelet" onchange="filterByCategory(this)"> Bracelet</label>
+    </div>
+    <button class="btn btn-dark" style="width:100%;margin-top:10px;" onclick="showAll(); toggleMobileFilter()">Clear Filters</button>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>Pavan<span>Art</span></h3>
+        <p>We craft each piece with current trends in mind, ensuring our jewellery reflects our customers' unique style.</p>
+        <div class="footer-social">
+          <a href="https://facebook.com/pavanart" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://instagram.com/pavanart" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/919321671416" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="https://youtube.com/@pavanart" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-title">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Categories</h4>
+        <ul class="footer-links">
+          <li><a href="products.html?category=Necklace">Necklace</a></li>
+          <li><a href="products.html?category=Crowns">Crowns</a></li>
+          <li><a href="products.html?category=Brooch">Brooch</a></li>
+          <li><a href="products.html?category=Earring">Earring</a></li>
+          <li><a href="products.html?category=Kada">Kada</a></li>
+          <li><a href="products.html?category=Bracelet">Bracelet</a></li>
+          <li><a href="products.html">All Products</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Customer Care</h4>
+        <div class="footer-contact">
+          <p><i class="fas fa-phone" style="color:var(--gold);margin-right:8px;"></i> +91 9321671416</p>
+          <p><i class="fas fa-envelope" style="color:var(--gold);margin-right:8px;"></i> support@pavanart.com</p>
+          <p><i class="fas fa-clock" style="color:var(--gold);margin-right:8px;"></i> Mon-Sat: 10 AM - 6 PM</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 - HemLabdhi jewells. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-overlay-header">
+    <button class="search-close" id="searchClose">&times;</button>
+  </div>
+  <div class="search-input-wrap">
+    <input type="text" id="searchInput" placeholder="Search products..." autocomplete="off">
+    <button><i class="fas fa-search"></i></button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</div>
+
+<div class="wishlist-drawer" id="wishlistDrawer">
+  <div class="cart-drawer-header">
+    <h3>Wishlist</h3>
+    <button class="cart-drawer-close" id="wishlistDrawerClose">&times;</button>
+  </div>
+  <div class="cart-drawer-items" id="wishlistDrawerItems">
+    <div class="cart-drawer-empty"><div class="empty-icon">&#10084;</div><p>Your wishlist is empty</p></div>
+  </div>
+</div>
+
+<div class="overlay" id="wishlistOverlay"></div>
+
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-drawer-header">
+    <h3>Shopping Cart</h3>
+    <button class="cart-drawer-close" id="cartDrawerClose">&times;</button>
+  </div>
+  <div class="cart-drawer-items" id="cartDrawerItems">
+    <div class="cart-drawer-empty"><div class="empty-icon">&#128722;</div><p>Your cart is empty</p></div>
+  </div>
+  <div class="cart-drawer-footer" id="cartDrawerFooter" style="display:none;">
+    <div id="cartDrawerTotal"></div>
+    <a href="cart.html" class="btn btn-dark">View Cart</a>
+    <a href="checkout.html" class="btn">Checkout</a>
+  </div>
+</div>
+
+<div class="overlay" id="cartOverlay"></div>
+
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-header">
+    <span style="font-family:'Jost',sans-serif;font-weight:600;font-size:18px;">Menu</span>
+    <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
+  </div>
+  <div class="mobile-nav-links" id="mobileNavLinks"></div>
+</div>
+
+<div class="overlay" id="navOverlay"></div>
+
+<div class="video-call-float">
+  <a href="javascript:videoCall()" aria-label="Video Call">
+    <i class="fas fa-video"></i>
+    <span class="tooltip">Video Call</span>
+  </a>
+</div>
+
+<div class="whatsapp-float">
+  <a href="https://wa.me/919321671416" target="_blank" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+</div>
+
+<div class="quick-view-overlay" id="quickViewOverlay" onclick="closeQuickView()"></div>
+<div class="quick-view-modal" id="quickViewModal"></div>
+
+<script>var IMG_PREFIX = '../images/';</script>
+<script src="../js/products.js"></script>
+<script src="../js/main.js"></script>
+<script>
+let currentProducts = [];
+let activeFilters = [];
+
+function doRender(arr) {
+  renderProducts('allProducts', arr);
+  const el = document.getElementById('productCount');
+  if (el) el.textContent = `Showing ${arr.length} products`;
+}
+
+function filterByCategory(el) {
+  const cat = el.dataset.category;
+  if (el.checked) {
+    if (!activeFilters.includes(cat)) activeFilters.push(cat);
+  } else {
+    activeFilters = activeFilters.filter(c => c !== cat);
+  }
+  currentProducts = activeFilters.length
+    ? products.filter(p => activeFilters.includes(p.category))
+    : [...products];
+  doRender(currentProducts);
+}
+
+function toggleMobileFilter() {
+  const drawer = document.getElementById('filterDrawer');
+  const overlay = document.getElementById('filterDrawerOverlay');
+  if (!drawer) return;
+  drawer.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('active');
+}
+
+function showAll() {
+  document.querySelectorAll('.filter-option input[type="checkbox"]').forEach(c => c.checked = false);
+  activeFilters = [];
+  currentProducts = [...products];
+  doRender(currentProducts);
+}
+
+function sortProducts(val) {
+  const sorted = val === 'name'
+    ? [...currentProducts].sort((a, b) => a.name.localeCompare(b.name))
+    : [...currentProducts];
+  doRender(sorted);
+}
+
+(function initPage() {
+  const params = new URLSearchParams(window.location.search);
+  const cat = params.get('category');
+  if (cat) {
+    activeFilters = [cat];
+    currentProducts = products.filter(p => p.category === cat);
+    document.querySelectorAll('.filter-option input[data-category]').forEach(cb => {
+      if (cb.dataset.category === cat) cb.checked = true;
+    });
+  } else {
+    currentProducts = [...products];
+  }
+  doRender(currentProducts);
+})();
+</script>
+</body>
+</html>

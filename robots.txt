@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /admin.html
+Disallow: /login.html
+Disallow: /pages/cart.html
+Disallow: /pages/checkout.html
+Disallow: /api/

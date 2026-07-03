@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - HemLabdhi jewells</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Jost:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="shortcut icon" href="images/product83.jpeg" type="image/x-icon">
+  <style>
+    .admin-page { padding: 30px 0; }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .admin-header h1 {
+      font-family: var(--font-heading);
+      font-size: 24px;
+    }
+    .admin-header h1 span { color: var(--gold); }
+    .admin-tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 25px;
+    }
+    .admin-tab {
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: var(--font-body);
+      color: var(--text-secondary);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: var(--transition);
+    }
+    .admin-tab:hover { color: var(--black); }
+    .admin-tab.active {
+      color: var(--gold-dark);
+      border-bottom-color: var(--gold);
+    }
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
+
+    .client-list { display: flex; flex-direction: column; gap: 10px; }
+    .client-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--white);
+      padding: 15px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .client-row .client-info { flex: 1; min-width: 200px; }
+    .client-row .client-name { font-weight: 600; font-size: 15px; }
+    .client-row .client-email { font-size: 13px; color: var(--text-secondary); }
+    .client-row .client-tier {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 3px 10px;
+      background: var(--light-gray);
+      border-radius: 20px;
+      font-weight: 600;
+    }
+    .client-row .client-tier.wholesale { background: #e8f5e9; color: #2e7d32; }
+    .client-row .client-tier.retailer { background: #e3f2fd; color: #1565c0; }
+    .client-row .client-tier.distributor { background: #fff3e0; color: #e65100; }
+    .client-row .client-actions { display: flex; gap: 8px; }
+    .client-row .client-actions button {
+      padding: 6px 14px;
+      font-size: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--white);
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: var(--transition);
+      border-radius: var(--radius-sm);
+    }
+    .client-row .client-actions button:hover { border-color: var(--gold); color: var(--gold); }
+    .client-row .client-actions button.danger:hover { border-color: var(--red); color: var(--red); }
+
+    .add-client-form {
+      background: var(--white);
+      padding: 25px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      margin-bottom: 25px;
+    }
+    .add-client-form h3 { font-family: var(--font-heading); font-size: 16px; margin-bottom: 15px; }
+    .add-client-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .add-client-form .form-group { margin-bottom: 12px; }
+    .add-client-form .form-group label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: block; margin-bottom: 4px; }
+    .add-client-form .form-group input,
+    .add-client-form .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); font-family: var(--font-body); font-size: 14px; }
+    .add-client-form .form-group input:focus,
+    .add-client-form .form-group select:focus { outline: none; border-color: var(--gold); }
+
+    .pricing-section { display: flex; flex-direction: column; gap: 15px; }
+    .pricing-client-select {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .pricing-client-select select {
+      padding: 10px 15px;
+      border: 1px solid var(--border-color);
+      font-family: var(--font-body);
+      font-size: 14px;
+      min-width: 200px;
+    }
+    .pricing-client-select select:focus { outline: none; border-color: var(--gold); }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .pricing-row {
+      display: grid;
+      grid-template-columns: 120px 1fr 120px;
+      gap: 12px;
+      align-items: center;
+      background: var(--white);
+      padding: 8px 15px;
+      border-radius: var(--radius-sm);
+    }
+    .pricing-row .p-img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
+    .pricing-row .p-name { font-size: 13px; font-weight: 500; }
+    .pricing-row input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--border-color);
+      font-family: var(--font-body);
+      font-size: 13px;
+      text-align: right;
+    }
+    .pricing-row input:focus { outline: none; border-color: var(--gold); }
+    .pricing-row input::placeholder { color: var(--border-color); }
+    .pricing-save {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .pricing-save .btn { padding: 12px 30px; }
+    .pricing-save .status { font-size: 13px; color: var(--green); }
+    .admin-error { color: var(--red); font-size: 13px; margin-top: 8px; }
+    .admin-success { color: var(--green); font-size: 13px; margin-top: 8px; }
+
+    .order-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .order-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .order-id { font-weight: 700; font-size: 15px; }
+    .order-date { font-size: 12px; color: var(--text-secondary); }
+    .order-status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .order-status.pending { background: #fff3e0; color: #e65100; }
+    .order-status.confirmed { background: #e3f2fd; color: #1565c0; }
+    .order-status.processing { background: #f3e5f5; color: #6a1b9a; }
+    .order-status.shipped { background: #e8f5e9; color: #2e7d32; }
+    .order-status.delivered { background: #e8f5e9; color: #1b5e20; }
+    .order-status.cancelled { background: #ffebee; color: #c62828; }
+    .order-card-body { font-size: 13px; }
+    .order-card-body .info-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 10px; }
+    .order-card-body .info-row span { color: var(--text-secondary); }
+    .order-card-body .info-row strong { color: var(--text-primary); }
+    .order-items-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+    .order-items-table th { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border-color); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); }
+    .order-items-table td { padding: 6px 8px; border-bottom: 1px solid #f0f0f0; }
+    .order-card-footer {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .order-total-display { font-size: 18px; font-weight: 700; font-family: var(--font-heading); }
+    .order-status-controls select {
+      padding: 6px 10px;
+      border: 1px solid var(--border-color);
+      font-family: var(--font-body);
+      font-size: 12px;
+    }
+
+    .pricing-search {
+      margin-bottom: 15px;
+    }
+    .pricing-search input {
+      padding: 10px 15px;
+      border: 1px solid var(--border-color);
+      font-family: var(--font-body);
+      font-size: 14px;
+      width: 100%;
+      max-width: 350px;
+    }
+    .pricing-search input:focus { outline: none; border-color: var(--gold); }
+
+    .bulk-actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .bulk-actions .btn { font-size: 12px; padding: 8px 16px; }
+
+    @media (max-width: 768px) {
+      .add-client-form .form-row { grid-template-columns: 1fr; }
+      .pricing-row { grid-template-columns: 80px 1fr 100px; }
+      .admin-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header" style="position:static;">
+  <div class="header-inner">
+    <div class="header-left">
+      <a href="index.html" style="font-size:13px;color:var(--text-secondary);"><i class="fas fa-arrow-left"></i> Back to Store</a>
+    </div>
+    <div class="logo">
+      <a href="index.html"><img src="images/logo.svg" alt="HemLabdhi jewells" class="logo-img"></a>
+    </div>
+    <div class="header-right">
+      <span style="font-size:13px;color:var(--text-secondary);" id="adminUserDisplay"></span>
+      <button class="btn" style="padding:8px 16px;font-size:12px;" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</header>
+
+<div class="container admin-page">
+  <div class="admin-header">
+    <h1>Admin <span>Panel</span></h1>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab active" data-tab="dashboard" onclick="switchTab('dashboard')">Dashboard</button>
+    <button class="admin-tab" data-tab="clients" onclick="switchTab('clients')">Clients</button>
+    <button class="admin-tab" data-tab="pricing" onclick="switchTab('pricing')">Pricing</button>
+    <button class="admin-tab" data-tab="inventory" onclick="switchTab('inventory')">Inventory</button>
+    <button class="admin-tab" data-tab="orders" onclick="switchTab('orders')">Orders</button>
+    <button class="admin-tab" data-tab="coupons" onclick="switchTab('coupons')">Coupons</button>
+    <button class="admin-tab" data-tab="enquiries" onclick="switchTab('enquiries')">Enquiries</button>
+  </div>
+
+  <!-- DASHBOARD TAB -->
+  <div class="admin-panel" id="panel-dashboard">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:25px;">
+      <div class="stat-card"><h3>Total Orders</h3><div class="stat-value" id="statOrders">-</div></div>
+      <div class="stat-card"><h3>Revenue</h3><div class="stat-value" id="statRevenue">-</div></div>
+      <div class="stat-card"><h3>Pending</h3><div class="stat-value" id="statPending">-</div></div>
+      <div class="stat-card"><h3>Clients</h3><div class="stat-value" id="statClients">-</div></div>
+      <div class="stat-card"><h3>Products</h3><div class="stat-value" id="statProducts">-</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="admin-section"><h3>Low Stock Alerts</h3><div id="lowStockList"><p style="color:var(--text-secondary);">Loading...</p></div></div>
+      <div class="admin-section"><h3>Recent Orders</h3><div id="recentOrdersList"><p style="color:var(--text-secondary);">Loading...</p></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;">
+      <div class="admin-section"><h3>Top Products</h3><div id="topProductsList"><p style="color:var(--text-secondary);">Loading...</p></div></div>
+      <div class="admin-section"><h3>Revenue by Month</h3><div id="revenueByMonthList"><p style="color:var(--text-secondary);">Loading...</p></div></div>
+    </div>
+  </div>
+
+  <!-- CLIENTS TAB -->
+  <div class="admin-panel active" id="panel-clients">
+    <div class="add-client-form">
+      <h3>Add New Client</h3>
+      <form onsubmit="return addClient(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="newClientName" required placeholder="Business name">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="newClientEmail" required placeholder="client@example.com">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="newClientPassword" required minlength="8" placeholder="At least 8 characters">
+          </div>
+          <div class="form-group">
+            <label>Tier</label>
+            <select id="newClientTier">
+              <option value="wholesale">Wholesale</option>
+              <option value="retailer" selected>Retailer</option>
+              <option value="distributor">Distributor</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn">Add Client</button>
+        <div class="admin-error" id="addClientError"></div>
+      </form>
+    </div>
+
+    <h3 style="font-family:var(--font-heading);font-size:16px;margin-bottom:15px;">All Clients</h3>
+    <div class="client-list" id="clientList">
+      <p style="color:var(--text-secondary);">Loading...</p>
+    </div>
+  </div>
+
+  <!-- PRICING TAB -->
+  <div class="admin-panel" id="panel-pricing">
+    <div class="pricing-client-select">
+      <label style="font-weight:600;font-size:14px;">Select Client:</label>
+      <select id="pricingClientSelect" onchange="loadPricing()">
+        <option value="">-- Choose a client --</option>
+      </select>
+    </div>
+
+    <div class="pricing-search" style="margin-top:15px;">
+      <input type="text" id="pricingSearch" placeholder="Search products..." oninput="filterPricing()">
+    </div>
+
+    <div class="bulk-actions">
+      <button class="btn" style="font-size:12px;padding:8px 16px;" onclick="setAllPrices(999)">Set all to ₹999</button>
+      <button class="btn" style="font-size:12px;padding:8px 16px;" onclick="setAllPrices(1999)">Set all to ₹1,999</button>
+      <button class="btn" style="font-size:12px;padding:8px 16px;" onclick="setAllPrices(4999)">Set all to ₹4,999</button>
+      <button class="btn" style="font-size:12px;padding:8px 16px;" onclick="clearAllPrices()">Clear all</button>
+    </div>
+
+    <div class="pricing-grid" id="pricingGrid">
+      <p style="color:var(--text-secondary);">Select a client to manage pricing.</p>
+    </div>
+
+    <div class="pricing-save" id="pricingSaveArea" style="display:none;">
+      <button class="btn btn-dark" onclick="savePricing()">Save All Prices</button>
+      <span class="status" id="pricingStatus"></span>
+    </div>
+  </div>
+
+  <!-- INVENTORY TAB -->
+  <div class="admin-panel" id="panel-inventory">
+    <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
+      <input type="text" id="inventorySearch" placeholder="Search products..." oninput="filterInventory()" style="padding:10px 15px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:14px;flex:1;max-width:350px;">
+      <button class="btn btn-dark" onclick="saveInventory()">Save Stock Changes</button>
+      <span class="status" id="inventoryStatus"></span>
+    </div>
+    <div id="inventoryGrid"><p style="color:var(--text-secondary);">Loading...</p></div>
+  </div>
+
+  <!-- ORDERS TAB -->
+  <div class="admin-panel" id="panel-orders">
+    <div style="margin-bottom:15px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <select id="orderStatusFilter" onchange="loadOrders()" style="padding:8px 12px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:13px;">
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="processing">Processing</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <button class="btn" style="font-size:12px;padding:8px 16px;" onclick="exportOrdersCSV()"><i class="fas fa-download"></i> Export CSV</button>
+    </div>
+    <div id="ordersList">
+      <p style="color:var(--text-secondary);">Loading...</p>
+    </div>
+  </div>
+
+  <!-- COUPONS TAB -->
+  <div class="admin-panel" id="panel-coupons">
+    <div class="add-client-form">
+      <h3>Create Coupon</h3>
+      <form onsubmit="return createCoupon(event)">
+        <div class="form-row">
+          <div class="form-group"><label>Code</label><input type="text" id="couponCode" required placeholder="e.g. FESTIVE10" style="text-transform:uppercase;"></div>
+          <div class="form-group"><label>Discount %</label><input type="number" id="couponPercent" value="10" min="1" max="100"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Min Order (₹)</label><input type="number" id="couponMinAmount" value="0" min="0"></div>
+          <div class="form-group"><label>Max Uses</label><input type="number" id="couponMaxUses" value="100" min="1"></div>
+        </div>
+        <div class="form-group"><label>Expires At (optional)</label><input type="date" id="couponExpires"></div>
+        <button type="submit" class="btn">Create Coupon</button>
+        <div class="admin-error" id="couponError"></div>
+      </form>
+    </div>
+    <h3 style="font-family:var(--font-heading);font-size:16px;margin-bottom:15px;">All Coupons</h3>
+    <div id="couponsList"><p style="color:var(--text-secondary);">Loading...</p></div>
+  </div>
+
+  <!-- ENQUIRIES TAB -->
+  <div class="admin-panel" id="panel-enquiries">
+    <div style="margin-bottom:15px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+      <select id="enquiryStatusFilter" onchange="loadEnquiries()" style="padding:8px 12px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:13px;">
+        <option value="">All</option>
+        <option value="pending">Pending</option>
+        <option value="contacted">Contacted</option>
+        <option value="quoted">Quoted</option>
+        <option value="closed">Closed</option>
+      </select>
+    </div>
+    <div id="enquiriesList"><p style="color:var(--text-secondary);">Loading...</p></div>
+  </div>
+</div>
+
+<style>
+  .stat-card {
+    background: var(--white); padding: 20px; border-radius: var(--radius-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); text-align: center;
+  }
+  .stat-card h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-weight: 700; font-family: var(--font-heading); color: var(--gold-dark); }
+  .admin-section {
+    background: var(--white); padding: 20px; border-radius: var(--radius-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .admin-section h3 { font-family: var(--font-heading); font-size: 15px; margin-bottom: 12px; }
+  .admin-section table { width: 100%; font-size: 13px; border-collapse: collapse; }
+  .admin-section td, .admin-section th { padding: 6px 8px; border-bottom: 1px solid #f0f0f0; text-align: left; }
+  .admin-section th { font-size: 11px; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.5px; }
+
+  .inventory-row {
+    display: grid; grid-template-columns: 60px 1fr 120px 120px;
+    gap: 12px; align-items: center; background: var(--white);
+    padding: 8px 15px; border-radius: var(--radius-sm); margin-bottom: 6px;
+  }
+  .inventory-row input { width: 100%; padding: 8px 10px; border: 1px solid var(--border-color); font-family: var(--font-body); font-size: 13px; text-align: center; }
+  .inventory-row input:focus { outline: none; border-color: var(--gold); }
+  .inventory-row .low-stock { color: var(--red); font-weight: 600; }
+
+  .order-note-item { padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+  .order-note-item .note-date { font-size: 11px; color: var(--text-secondary); }
+
+  .coupon-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--white); padding: 12px 20px; border-radius: var(--radius-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 8px; flex-wrap: wrap; gap: 10px;
+  }
+  .coupon-code { font-weight: 700; font-family: monospace; font-size: 16px; color: var(--gold-dark); }
+  .coupon-info { font-size: 13px; color: var(--text-secondary); }
+
+  .enquiry-card {
+    background: var(--white); padding: 15px 20px; border-radius: var(--radius-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 10px;
+  }
+  .enquiry-card .enq-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .enquiry-card .enq-name { font-weight: 600; }
+  .enquiry-card .enq-status { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
+  .enq-status.pending { background: #fff3e0; color: #e65100; }
+  .enq-status.contacted { background: #e3f2fd; color: #1565c0; }
+  .enq-status.quoted { background: #f3e5f5; color: #6a1b9a; }
+  .enq-status.closed { background: #e8f5e9; color: #2e7d32; }
+
+  .tracking-input { display: flex; gap: 8px; margin: 8px 0; }
+  .tracking-input input { flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); font-family: var(--font-body); font-size: 13px; }
+  .tracking-input input:focus { outline: none; border-color: var(--gold); }
+  .tracking-input button { padding: 8px 16px; font-size: 12px; }
+</style>
+
+<script>
+const API_BASE = window.location.origin;
+
+function getToken() { return localStorage.getItem('pa_token'); }
+
+function escapeHtml(value) {
+  const div = document.createElement('div');
+  div.textContent = value == null ? '' : String(value);
+  return div.innerHTML;
+}
+
+function authHeaders() {
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + getToken()
+  };
+}
+
+async function checkAuth() {
+  const token = getToken();
+  if (!token) { window.location.href = '/login.html'; return false; }
+  try {
+    const res = await fetch(API_BASE + '/api/auth/me', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) throw new Error('Auth failed');
+    const data = await res.json();
+    if (!data.client?.is_admin) { window.location.href = '/index.html'; return false; }
+    document.getElementById('adminUserDisplay').textContent = data.client.email;
+    localStorage.setItem('pa_client', JSON.stringify(data.client));
+    return true;
+  } catch {
+    window.location.href = '/login.html';
+    return false;
+  }
+}
+
+function logout() {
+  localStorage.removeItem('pa_token');
+  localStorage.removeItem('pa_client');
+  window.location.href = '/login.html';
+}
+
+let allProducts = [];
+let allClients = [];
+
+function switchTab(name) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.admin-tab[data-tab="' + name + '"]').classList.add('active');
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'pricing') loadPricingClients();
+  if (name === 'inventory') loadInventory();
+  if (name === 'coupons') loadCoupons();
+  if (name === 'enquiries') loadEnquiries();
+}
+
+async function apiFetch(url, options) {
+  const res = await fetch(API_BASE + url, { ...options, headers: { ...authHeaders(), ...(options?.headers || {}) } });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+// ===== DASHBOARD =====
+async function loadDashboard() {
+  try {
+    const d = await apiFetch('/api/dashboard');
+    document.getElementById('statOrders').textContent = d.totalOrders;
+    document.getElementById('statRevenue').textContent = '\u20B9' + Number(d.totalRevenue).toLocaleString();
+    document.getElementById('statPending').textContent = d.pendingOrders;
+    document.getElementById('statClients').textContent = d.totalClients;
+    document.getElementById('statProducts').textContent = d.totalProducts;
+
+    document.getElementById('lowStockList').innerHTML = d.lowStock.length === 0
+      ? '<p style="color:var(--green);">All products well stocked</p>'
+      : '<table><tr><th>Product</th><th>Stock</th></tr>' + d.lowStock.map(s => `<tr><td>${escapeHtml(s.name)}</td><td style="color:var(--red);font-weight:600;">${s.stock}</td></tr>`).join('') + '</table>';
+
+    document.getElementById('recentOrdersList').innerHTML = d.recentOrders.length === 0
+      ? '<p style="color:var(--text-secondary);">No orders yet</p>'
+      : '<table><tr><th>ID</th><th>Client</th><th>Total</th><th>Status</th></tr>' + d.recentOrders.map(o => `<tr><td>#${o.id}</td><td>${escapeHtml(o.client_name)}</td><td>\u20B9${Number(o.total).toLocaleString()}</td><td>${o.status}</td></tr>`).join('') + '</table>';
+
+    document.getElementById('topProductsList').innerHTML = d.topProducts.length === 0
+      ? '<p style="color:var(--text-secondary);">No sales yet</p>'
+      : '<table><tr><th>Product</th><th>Qty</th><th>Revenue</th></tr>' + d.topProducts.map(p => `<tr><td>${escapeHtml(p.product_name)}</td><td>${p.qty}</td><td>\u20B9${Number(p.revenue).toLocaleString()}</td></tr>`).join('') + '</table>';
+
+    document.getElementById('revenueByMonthList').innerHTML = d.revenueByMonth.length === 0
+      ? '<p style="color:var(--text-secondary);">No data yet</p>'
+      : '<table><tr><th>Month</th><th>Revenue</th></tr>' + d.revenueByMonth.map(r => `<tr><td>${r.month}</td><td>\u20B9${Number(r.revenue).toLocaleString()}</td></tr>`).join('') + '</table>';
+  } catch (err) {
+    ['statOrders','statRevenue','statPending','statClients','statProducts'].forEach(id => document.getElementById(id).textContent = 'Error');
+  }
+}
+
+// ===== CLIENTS =====
+async function loadClients() {
+  try {
+    const data = await apiFetch('/api/admin/clients');
+    allClients = data.clients.filter(c => !c.is_admin);
+    const list = document.getElementById('clientList');
+    if (allClients.length === 0) {
+      list.innerHTML = '<p style="color:var(--text-secondary);">No clients yet.</p>';
+      return;
+    }
+    list.innerHTML = allClients.map(c => `
+      <div class="client-row">
+        <div class="client-info">
+          <div class="client-name">${escapeHtml(c.name)}</div>
+          <div class="client-email">${escapeHtml(c.email)}</div>
+        </div>
+        <span class="client-tier ${escapeHtml(c.tier)}">${escapeHtml(c.tier)}</span>
+        <div class="client-actions">
+          <button onclick="deleteClient(${c.id})" class="danger"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    document.getElementById('clientList').innerHTML = '<p style="color:var(--red);">Failed to load clients: ' + escapeHtml(err.message) + '</p>';
+  }
+}
+
+async function addClient(e) {
+  e.preventDefault();
+  const name = document.getElementById('newClientName').value.trim();
+  const email = document.getElementById('newClientEmail').value.trim();
+  const password = document.getElementById('newClientPassword').value;
+  const tier = document.getElementById('newClientTier').value;
+  const errorEl = document.getElementById('addClientError');
+  if (!name || !email || !password) { errorEl.textContent = 'All fields required'; return; }
+  if (password.length < 8) { errorEl.textContent = 'Password must be at least 8 characters'; return; }
+  errorEl.textContent = '';
+  try {
+    await apiFetch('/api/admin/clients', { method: 'POST', body: JSON.stringify({ name, email, password, tier }) });
+    document.getElementById('newClientName').value = '';
+    document.getElementById('newClientEmail').value = '';
+    document.getElementById('newClientPassword').value = '';
+    loadClients(); loadPricingClients();
+    errorEl.style.color = 'var(--green)'; errorEl.textContent = 'Client added successfully!';
+    setTimeout(() => { errorEl.textContent = ''; errorEl.style.color = ''; }, 3000);
+  } catch (err) { errorEl.textContent = err.message; }
+  return false;
+}
+
+async function deleteClient(id) {
+  if (!confirm('Delete this client?')) return;
+  try { await apiFetch('/api/admin/clients/' + id, { method: 'DELETE' }); loadClients(); loadPricingClients(); } catch (err) { alert(err.message); }
+}
+
+// ===== PRICING =====
+async function loadPricingClients() {
+  try {
+    const data = await apiFetch('/api/admin/clients');
+    const clients = data.clients.filter(c => !c.is_admin);
+    const select = document.getElementById('pricingClientSelect');
+    const currentVal = select.value;
+    select.innerHTML = '<option value="">-- Choose a client --</option>' + clients.map(c => `<option value="${c.id}">${escapeHtml(c.name)} (${escapeHtml(c.email)})</option>`).join('');
+    if (currentVal && clients.some(c => c.id == currentVal)) select.value = currentVal;
+  } catch {}
+}
+
+async function loadPricing() {
+  const clientId = document.getElementById('pricingClientSelect').value;
+  const grid = document.getElementById('pricingGrid');
+  const saveArea = document.getElementById('pricingSaveArea');
+  if (!clientId) { grid.innerHTML = '<p style="color:var(--text-secondary);">Select a client to manage pricing.</p>'; saveArea.style.display = 'none'; return; }
+  saveArea.style.display = 'none';
+  grid.innerHTML = '<p style="color:var(--text-secondary);">Loading products...</p>';
+  try {
+    const data = await apiFetch('/api/admin/pricing/' + clientId);
+    const priceMap = data.pricing || {};
+    allProducts = allProducts.length === 0 ? await loadAllProducts() : allProducts;
+    if (allProducts.length === 0) { grid.innerHTML = '<p style="color:var(--text-secondary);">No products found.</p>'; return; }
+    renderPricingGrid(priceMap);
+    saveArea.style.display = 'flex';
+  } catch (err) { grid.innerHTML = '<p style="color:var(--red);">Error: ' + escapeHtml(err.message) + '</p>'; }
+}
+
+async function loadAllProducts() {
+  try { const res = await fetch(API_BASE + '/api/products', { headers: { 'Authorization': 'Bearer ' + getToken() } }); const data = await res.json(); return data.products || []; } catch { return []; }
+}
+
+function renderPricingGrid(priceMap) {
+  const grid = document.getElementById('pricingGrid');
+  grid.innerHTML = allProducts.map(p => {
+    const price = priceMap[p.id] || '';
+    return `<div class="pricing-row" data-name="${escapeHtml(p.name.toLowerCase())}" data-id="${p.id}"><img class="p-img" src="${escapeHtml(Array.isArray(p.images) ? p.images[0] : p.images)}" alt="${escapeHtml(p.name)}" loading="lazy"><div class="p-name">${escapeHtml(p.sku)} - ${escapeHtml(p.name)}</div><input type="number" class="price-input" data-product-id="${p.id}" value="${price}" placeholder="No price" min="0" step="1"></div>`;
+  }).join('');
+}
+
+function filterPricing() {
+  const q = document.getElementById('pricingSearch').value.toLowerCase().trim();
+  document.querySelectorAll('.pricing-row').forEach(row => { row.style.display = (!q || row.dataset.name.includes(q)) ? 'grid' : 'none'; });
+}
+
+function setAllPrices(price) { document.querySelectorAll('.price-input').forEach(inp => inp.value = price); }
+function clearAllPrices() { document.querySelectorAll('.price-input').forEach(inp => inp.value = ''); }
+
+async function savePricing() {
+  const clientId = document.getElementById('pricingClientSelect').value;
+  if (!clientId) return;
+  const statusEl = document.getElementById('pricingStatus');
+  const pricing = {};
+  document.querySelectorAll('.price-input').forEach(inp => { const val = inp.value.trim(); if (val !== '') pricing[inp.dataset.productId] = parseFloat(val); });
+  statusEl.textContent = 'Saving...';
+  try { await apiFetch('/api/admin/pricing/' + clientId, { method: 'POST', body: JSON.stringify({ pricing }) }); statusEl.textContent = 'Prices saved successfully!'; setTimeout(() => { statusEl.textContent = ''; }, 3000); } catch (err) { statusEl.textContent = 'Error: ' + err.message; statusEl.style.color = 'var(--red)'; }
+}
+
+// ===== INVENTORY =====
+let inventoryData = {};
+
+async function loadInventory() {
+  const grid = document.getElementById('inventoryGrid');
+  grid.innerHTML = '<p style="color:var(--text-secondary);">Loading...</p>';
+  try {
+    const stockRes = await apiFetch('/api/stock');
+    inventoryData = stockRes.stock || {};
+    allProducts = allProducts.length === 0 ? await loadAllProducts() : allProducts;
+    renderInventory();
+  } catch (err) { grid.innerHTML = '<p style="color:var(--red);">Error: ' + escapeHtml(err.message) + '</p>'; }
+}
+
+function renderInventory() {
+  const grid = document.getElementById('inventoryGrid');
+  grid.innerHTML = allProducts.map(p => {
+    const s = inventoryData[p.id] || { stock: 0, low_stock_threshold: 3 };
+    const low = s.stock <= s.low_stock_threshold;
+    return `<div class="inventory-row" data-name="${escapeHtml(p.name.toLowerCase())}">
+      <img class="p-img" src="${escapeHtml(Array.isArray(p.images) ? p.images[0] : p.images)}" alt="${escapeHtml(p.name)}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;">
+      <div class="p-name" style="font-size:13px;">${escapeHtml(p.sku)} - ${escapeHtml(p.name)}</div>
+      <input type="number" class="inv-stock" data-id="${p.id}" value="${s.stock || 0}" min="0" style="${low ? 'border-color:var(--red);' : ''}">
+      <input type="number" class="inv-threshold" data-id="${p.id}" value="${s.low_stock_threshold || 3}" min="1" style="font-size:12px;">
+    </div>`;
+  }).join('');
+}
+
+function filterInventory() {
+  const q = document.getElementById('inventorySearch').value.toLowerCase().trim();
+  document.querySelectorAll('.inventory-row').forEach(row => { row.style.display = (!q || row.dataset.name.includes(q)) ? 'grid' : 'none'; });
+}
+
+async function saveInventory() {
+  const statusEl = document.getElementById('inventoryStatus');
+  const stock = {};
+  document.querySelectorAll('.inv-stock').forEach(inp => {
+    const id = inp.dataset.id;
+    const threshold = document.querySelector(`.inv-threshold[data-id="${id}"]`);
+    stock[id] = { stock: parseInt(inp.value) || 0, low_stock_threshold: parseInt(threshold?.value) || 3 };
+  });
+  statusEl.textContent = 'Saving...';
+  try { await apiFetch('/api/stock', { method: 'PUT', body: JSON.stringify({ stock }) }); statusEl.textContent = 'Stock saved!'; setTimeout(() => { statusEl.textContent = ''; }, 3000); } catch (err) { statusEl.textContent = 'Error: ' + err.message; }
+}
+
+// ===== ORDERS =====
+async function loadOrders() {
+  const list = document.getElementById('ordersList');
+  const filter = document.getElementById('orderStatusFilter')?.value || '';
+  list.innerHTML = '<p style="color:var(--text-secondary);">Loading orders...</p>';
+  try {
+    const data = await apiFetch('/api/orders/admin/all');
+    let orders = data.orders || [];
+    if (filter) orders = orders.filter(o => o.status === filter);
+    if (orders.length === 0) { list.innerHTML = '<p style="color:var(--text-secondary);">No orders found.</p>'; return; }
+    list.innerHTML = orders.map(o => {
+      const itemsHtml = (o.items || []).map(i => `<tr><td>${escapeHtml(i.product_name)}</td><td>\u20B9${Number(i.price).toLocaleString()}</td><td>${i.qty}</td><td>\u20B9${(i.price * i.qty).toLocaleString()}</td></tr>`).join('');
+      const discountHtml = o.discount_amount ? `<div style="font-size:13px;color:var(--green);">Coupon: ${escapeHtml(o.coupon_code||'')} (-₹${Number(o.discount_amount).toLocaleString()})</div>` : '';
+      const trackingHtml = o.tracking_number ? `<div style="font-size:13px;">Tracking: <strong>${escapeHtml(o.tracking_number)}</strong></div>` : '';
+      return `<div class="order-card">
+        <div class="order-card-header">
+          <div><span class="order-id">#${o.id}</span> <span class="order-date">${escapeHtml(o.created_at)}</span></div>
+          <span class="order-status ${escapeHtml(o.status)}">${escapeHtml(o.status)}</span>
+        </div>
+        <div class="order-card-body">
+          <div class="info-row">
+            <span><strong>${escapeHtml(o.client_name)}</strong> (${escapeHtml(o.client_email)})</span>
+            <span>${escapeHtml(o.client_phone || '')}</span>
+            <span>${escapeHtml(o.shipping_address || '')}, ${escapeHtml(o.shipping_city || '')}, ${escapeHtml(o.shipping_state || '')} ${escapeHtml(o.shipping_pincode || '')}</span>
+          </div>
+          ${trackingHtml}${discountHtml}
+          <table class="order-items-table"><thead><tr><th>Item</th><th>Price</th><th>Qty</th><th>Total</th></tr></thead><tbody>${itemsHtml}</tbody></table>
+        </div>
+        <div class="order-card-footer">
+          <div class="order-total-display">Total: \u20B9${Number(o.total).toLocaleString()}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <div class="order-status-controls">
+              <select onchange="updateOrderStatus(${o.id}, this.value)">
+                <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                <option value="confirmed" ${o.status === 'confirmed' ? 'selected' : ''}>Confirm</option>
+                <option value="processing" ${o.status === 'processing' ? 'selected' : ''}>Processing</option>
+                <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                <option value="delivered" ${o.status === 'delivered' ? 'selected' : ''}>Delivered</option>
+                <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancel</option>
+              </select>
+            </div>
+            <button class="btn" style="font-size:11px;padding:6px 12px;" onclick="toggleOrderDetails(${o.id})">Details</button>
+            <a href="../api/orders/${o.id}/invoice" target="_blank" class="btn" style="font-size:11px;padding:6px 12px;text-decoration:none;">Invoice</a>
+          </div>
+        </div>
+        <div id="orderDetails-${o.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0;">
+          <div class="tracking-input">
+            <input type="text" id="trackingInput-${o.id}" placeholder="Tracking number" value="${escapeHtml(o.tracking_number||'')}">
+            <button onclick="updateTracking(${o.id})">Save Tracking</button>
+          </div>
+          <div style="margin-top:10px;">
+            <h4 style="font-size:13px;margin-bottom:6px;">Order Notes</h4>
+            <div id="orderNotes-${o.id}"><p style="font-size:13px;color:var(--text-secondary);">Loading...</p></div>
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <input type="text" id="noteInput-${o.id}" placeholder="Add a note..." style="flex:1;padding:8px 12px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:13px;">
+              <button onclick="addOrderNote(${o.id})">Add Note</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (err) { list.innerHTML = '<p style="color:var(--red);">Error loading orders: ' + escapeHtml(err.message) + '</p>'; }
+}
+
+async function toggleOrderDetails(id) {
+  const el = document.getElementById('orderDetails-' + id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  if (el.style.display === 'block' && !el.dataset.loaded) {
+    el.dataset.loaded = '1';
+    loadOrderNotes(id);
+  }
+}
+
+async function loadOrderNotes(orderId) {
+  try {
+    const data = await apiFetch('/api/orders/' + orderId + '/notes');
+    document.getElementById('orderNotes-' + orderId).innerHTML = data.notes.length === 0
+      ? '<p style="font-size:13px;color:var(--text-secondary);">No notes yet</p>'
+      : data.notes.map(n => `<div class="order-note-item"><span class="note-date">${escapeHtml(n.created_at)}</span><br>${escapeHtml(n.note)}</div>`).join('');
+  } catch {}
+}
+
+async function addOrderNote(orderId) {
+  const input = document.getElementById('noteInput-' + orderId);
+  const note = input.value.trim();
+  if (!note) return;
+  try { await apiFetch('/api/orders/' + orderId + '/notes', { method: 'POST', body: JSON.stringify({ note }) }); input.value = ''; loadOrderNotes(orderId); } catch (err) { alert(err.message); }
+}
+
+async function updateTracking(orderId) {
+  const tracking = document.getElementById('trackingInput-' + orderId).value.trim();
+  try { await apiFetch('/api/orders/' + orderId + '/tracking', { method: 'PUT', body: JSON.stringify({ tracking_number: tracking }) }); showMessage('Tracking saved!'); } catch (err) { alert(err.message); }
+}
+
+async function updateOrderStatus(orderId, status) {
+  try { await apiFetch('/api/orders/admin/' + orderId + '/status', { method: 'PUT', body: JSON.stringify({ status }) }); loadOrders(); } catch (err) { alert('Failed: ' + err.message); loadOrders(); }
+}
+
+function exportOrdersCSV() { window.open(API_BASE + '/api/orders/export', '_blank'); }
+
+function showMessage(msg) {
+  const el = document.createElement('div');
+  el.style.cssText = 'position:fixed;bottom:20px;right:20px;background:var(--green);color:#fff;padding:12px 20px;border-radius:4px;font-size:13px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.15);';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
+// ===== COUPONS =====
+async function loadCoupons() {
+  try {
+    const data = await apiFetch('/api/coupons');
+    const list = document.getElementById('couponsList');
+    const coupons = data.coupons || [];
+    if (coupons.length === 0) { list.innerHTML = '<p style="color:var(--text-secondary);">No coupons yet.</p>'; return; }
+    list.innerHTML = coupons.map(c => `<div class="coupon-row">
+      <div><div class="coupon-code">${escapeHtml(c.code)}</div><div class="coupon-info">${c.discount_percent}% off | Min: ₹${c.min_amount} | Uses: ${c.used_count}/${c.max_uses} | ${c.is_active ? '<span style="color:var(--green)">Active</span>' : '<span style="color:var(--red)">Inactive</span>'}${c.expires_at ? ' | Expires: ' + c.expires_at : ''}</div></div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn" style="font-size:11px;padding:6px 12px;" onclick="toggleCoupon(${c.id}, ${c.is_active ? 0 : 1})">${c.is_active ? 'Deactivate' : 'Activate'}</button>
+      </div>
+    </div>`).join('');
+  } catch (err) { document.getElementById('couponsList').innerHTML = '<p style="color:var(--red);">Error: ' + escapeHtml(err.message) + '</p>'; }
+}
+
+async function createCoupon(e) {
+  e.preventDefault();
+  const code = document.getElementById('couponCode').value.trim().toUpperCase().replace(/\s+/g, '');
+  const discount_percent = parseInt(document.getElementById('couponPercent').value) || 10;
+  const min_amount = parseFloat(document.getElementById('couponMinAmount').value) || 0;
+  const max_uses = parseInt(document.getElementById('couponMaxUses').value) || 100;
+  const expires_at = document.getElementById('couponExpires').value || null;
+  const errorEl = document.getElementById('couponError');
+  if (!code) { errorEl.textContent = 'Coupon code required'; return; }
+  errorEl.textContent = '';
+  try {
+    await apiFetch('/api/coupons', { method: 'POST', body: JSON.stringify({ code, discount_percent, min_amount, max_uses, expires_at }) });
+    document.getElementById('couponCode').value = '';
+    loadCoupons();
+    errorEl.style.color = 'var(--green)'; errorEl.textContent = 'Coupon created!';
+    setTimeout(() => { errorEl.textContent = ''; errorEl.style.color = ''; }, 3000);
+  } catch (err) { errorEl.textContent = err.message; }
+  return false;
+}
+
+async function toggleCoupon(id, active) {
+  try { await apiFetch('/api/coupons/' + id, { method: 'PUT', body: JSON.stringify({ is_active: active }) }); loadCoupons(); } catch (err) { alert(err.message); }
+}
+
+// ===== ENQUIRIES =====
+async function loadEnquiries() {
+  try {
+    const data = await apiFetch('/api/enquiries');
+    let enquiries = data.enquiries || [];
+    const filter = document.getElementById('enquiryStatusFilter').value;
+    if (filter) enquiries = enquiries.filter(e => e.status === filter);
+    const list = document.getElementById('enquiriesList');
+    if (enquiries.length === 0) { list.innerHTML = '<p style="color:var(--text-secondary);">No enquiries yet.</p>'; return; }
+    list.innerHTML = enquiries.map(e => `<div class="enquiry-card">
+      <div class="enq-header">
+        <div><span class="enq-name">${escapeHtml(e.client_name)}</span> <span style="font-size:13px;color:var(--text-secondary);">(${escapeHtml(e.client_email)}${e.client_phone ? ' - ' + escapeHtml(e.client_phone) : ''})</span></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select onchange="updateEnquiryStatus(${e.id}, this.value)" style="padding:4px 8px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:12px;">
+            <option value="pending" ${e.status === 'pending' ? 'selected' : ''}>Pending</option>
+            <option value="contacted" ${e.status === 'contacted' ? 'selected' : ''}>Contacted</option>
+            <option value="quoted" ${e.status === 'quoted' ? 'selected' : ''}>Quoted</option>
+            <option value="closed" ${e.status === 'closed' ? 'selected' : ''}>Closed</option>
+          </select>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--text-secondary);margin-top:6px;"><strong>Products:</strong> ${escapeHtml(e.products)}</div>
+      ${e.message ? `<div style="font-size:13px;margin-top:4px;"><strong>Message:</strong> ${escapeHtml(e.message)}</div>` : ''}
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:6px;">${escapeHtml(e.created_at)}</div>
+    </div>`).join('');
+  } catch (err) { document.getElementById('enquiriesList').innerHTML = '<p style="color:var(--red);">Error: ' + escapeHtml(err.message) + '</p>'; }
+}
+
+async function updateEnquiryStatus(id, status) {
+  try { await apiFetch('/api/enquiries/' + id, { method: 'PUT', body: JSON.stringify({ status }) }); loadEnquiries(); } catch (err) { alert(err.message); }
+}
+
+// ===== INIT =====
+async function initAdmin() {
+  if (!(await checkAuth())) return;
+  loadDashboard();
+  loadClients();
+  loadPricingClients();
+  loadOrders();
+}
+
+initAdmin();
+</script>
+</body>
+</html>

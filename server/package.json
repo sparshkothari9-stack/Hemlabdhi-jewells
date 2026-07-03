@@ -1,0 +1,25 @@
+{
+  "name": "Hemlabdhi-jewells",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "deploy:init": "node seed.js && node import-products.js && node set-pricing.js",
+    "deploy:start": "npm run deploy:init && npm start",
+    "dev": "set NODE_ENV=development&& node server.js",
+    "prod": "set NODE_ENV=production&& node server.js",
+    "seed": "node seed.js",
+    "seed:prod": "set NODE_ENV=production&& node seed.js",
+    "import": "node import-products.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.18.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "sql.js": "^1.10.0",
+    "uuid": "^14.0.1"
+  }
+}

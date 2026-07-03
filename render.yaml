@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: hemlabdhi-jewells
+    runtime: node
+    plan: starter
+    buildCommand: cd server && npm ci
+    startCommand: cd server && npm run deploy:start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_PATH
+        value: /var/data/pavanart.db
+      - key: JWT_SECRET
+        sync: false
+      - key: ADMIN_EMAIL
+        value: sparshkothari9@gmail.com
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: CLIENT_PASSWORD
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+    disk:
+      name: hemlabdhi-data
+      mountPath: /var/data
+      sizeGB: 1
