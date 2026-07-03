@@ -37,17 +37,39 @@ JWT_SECRET=<random string at least 32 characters>
 ADMIN_EMAIL=sparshkothari9@gmail.com
 ADMIN_PASSWORD=<your admin password, at least 8 characters>
 CLIENT_PASSWORD=<default client password, at least 8 characters>
-SHOW_DEMO_OTP=true
+SHOW_DEMO_OTP=false
 ```
 
-4. Deploy.
-5. Open the Vercel production domain.
+4. For real OTP, add one provider.
+
+MSG91:
+
+```text
+OTP_PROVIDER=msg91
+MSG91_AUTH_KEY=<your MSG91 auth key>
+MSG91_TEMPLATE_ID=<your MSG91 flow/template id>
+MSG91_OTP_VAR=var1
+```
+
+Twilio:
+
+```text
+OTP_PROVIDER=twilio
+TWILIO_ACCOUNT_SID=<your Twilio account SID>
+TWILIO_AUTH_TOKEN=<your Twilio auth token>
+TWILIO_FROM_NUMBER=<your Twilio sender number>
+```
+
+For Twilio Messaging Service, use `TWILIO_MESSAGING_SERVICE_SID` instead of `TWILIO_FROM_NUMBER`.
+
+5. Deploy.
+6. Open the Vercel production domain.
 
 Vercel functions use read-only project files and writable temporary storage, so this setup stores the SQLite database in `/tmp` and seeds products/prices when the function starts. Use Render/Railway/VPS with persistent storage for real production orders and visitor history.
 
 ## Important OTP note
 
-In local development, checkout shows a demo OTP on the page. In production (`NODE_ENV=production`), demo OTP is hidden unless `SHOW_DEMO_OTP=true` is set. Use that only for testing. Before real customers use checkout, connect an SMS or WhatsApp OTP provider.
+In local development, checkout shows a demo OTP on the page. In production (`NODE_ENV=production`), demo OTP is hidden unless `SHOW_DEMO_OTP=true` is set. Use that only for testing. For real customers, set `OTP_PROVIDER` and the matching provider keys above.
 
 ## After deploy
 

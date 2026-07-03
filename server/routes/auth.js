@@ -4,8 +4,10 @@ const crypto = require('crypto');
 const { get, run } = require('../db-helpers');
 const { generateToken, requireAuth } = require('../middleware/auth');
 const { asString, normalizeEmail, isEmail, isPhone, isPincode } = require('../validation');
+const { deliverOtp, shouldShowDemoOtp } = require('../services/otp-sender');
 
 const router = express.Router();
+const OTP_TTL_MINUTES = 5;
 
 // In-memory OTP store: phone -> { otp, expiresAt }
 const otpStore = new Map();
@@ -23,7 +25,7 @@ function generateOTP() {
 }
 
 // POST /api/auth/send-otp
-router.post('/send-otp', (req, res) => {
+router.post('/send-otp', async (req, res) => {
   const phone = asString(req.body.phone, 20);
   if (!phone || !isPhone(phone)) {
     return res.status(400).json({ error: 'Valid phone number required' });
@@ -35,16 +37,23 @@ router.post('/send-otp', (req, res) => {
     return res.status(429).json({ error: `OTP already sent. Try again in ${remaining}s`, cooldown: remaining });
   }
   const otp = generateOTP();
-  otpStore.set(phone, { otp, expiresAt: Date.now() + 5 * 60 * 1000 });
+  let delivery;
+  try {
+    delivery = await deliverOtp(phone, otp, OTP_TTL_MINUTES);
+  } catch (err) {
+    console.error('[OTP]', err.message);
+    return res.status(503).json({ error: 'OTP delivery is not configured. Please contact admin.' });
+  }
+
+  otpStore.set(phone, { otp, expiresAt: Date.now() + OTP_TTL_MINUTES * 60 * 1000 });
   // In development, return OTP in response for convenience
-  const isDev = process.env.NODE_ENV !== 'production' || process.env.SHOW_DEMO_OTP === 'true';
   const result = { success: true, message: 'OTP sent to ' + phone };
-  if (isDev) {
+  if (shouldShowDemoOtp()) {
     result.otp = otp;
     result.dev = true;
   }
-  // TODO: In production, integrate with SMS gateway (Twilio, MSG91, etc.)
-  console.log(`[OTP] ${phone} -> ${otp}${isDev ? ' (DEV MODE - shown in response)' : ''}`);
+  if (delivery.mode !== 'demo') result.delivery = delivery.mode;
+  console.log(`[OTP] ${phone} -> ${shouldShowDemoOtp() ? otp : 'sent'}${shouldShowDemoOtp() ? ' (DEV MODE - shown in response)' : ''}`);
   res.json(result);
 });
 

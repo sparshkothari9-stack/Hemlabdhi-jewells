@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const { get, all, run } = require('../db-helpers');
 const { requireAuth } = require('../middleware/auth');
 const { asString, isPhone, isPincode, parsePositiveInt } = require('../validation');
+const { deliverOtp, shouldShowDemoOtp } = require('../services/otp-sender');
 
 const router = express.Router();
 const OTP_TTL_MINUTES = 10;
@@ -21,16 +22,24 @@ function safeEqual(a, b) {
   return left.length === right.length && crypto.timingSafeEqual(left, right);
 }
 
-router.post('/otp/request', requireAuth, (req, res) => {
+router.post('/otp/request', requireAuth, async (req, res) => {
   const phone = asString(req.body.phone, 20);
   if (!phone || !isPhone(phone)) {
     return res.status(400).json({ error: 'Valid phone number required for OTP' });
   }
 
-  run("UPDATE checkout_otps SET used_at = datetime('now') WHERE client_id = ? AND used_at IS NULL", [req.client.id]);
-
   const code = String(crypto.randomInt(100000, 1000000));
   const salt = crypto.randomBytes(16).toString('hex');
+  let delivery;
+
+  try {
+    delivery = await deliverOtp(phone, code, OTP_TTL_MINUTES);
+  } catch (err) {
+    console.error('[OTP]', err.message);
+    return res.status(503).json({ error: 'OTP delivery is not configured. Please contact admin.' });
+  }
+
+  run("UPDATE checkout_otps SET used_at = datetime('now') WHERE client_id = ? AND used_at IS NULL", [req.client.id]);
   const created = run(
     `INSERT INTO checkout_otps (client_id, phone, otp_hash, otp_salt, expires_at)
      VALUES (?, ?, ?, ?, datetime('now', ?))`,
@@ -42,9 +51,10 @@ router.post('/otp/request', requireAuth, (req, res) => {
     challenge_id: created.lastInsertRowid,
     expires_in_minutes: OTP_TTL_MINUTES
   };
-  if (process.env.NODE_ENV !== 'production' || process.env.SHOW_DEMO_OTP === 'true') {
+  if (shouldShowDemoOtp()) {
     response.dev_otp = code;
   }
+  if (delivery.mode !== 'demo') response.delivery = delivery.mode;
   res.json(response);
 });
 
