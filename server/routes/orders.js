@@ -42,7 +42,7 @@ router.post('/otp/request', requireAuth, (req, res) => {
     challenge_id: created.lastInsertRowid,
     expires_in_minutes: OTP_TTL_MINUTES
   };
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' || process.env.SHOW_DEMO_OTP === 'true') {
     response.dev_otp = code;
   }
   res.json(response);

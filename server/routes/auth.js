@@ -10,12 +10,13 @@ const router = express.Router();
 // In-memory OTP store: phone -> { otp, expiresAt }
 const otpStore = new Map();
 // Cleanup expired OTPs every 60s
-setInterval(() => {
+const otpCleanupTimer = setInterval(() => {
   const now = Date.now();
   for (const [key, val] of otpStore) {
     if (val.expiresAt < now) otpStore.delete(key);
   }
 }, 60000);
+if (otpCleanupTimer.unref) otpCleanupTimer.unref();
 
 function generateOTP() {
   return String(Math.floor(100000 + Math.random() * 900000));
@@ -36,7 +37,7 @@ router.post('/send-otp', (req, res) => {
   const otp = generateOTP();
   otpStore.set(phone, { otp, expiresAt: Date.now() + 5 * 60 * 1000 });
   // In development, return OTP in response for convenience
-  const isDev = process.env.NODE_ENV !== 'production';
+  const isDev = process.env.NODE_ENV !== 'production' || process.env.SHOW_DEMO_OTP === 'true';
   const result = { success: true, message: 'OTP sent to ' + phone };
   if (isDev) {
     result.otp = otp;

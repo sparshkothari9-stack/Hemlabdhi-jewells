@@ -84,11 +84,15 @@ app.use((err, req, res, next) => {
   });
 });
 
-init().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT} [${isProduction ? 'production' : 'development'}]`);
+if (require.main === module) {
+  init().then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT} [${isProduction ? 'production' : 'development'}]`);
+    });
+  }).catch(err => {
+    console.error('Failed to start server:', err);
+    process.exit(1);
   });
-}).catch(err => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
-});
+}
+
+module.exports = { app, initApp: init };
