@@ -55,32 +55,34 @@ function sameOtp(left, right) {
 
 async function setMissingPricesForClient(client) {
   if (!client || client.is_admin) return;
-  const products = await all('SELECT id, category FROM products ORDER BY id');
-  const baseByCategory = {
-    Necklace: 8500,
-    Crowns: 12000,
-    Brooch: 4500,
-    Earring: 3200,
-    Kada: 2800,
-    Bracelet: 5500,
-    'Necklace Ad Replica': 8500
-  };
   const tierMultiplier = {
     wholesale: 0.9,
     distributor: 0.82,
     retailer: 1
   };
-
-  for (const product of products) {
-    const existing = await get('SELECT id FROM pricing WHERE client_id = ? AND product_id = ?', [client.id, product.id]);
-    if (existing) continue;
-
-    const base = baseByCategory[product.category] || 5000;
-    const multiplier = tierMultiplier[client.tier] || 1;
-    const variation = (product.id % 11) * 75;
-    const price = Math.round((base + variation) * multiplier);
-    await run('INSERT INTO pricing (client_id, product_id, price) VALUES (?, ?, ?)', [client.id, product.id, price]);
-  }
+  const multiplier = tierMultiplier[client.tier] || 1;
+  await run(
+    `INSERT INTO pricing (client_id, product_id, price)
+     SELECT ?, p.id,
+       ROUND((
+         CASE p.category
+           WHEN 'Necklace' THEN 8500
+           WHEN 'Crowns' THEN 12000
+           WHEN 'Brooch' THEN 4500
+           WHEN 'Earring' THEN 3200
+           WHEN 'Kada' THEN 2800
+           WHEN 'Bracelet' THEN 5500
+           WHEN 'Necklace Ad Replica' THEN 8500
+           ELSE 5000
+         END + ((p.id % 11) * 75)
+       ) * ?)
+     FROM products p
+     WHERE NOT EXISTS (
+       SELECT 1 FROM pricing existing
+       WHERE existing.client_id = ? AND existing.product_id = p.id
+     )`,
+    [client.id, multiplier, client.id]
+  );
 }
 
 router.post('/send-otp', asyncHandler(async (req, res) => {
