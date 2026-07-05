@@ -9,17 +9,48 @@ const { deliverOtp, shouldShowDemoOtp } = require('../services/otp-sender');
 const router = express.Router();
 const OTP_TTL_MINUTES = 5;
 
-const otpStore = new Map();
-const otpCleanupTimer = setInterval(() => {
-  const now = Date.now();
-  for (const [key, val] of otpStore) {
-    if (val.expiresAt < now) otpStore.delete(key);
-  }
-}, 60000);
-if (otpCleanupTimer.unref) otpCleanupTimer.unref();
-
 function generateOTP() {
   return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function getChallengeKey() {
+  const secret = process.env.JWT_SECRET || 'development-otp-challenge-secret';
+  return crypto.createHash('sha256').update(secret).digest();
+}
+
+function base64Url(buffer) {
+  return Buffer.from(buffer).toString('base64url');
+}
+
+function encryptOtpChallenge(payload) {
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv('aes-256-gcm', getChallengeKey(), iv);
+  const encrypted = Buffer.concat([
+    cipher.update(JSON.stringify(payload), 'utf8'),
+    cipher.final()
+  ]);
+  const tag = cipher.getAuthTag();
+  return [base64Url(iv), base64Url(tag), base64Url(encrypted)].join('.');
+}
+
+function decryptOtpChallenge(challenge) {
+  const parts = asString(challenge, 2000).split('.');
+  if (parts.length !== 3) return null;
+  try {
+    const [iv, tag, encrypted] = parts.map(part => Buffer.from(part, 'base64url'));
+    const decipher = crypto.createDecipheriv('aes-256-gcm', getChallengeKey(), iv);
+    decipher.setAuthTag(tag);
+    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]).toString('utf8');
+    return JSON.parse(decrypted);
+  } catch {
+    return null;
+  }
+}
+
+function sameOtp(left, right) {
+  const a = Buffer.from(String(left || ''));
+  const b = Buffer.from(String(right || ''));
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
 async function setMissingPricesForClient(client) {
@@ -57,12 +88,8 @@ router.post('/send-otp', asyncHandler(async (req, res) => {
   if (!phone || !isPhone(phone)) {
     return res.status(400).json({ error: 'Valid 10-digit phone number required' });
   }
-  const existingClient = await get('SELECT id FROM clients WHERE phone = ?', [phone]);
-  const existing = otpStore.get(phone);
-  if (existing && existing.expiresAt > Date.now()) {
-    const remaining = Math.ceil((existing.expiresAt - Date.now()) / 1000);
-    return res.status(429).json({ error: `OTP already sent. Try again in ${remaining}s`, cooldown: remaining });
-  }
+  const derivedEmail = phone.replace(/[^0-9]/g, '') + '@customer.Hemlabdhi';
+  const existingClient = await get('SELECT id FROM clients WHERE phone = ? OR email = ?', [phone, derivedEmail]);
   const otp = generateOTP();
   let delivery;
   try {
@@ -72,8 +99,17 @@ router.post('/send-otp', asyncHandler(async (req, res) => {
     return res.status(503).json({ error: 'OTP delivery is not configured. Please contact admin.' });
   }
 
-  otpStore.set(phone, { otp, expiresAt: Date.now() + OTP_TTL_MINUTES * 60 * 1000 });
-  const result = { success: true, message: 'OTP sent to ' + phone, isRegistered: !!existingClient };
+  const result = {
+    success: true,
+    message: 'OTP sent to ' + phone,
+    isRegistered: !!existingClient,
+    challenge: encryptOtpChallenge({
+      phone,
+      otp,
+      exp: Date.now() + OTP_TTL_MINUTES * 60 * 1000
+    }),
+    expires_in_minutes: OTP_TTL_MINUTES
+  };
   if (shouldShowDemoOtp()) {
     result.otp = otp;
     result.dev = true;
@@ -86,21 +122,19 @@ router.post('/send-otp', asyncHandler(async (req, res) => {
 router.post('/verify-otp', asyncHandler(async (req, res) => {
   const phone = asString(req.body.phone, 20);
   const otp = asString(req.body.otp, 10);
+  const challenge = decryptOtpChallenge(req.body.challenge);
   if (!phone || !otp) {
     return res.status(400).json({ error: 'Phone and OTP required' });
   }
-  const stored = otpStore.get(phone);
-  if (!stored) {
+  if (!challenge || challenge.phone !== phone) {
     return res.status(400).json({ error: 'No OTP sent for this number. Please request one.' });
   }
-  if (stored.expiresAt < Date.now()) {
-    otpStore.delete(phone);
+  if (!challenge.exp || challenge.exp < Date.now()) {
     return res.status(400).json({ error: 'OTP expired. Please request a new one.' });
   }
-  if (stored.otp !== otp) {
+  if (!sameOtp(challenge.otp, otp)) {
     return res.status(401).json({ error: 'Invalid OTP' });
   }
-  otpStore.delete(phone);
 
   let client = await get('SELECT * FROM clients WHERE phone = ?', [phone]);
   if (!client) {

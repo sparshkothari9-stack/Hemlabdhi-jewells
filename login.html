@@ -84,6 +84,7 @@ const API_BASE = window.location.origin;
 const PRODUCTS_URL = 'pages/products.html';
 const ADMIN_URL = 'admin.html';
 let currentPhone = '';
+let currentChallenge = '';
 let otpCooldown = 0;
 let resendTimer = null;
 
@@ -150,6 +151,7 @@ async function sendOTP() {
     setLoading('otpSending', false);
     if (data.success) {
       currentPhone = phone;
+      currentChallenge = data.challenge || '';
       document.getElementById('stepPhone').style.display = 'none';
       document.getElementById('stepOTP').style.display = 'block';
       document.getElementById('otpPhoneDisplay').textContent = phone;
@@ -187,7 +189,7 @@ async function verifyOTP() {
   hideError();
   setLoading('otpVerifying', true);
   try {
-    const body = { phone: currentPhone, otp };
+    const body = { phone: currentPhone, otp, challenge: currentChallenge };
     const nameInput = document.getElementById('loginName');
     if (nameInput && nameInput.value.trim()) {
       body.name = nameInput.value.trim();
@@ -222,6 +224,7 @@ function resetLogin() {
   const nameField = document.getElementById('loginName');
   if (nameField) nameField.value = '';
   currentPhone = '';
+  currentChallenge = '';
   hideError();
 }
 
