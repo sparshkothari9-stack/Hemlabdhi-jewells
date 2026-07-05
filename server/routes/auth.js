@@ -62,7 +62,7 @@ async function setMissingPricesForClient(client) {
   };
   const multiplier = tierMultiplier[client.tier] || 1;
   await run(
-    `INSERT INTO pricing (client_id, product_id, price)
+    `INSERT OR IGNORE INTO pricing (client_id, product_id, price)
      SELECT ?, p.id,
        ROUND((
          CASE p.category
