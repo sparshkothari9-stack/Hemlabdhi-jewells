@@ -582,9 +582,7 @@ function renderAuthUI() {
       container.insertBefore(adminBtn, container.firstChild);
     }
   } else {
-    btn.innerHTML = `<i class="fas fa-sign-in-alt"></i>`;
-    btn.title = 'Client Login';
-    btn.onclick = () => window.location.href = '/login.html';
+    return;
   }
   container.insertBefore(btn, container.firstChild);
 }
@@ -1388,7 +1386,7 @@ function populateMobileNav() {
   if (!links) return;
   const authLink = isLoggedIn()
     ? `<a href="#" onclick="logout()" style="color:var(--gold);"><i class="fas fa-sign-out-alt"></i> Logout (${(getClientInfo()||{}).name||''})</a>`
-    : `<a href="${ROOT_PREFIX}login.html" style="color:var(--gold);"><i class="fas fa-sign-in-alt"></i> Client Login</a>`;
+    : '';
   const adminLink = isLoggedIn() && getClientInfo()?.is_admin
     ? `<a href="${ROOT_PREFIX}admin.html"><i class="fas fa-cog"></i> Admin Panel</a>`
     : '';
