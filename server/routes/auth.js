@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const { get, run, asyncHandler } = require('../db-helpers');
+const { get, all, run, asyncHandler } = require('../db-helpers');
 const { generateToken, requireAuth } = require('../middleware/auth');
 const { asString, normalizeEmail, isEmail, isPhone, isPincode } = require('../validation');
 const { deliverOtp, shouldShowDemoOtp } = require('../services/otp-sender');
@@ -20,6 +20,36 @@ if (otpCleanupTimer.unref) otpCleanupTimer.unref();
 
 function generateOTP() {
   return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+async function setMissingPricesForClient(client) {
+  if (!client || client.is_admin) return;
+  const products = await all('SELECT id, category FROM products ORDER BY id');
+  const baseByCategory = {
+    Necklace: 8500,
+    Crowns: 12000,
+    Brooch: 4500,
+    Earring: 3200,
+    Kada: 2800,
+    Bracelet: 5500,
+    'Necklace Ad Replica': 8500
+  };
+  const tierMultiplier = {
+    wholesale: 0.9,
+    distributor: 0.82,
+    retailer: 1
+  };
+
+  for (const product of products) {
+    const existing = await get('SELECT id FROM pricing WHERE client_id = ? AND product_id = ?', [client.id, product.id]);
+    if (existing) continue;
+
+    const base = baseByCategory[product.category] || 5000;
+    const multiplier = tierMultiplier[client.tier] || 1;
+    const variation = (product.id % 11) * 75;
+    const price = Math.round((base + variation) * multiplier);
+    await run('INSERT INTO pricing (client_id, product_id, price) VALUES (?, ?, ?)', [client.id, product.id, price]);
+  }
 }
 
 router.post('/send-otp', asyncHandler(async (req, res) => {
@@ -76,16 +106,23 @@ router.post('/verify-otp', asyncHandler(async (req, res) => {
   if (!client) {
     const name = asString(req.body.name, 120) || 'Customer ' + phone.slice(-4);
     const email = phone.replace(/[^0-9]/g, '') + '@customer.Hemlabdhi';
-    const tempPass = crypto.randomBytes(16).toString('hex');
-    const hashed = bcrypt.hashSync(tempPass, 10);
-    const created = await run(
-      'INSERT INTO clients (name, email, password, tier) VALUES (?, ?, ?, ?)',
-      [name, email, hashed, 'retailer']
-    );
-    client = await get('SELECT * FROM clients WHERE id = ?', [created.lastInsertRowid]);
-    if (!client) return res.status(500).json({ error: 'Failed to create account' });
-    console.log(`[OTP] New client created: ${name} (${phone})`);
+    client = await get('SELECT * FROM clients WHERE email = ?', [email]);
+    if (client) {
+      await run('UPDATE clients SET phone = ? WHERE id = ?', [phone, client.id]);
+      client = await get('SELECT * FROM clients WHERE id = ?', [client.id]);
+    } else {
+      const tempPass = crypto.randomBytes(16).toString('hex');
+      const hashed = bcrypt.hashSync(tempPass, 10);
+      const created = await run(
+        'INSERT INTO clients (name, email, password, tier, phone) VALUES (?, ?, ?, ?, ?)',
+        [name, email, hashed, 'retailer', phone]
+      );
+      client = await get('SELECT * FROM clients WHERE id = ?', [created.lastInsertRowid]);
+      if (!client) return res.status(500).json({ error: 'Failed to create account' });
+      console.log(`[OTP] New client created: ${name} (${phone})`);
+    }
   }
+  await setMissingPricesForClient(client);
 
   const token = generateToken(client);
   res.json({

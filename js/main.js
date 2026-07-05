@@ -23,6 +23,11 @@ function getClientInfo() { try { return JSON.parse(localStorage.getItem('pa_clie
 function isLoggedIn() { return !!getToken(); }
 function logout() { localStorage.removeItem('pa_token'); localStorage.removeItem('pa_client'); window.location.reload(); }
 function clearAuth() { localStorage.removeItem('pa_token'); localStorage.removeItem('pa_client'); }
+function normalizePhone(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  if (digits.length === 12 && digits.startsWith('91')) return digits.slice(2);
+  return digits;
+}
 
 function sanitize(str) {
   if (!str) return '';
@@ -1160,11 +1165,15 @@ function resetCheckoutOtp() {
 
 async function requestCheckoutOtp() {
   const phoneEl = document.getElementById('checkoutPhone');
-  const phone = phoneEl ? phoneEl.value.trim() : '';
+  const phone = normalizePhone(phoneEl ? phoneEl.value : '');
   if (!/^\d{10}$/.test(phone)) {
     if (phoneEl) phoneEl.style.borderColor = 'var(--red)';
-    setOtpMessage('Enter a valid 10-digit phone number.', 'error');
+    setOtpMessage('Enter a valid 10-digit phone number. +91 format is also accepted.', 'error');
     return;
+  }
+  if (phoneEl) {
+    phoneEl.value = phone;
+    phoneEl.style.borderColor = '';
   }
 
   resetCheckoutOtp();
@@ -1283,7 +1292,7 @@ async function initCheckoutValidation() {
   });
 
   document.getElementById('checkoutPhone')?.addEventListener('input', function() {
-    if (checkoutOtp.phone && this.value.trim() !== checkoutOtp.phone) {
+    if (checkoutOtp.phone && normalizePhone(this.value) !== checkoutOtp.phone) {
       resetCheckoutOtp();
       setOtpMessage('Phone changed. Please request a new OTP.');
     }

@@ -44,15 +44,15 @@
             <label>Phone Number *</label>
             <input type="tel" id="checkoutPhone" placeholder="+91 9876543210">
           </div>
-          <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;">
-            <button class="btn" type="button" onclick="requestCheckoutOtp()" style="white-space:nowrap;">Send OTP</button>
-            <div class="form-group" style="flex:1;min-width:180px;margin-bottom:0;">
+          <div class="otp-row">
+            <button class="btn" type="button" onclick="requestCheckoutOtp()">Send OTP</button>
+            <div class="form-group">
               <label>OTP *</label>
               <input type="text" id="checkoutOtp" placeholder="6-digit OTP" inputmode="numeric" maxlength="6">
             </div>
-            <button class="btn btn-dark" type="button" onclick="verifyCheckoutOtp()" style="white-space:nowrap;">Verify OTP</button>
+            <button class="btn btn-dark" type="button" onclick="verifyCheckoutOtp()">Verify OTP</button>
           </div>
-          <div id="otpMessage" style="font-size:13px;margin-top:10px;color:var(--text-secondary);"></div>
+          <div class="otp-message" id="otpMessage"></div>
         </div>
 
         <div class="checkout-section">
