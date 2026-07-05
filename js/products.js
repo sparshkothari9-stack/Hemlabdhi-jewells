@@ -23,6 +23,7 @@ const products = Array.from({ length: 216 }, (_, i) => {
   let seq, name, category, skuPrefix, desc, imgs;
   if (earring) {
     seq = id - 151;
+    if (id > 199) seq = id - 152;
     name = `Designer Earring ${String(seq).padStart(3, '0')}`;
     category = "Earring";
     skuPrefix = "PA-ER";
@@ -65,7 +66,7 @@ const products = Array.from({ length: 216 }, (_, i) => {
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
     sku: `${skuPrefix}-${String(seq).padStart(3, '0')}`
   };
-}).filter(p => (p.id >= 83 && p.id <= 151 && p.id !== 126) || isEarring(p.id) || isKada(p.id) || isBracelet(p.id) || isReplica(p.id));
+}).filter(p => (p.id >= 83 && p.id <= 151 && p.id !== 126) || (isEarring(p.id) && p.id !== 199) || isKada(p.id) || isBracelet(p.id) || isReplica(p.id));
 
 const earringColors = [
   { name: "Gold", image: `${IMG}product400.jpeg` },
@@ -81,7 +82,7 @@ const earringColors = [
 
 products.push({
   id: 217,
-  name: "Designer Earring 066",
+  name: "Designer Earring 065",
   category: "Earring",
   images: earringColors.map(c => c.image),
   colors: earringColors,
@@ -89,7 +90,7 @@ products.push({
   badge: "New",
   description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials.",
   features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-  sku: "PA-ER-066"
+  sku: "PA-ER-065"
 });
 
 const earringColors2 = [
@@ -104,7 +105,7 @@ const earringColors2 = [
 
 products.push({
   id: 218,
-  name: "Designer Earring 067",
+  name: "Designer Earring 066",
   category: "Earring",
   images: earringColors2.map(c => c.image),
   colors: earringColors2,
@@ -112,7 +113,7 @@ products.push({
   badge: "New",
   description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials.",
   features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-  sku: "PA-ER-067"
+  sku: "PA-ER-066"
 });
 
 const earringColors3 = [
@@ -130,7 +131,7 @@ const earringColors3 = [
 
 products.push({
   id: 219,
-  name: "Designer Earring 068",
+  name: "Designer Earring 067",
   category: "Earring",
   images: earringColors3.map(c => c.image),
   colors: earringColors3,
@@ -138,7 +139,7 @@ products.push({
   badge: "New",
   description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials.",
   features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-  sku: "PA-ER-068"
+  sku: "PA-ER-067"
 });
 
 const earringColors4 = [
@@ -153,7 +154,7 @@ const earringColors4 = [
 
 products.push({
   id: 220,
-  name: "Designer Earring 069",
+  name: "Designer Earring 068",
   category: "Earring",
   images: earringColors4.map(c => c.image),
   colors: earringColors4,
@@ -161,7 +162,7 @@ products.push({
   badge: "New",
   description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials.",
   features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-  sku: "PA-ER-069"
+  sku: "PA-ER-068"
 });
 
 const earringColors5 = [
@@ -180,7 +181,7 @@ const earringColors5 = [
 
 products.push({
   id: 221,
-  name: "Designer Earring 070",
+  name: "Designer Earring 069",
   category: "Earring",
   images: earringColors5.map(c => c.image),
   colors: earringColors5,
@@ -188,7 +189,7 @@ products.push({
   badge: "New",
   description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials.",
   features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-  sku: "PA-ER-070"
+  sku: "PA-ER-069"
 });
 
 for (let i = 0; i < 21; i++) {
@@ -243,7 +244,7 @@ const categories = [
   { name: "Necklace", image: `${IMG}product169.jpeg`, count: `34 Designs` },
   { name: "Crowns", image: `${IMG}product83.jpeg`, count: `16 Designs` },
   { name: "Brooch", image: `${IMG}product99.jpeg`, count: `18 Designs` },
-  { name: "Earring", image: `${IMG}product335.jpeg`, count: `70 Designs` },
+  { name: "Earring", image: `${IMG}product335.jpeg`, count: `69 Designs` },
   { name: "Kada", image: `${IMG}product444.jpeg`, count: `21 Designs` },
   { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs` },
   { name: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `120 Designs` }

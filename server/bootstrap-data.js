@@ -39,6 +39,7 @@ function buildProducts() {
 
     if (isEarring(id)) {
       seq = id - 151;
+      if (id > 199) seq = id - 152;
       name = `Designer Earring ${String(seq).padStart(3, '0')}`;
       category = 'Earring';
       skuPrefix = 'PA-ER';
@@ -76,14 +77,14 @@ function buildProducts() {
       features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']),
       sku: `${skuPrefix}-${String(seq).padStart(3, '0')}`
     };
-  }).filter(p => (p.id >= 83 && p.id <= 151 && p.id !== 126) || (p.id >= 152 && p.id <= 216));
+  }).filter(p => (p.id >= 83 && p.id <= 151 && p.id !== 126) || (p.id >= 152 && p.id <= 216 && p.id !== 199));
 
   const extraProducts = [
-    { id: 217, name: 'Designer Earring 066', category: 'Earring', images: JSON.stringify(Array.from({ length: 9 }, (_, i) => `${IMG}product${400 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-066', badge: 'New' },
-    { id: 218, name: 'Designer Earring 067', category: 'Earring', images: JSON.stringify(Array.from({ length: 7 }, (_, i) => `${IMG}product${409 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-067', badge: 'New' },
-    { id: 219, name: 'Designer Earring 068', category: 'Earring', images: JSON.stringify(Array.from({ length: 10 }, (_, i) => `${IMG}product${416 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-068', badge: 'New' },
-    { id: 220, name: 'Designer Earring 069', category: 'Earring', images: JSON.stringify(Array.from({ length: 7 }, (_, i) => `${IMG}product${426 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-069', badge: 'New' },
-    { id: 221, name: 'Designer Earring 070', category: 'Earring', images: JSON.stringify(Array.from({ length: 11 }, (_, i) => `${IMG}product${433 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-070', badge: 'New' }
+    { id: 217, name: 'Designer Earring 065', category: 'Earring', images: JSON.stringify(Array.from({ length: 9 }, (_, i) => `${IMG}product${400 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-065', badge: 'New' },
+    { id: 218, name: 'Designer Earring 066', category: 'Earring', images: JSON.stringify(Array.from({ length: 7 }, (_, i) => `${IMG}product${409 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-066', badge: 'New' },
+    { id: 219, name: 'Designer Earring 067', category: 'Earring', images: JSON.stringify(Array.from({ length: 10 }, (_, i) => `${IMG}product${416 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-067', badge: 'New' },
+    { id: 220, name: 'Designer Earring 068', category: 'Earring', images: JSON.stringify(Array.from({ length: 7 }, (_, i) => `${IMG}product${426 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-068', badge: 'New' },
+    { id: 221, name: 'Designer Earring 069', category: 'Earring', images: JSON.stringify(Array.from({ length: 11 }, (_, i) => `${IMG}product${433 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-069', badge: 'New' }
   ];
 
   for (let i = 0; i < 21; i++) {

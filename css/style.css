@@ -2404,13 +2404,24 @@ img {
 
 .quick-view-info h3 {
   font-family: var(--font-heading);
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .quick-view-desc {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text-secondary);
-  line-height: 1.6;
+  line-height: 1.5;
+}
+
+.quick-view-info .quick-view-price {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 6px 0;
+}
+
+.quick-view-info .btn {
+  font-size: 12px !important;
+  padding: 8px 12px !important;
 }
 
 .quick-view-info .btn {

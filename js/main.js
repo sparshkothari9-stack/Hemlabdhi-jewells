@@ -702,8 +702,8 @@ function openQuickView(id) {
   if (!overlay || !modal) return;
   const quickPrice = getProductPrice(p);
   const quickPriceHTML = quickPrice
-    ? `<div style="font-size:18px;font-weight:700;margin:10px 0;">&#8377;${quickPrice.toLocaleString()}</div>`
-    : `<a href="${getPriceWhatsAppUrl(p)}" target="_blank" style="color:var(--gold);display:inline-block;margin:10px 0;text-decoration:underline;"><i class="fab fa-whatsapp"></i> Contact on WhatsApp for price</a>`;
+    ? `<div class="quick-view-price">&#8377;${quickPrice.toLocaleString()}</div>`
+    : `<a href="${getPriceWhatsAppUrl(p)}" target="_blank" style="color:var(--gold);display:inline-block;margin:10px 0;text-decoration:underline;font-size:12px;"><i class="fab fa-whatsapp"></i> Contact on WhatsApp for price</a>`;
   modal.innerHTML = `
     <div class="quick-view-close" onclick="closeQuickView()">&times;</div>
     <div class="quick-view-layout">
