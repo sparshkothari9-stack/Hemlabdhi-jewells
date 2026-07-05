@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Client Login - HemLabdhi jewells</title>
-  <meta name="description" content="B2B client login for HemLabdhi jewells wholesale jewellery pricing">
+  <title>Client Login - Hem Labdhi jewels</title>
+  <meta name="description" content="B2B client login for Hem Labdhi jewels wholesale jewellery pricing">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
@@ -137,7 +137,7 @@
 <div class="login-page">
   <div class="login-card">
     <div class="logo">
-      <a href="index.html"><img src="images/logo.svg" alt="HemLabdhi jewells" class="logo-img"></a>
+      <a href="index.html"><img src="images/logo.svg" alt="Hem Labdhi jewels" class="logo-img"></a>
     </div>
     <h2>Sign In</h2>
     <p id="loginSubtitle">Enter your phone number to receive a one-time password</p>
@@ -206,6 +206,10 @@ const API_BASE = window.location.origin;
 let currentPhone = '';
 let otpCooldown = 0;
 
+if (localStorage.getItem('pa_token')) {
+  window.location.href = 'index.html';
+}
+
 function showError(msg) {
   const el = document.getElementById('loginError');
   el.textContent = msg;
@@ -231,8 +235,8 @@ function switchLoginTab(tab) {
 
 async function sendOTP() {
   const phone = document.getElementById('loginPhone').value.trim();
-  if (!phone || phone.length < 10) {
-    showError('Please enter a valid phone number');
+  if (!/^\d{10}$/.test(phone)) {
+    showError('Please enter a valid 10-digit phone number');
     return;
   }
   hideError();
@@ -254,6 +258,11 @@ async function sendOTP() {
         const devEl = document.getElementById('otpDevDisplay');
         devEl.textContent = data.otp;
         devEl.style.display = 'block';
+      }
+      if (data.isRegistered) {
+        const nameField = document.getElementById('loginName');
+        nameField.style.display = 'none';
+        nameField.removeAttribute('required');
       }
       startResendCooldown();
     } else {

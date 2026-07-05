@@ -1,28 +1,34 @@
-const initSqlJs = require('sql.js');
-const fs = require('fs');
+const { createClient } = require('@libsql/client');
 const path = require('path');
+const os = require('os');
+const fs = require('fs');
 
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'pavanart.db');
+let client = null;
 
-async function getDB() {
-  const SQL = await initSqlJs();
-  let db;
-  if (fs.existsSync(DB_PATH)) {
-    const buffer = fs.readFileSync(DB_PATH);
-    db = new SQL.Database(buffer);
-  } else {
-    db = new SQL.Database();
+function getConfig() {
+  if (process.env.LIBSQL_URL) {
+    return {
+      url: process.env.LIBSQL_URL,
+      authToken: process.env.LIBSQL_AUTH_TOKEN,
+    };
   }
-  getDB.__syncDb = db;
-  initTables(db);
-  save();
-  return db;
+  const dbPath = process.env.DB_PATH || path.join(__dirname, 'pavanart.db');
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+  return { url: `file:${dbPath}` };
 }
 
-function initTables(db) {
-  db.run('PRAGMA foreign_keys = ON;');
-  db.run(`
-    CREATE TABLE IF NOT EXISTS clients (
+async function getClient() {
+  if (!client) {
+    client = createClient(getConfig());
+    await initTables();
+  }
+  return client;
+}
+
+async function initTables() {
+  const statements = [
+    'PRAGMA foreign_keys = ON;',
+    `CREATE TABLE IF NOT EXISTS clients (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
@@ -30,9 +36,8 @@ function initTables(db) {
       tier TEXT NOT NULL DEFAULT 'retailer',
       is_admin INTEGER NOT NULL DEFAULT 0,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE TABLE IF NOT EXISTS products (
+    )`,
+    `CREATE TABLE IF NOT EXISTS products (
       id INTEGER PRIMARY KEY,
       name TEXT,
       category TEXT,
@@ -41,18 +46,16 @@ function initTables(db) {
       images TEXT,
       features TEXT,
       description TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS pricing (
+    )`,
+    `CREATE TABLE IF NOT EXISTS pricing (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       client_id INTEGER NOT NULL,
       product_id INTEGER NOT NULL,
       price REAL NOT NULL,
       FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
       UNIQUE(client_id, product_id)
-    );
-
-    CREATE TABLE IF NOT EXISTS orders (
+    )`,
+    `CREATE TABLE IF NOT EXISTS orders (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       client_id INTEGER,
       client_name TEXT NOT NULL,
@@ -68,9 +71,8 @@ function initTables(db) {
       total REAL NOT NULL DEFAULT 0,
       status TEXT NOT NULL DEFAULT 'pending',
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE TABLE IF NOT EXISTS order_items (
+    )`,
+    `CREATE TABLE IF NOT EXISTS order_items (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       order_id INTEGER NOT NULL,
       product_id INTEGER NOT NULL,
@@ -78,9 +80,8 @@ function initTables(db) {
       price REAL NOT NULL,
       qty INTEGER NOT NULL,
       FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS checkout_otps (
+    )`,
+    `CREATE TABLE IF NOT EXISTS checkout_otps (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       client_id INTEGER NOT NULL,
       phone TEXT NOT NULL,
@@ -91,24 +92,21 @@ function initTables(db) {
       used_at TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS order_notes (
+    )`,
+    `CREATE TABLE IF NOT EXISTS order_notes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       order_id INTEGER NOT NULL,
       note TEXT NOT NULL,
       created_at TEXT NOT NULL DEFAULT (datetime('now')),
       FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS product_stock (
+    )`,
+    `CREATE TABLE IF NOT EXISTS product_stock (
       product_id INTEGER PRIMARY KEY,
       stock INTEGER NOT NULL DEFAULT 10,
       low_stock_threshold INTEGER NOT NULL DEFAULT 3,
       FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS enquiries (
+    )`,
+    `CREATE TABLE IF NOT EXISTS enquiries (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       client_id INTEGER,
       client_name TEXT NOT NULL,
@@ -118,9 +116,8 @@ function initTables(db) {
       message TEXT,
       status TEXT NOT NULL DEFAULT 'pending',
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-
-    CREATE TABLE IF NOT EXISTS coupons (
+    )`,
+    `CREATE TABLE IF NOT EXISTS coupons (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       code TEXT UNIQUE NOT NULL,
       discount_percent INTEGER NOT NULL DEFAULT 10,
@@ -130,27 +127,18 @@ function initTables(db) {
       expires_at TEXT,
       is_active INTEGER NOT NULL DEFAULT 1,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    );
-  `);
-
-  ['phone', 'address', 'city', 'state', 'pincode'].forEach(col => {
-    try { db.run(`ALTER TABLE clients ADD COLUMN ${col} TEXT DEFAULT ''`); } catch {}
-  });
-
-  ['tracking_number', 'coupon_code'].forEach(col => {
-    try { db.run(`ALTER TABLE orders ADD COLUMN ${col} TEXT DEFAULT ''`); } catch {}
-  });
-  try { db.run(`ALTER TABLE orders ADD COLUMN discount_amount REAL DEFAULT 0`); } catch {}
-}
-
-function save() {
-  const db = getDB.__syncDb;
-  if (db) {
-    const data = db.export();
-    const buffer = Buffer.from(data);
-    fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
-    fs.writeFileSync(DB_PATH, buffer);
+    )`,
+  ];
+  for (const sql of statements) {
+    await client.execute(sql);
   }
+  for (const col of ['phone', 'address', 'city', 'state', 'pincode']) {
+    try { await client.execute(`ALTER TABLE clients ADD COLUMN ${col} TEXT DEFAULT ''`); } catch {}
+  }
+  for (const col of ['tracking_number', 'coupon_code']) {
+    try { await client.execute(`ALTER TABLE orders ADD COLUMN ${col} TEXT DEFAULT ''`); } catch {}
+  }
+  try { await client.execute('ALTER TABLE orders ADD COLUMN discount_amount REAL DEFAULT 0'); } catch {}
 }
 
-module.exports = { getDB, save };
+module.exports = { getClient };

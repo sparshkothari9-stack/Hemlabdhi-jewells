@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('express-async-errors');
 
 const express = require('express');
 const cors = require('cors');
@@ -73,14 +74,10 @@ app.use('/api', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  if (isProduction) {
-    console.error('[ERROR]', err.message);
-  } else {
-    console.error(err);
-  }
+  console.error('[ERROR]', err.message, err.stack);
   if (res.headersSent) return next(err);
   res.status(err.status || 500).json({
-    error: isProduction ? 'Internal server error' : err.message
+    error: err.message || 'Internal server error'
   });
 });
 

@@ -1,5 +1,5 @@
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^[+()\d\s-]{10,22}$/;
+const PHONE_RE = /^\d{10}$/;
 const PINCODE_RE = /^\d{6}$/;
 const VALID_TIERS = new Set(['retailer', 'wholesale', 'distributor']);
 
@@ -17,9 +17,7 @@ function isEmail(value) {
 }
 
 function isPhone(value) {
-  if (!PHONE_RE.test(value)) return false;
-  const digits = value.replace(/\D/g, '');
-  return digits.length >= 10 && digits.length <= 15;
+  return PHONE_RE.test(value);
 }
 
 function isPincode(value) {

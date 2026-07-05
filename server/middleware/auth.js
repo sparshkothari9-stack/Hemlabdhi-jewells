@@ -29,14 +29,14 @@ function verifyToken(token) {
   return jwt.verify(token, getJwtSecret());
 }
 
-function requireAuth(req, res, next) {
+async function requireAuth(req, res, next) {
   const header = req.headers.authorization;
   if (!header || !header.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   try {
     const payload = verifyToken(header.slice(7));
-    const client = get('SELECT id, name, email, tier, is_admin FROM clients WHERE id = ?', [payload.id]);
+    const client = await get('SELECT id, name, email, tier, is_admin FROM clients WHERE id = ?', [payload.id]);
     if (!client) {
       return res.status(401).json({ error: 'Invalid or expired token' });
     }

@@ -7,9 +7,13 @@ process.env.DB_PATH = process.env.DB_PATH || path.join(os.tmpdir(), 'hemlabdhi-p
 const { app, initApp } = require('../server/server');
 const { ensureSeedData } = require('../server/bootstrap-data');
 
-const ready = initApp().then(ensureSeedData);
+let ready = null;
+function getReady() {
+  if (!ready) ready = initApp().then(ensureSeedData).then(() => console.error('[BOOT] Ready')).catch(e => console.error('[BOOT ERROR]', e && e.message));
+  return ready;
+}
 
 module.exports = async (req, res) => {
-  await ready;
+  await getReady();
   return app(req, res);
 };

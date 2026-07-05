@@ -3,7 +3,7 @@ let wishlist = [];
 let serverPrices = null;
 let stockData = {};
 let appliedCoupon = null;
-let checkoutOtp = { challengeId: null, phone: '', verified: false };
+let checkoutOtp = (() => { try { const s = localStorage.getItem('pa_checkout_otp'); return s ? JSON.parse(s) : { challengeId: null, phone: '', verified: false }; } catch { return { challengeId: null, phone: '', verified: false }; } })();
 
 const PAGE_PREFIX = window.location.pathname.includes('/pages/') ? '' : 'pages/';
 const ROOT_PREFIX = window.location.pathname.includes('/pages/') ? '../' : '';
@@ -735,13 +735,13 @@ function shareOnWhatsApp(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
   const url = encodeURIComponent(window.location.origin + '/' + PAGE_PREFIX + 'product-detail.html?id=' + id);
-  const text = encodeURIComponent(`Check out this ${p.name} at HemLabdhi jewells!`);
+  const text = encodeURIComponent(`Check out this ${p.name} at Hem Labdhi jewels!`);
   window.open(`https://wa.me/919321671416?text=${text}%20${url}`, '_blank');
 }
 
 // ===== VIDEO CALL =====
 function videoCall(productName) {
-  let msg = 'Hi! I visited HemLabdhi jewells and would like a video call demonstration. Please video call me back.';
+  let msg = 'Hi! I visited Hem Labdhi jewels and would like a video call demonstration. Please video call me back.';
   if (productName) {
     msg = `Hi! I'm interested in ${productName} and would like a video call demonstration. Please video call me back.`;
   }
@@ -767,7 +767,7 @@ function renderProductDetail() {
   _productImages = product.images;
   _currentImageIndex = 0;
   trackRecentlyViewed(product.id);
-  document.title = `${product.name} - HemLabdhi jewells`;
+  document.title = `${product.name} - Hem Labdhi jewels`;
   const avgRating = getAverageRating(product.id);
   const reviews = getReviews(product.id);
   const related = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
@@ -1147,8 +1147,13 @@ function setOtpMessage(message, type = 'info') {
   msg.innerHTML = `<span style="color:${color};">${message}</span>`;
 }
 
+function saveCheckoutOtp() {
+  localStorage.setItem('pa_checkout_otp', JSON.stringify(checkoutOtp));
+}
+
 function resetCheckoutOtp() {
   checkoutOtp = { challengeId: null, phone: '', verified: false };
+  saveCheckoutOtp();
   const otpInput = document.getElementById('checkoutOtp');
   if (otpInput) otpInput.value = '';
 }
@@ -1156,9 +1161,9 @@ function resetCheckoutOtp() {
 async function requestCheckoutOtp() {
   const phoneEl = document.getElementById('checkoutPhone');
   const phone = phoneEl ? phoneEl.value.trim() : '';
-  if (!/^\+?[\d\s\-]{10,15}$/.test(phone)) {
+  if (!/^\d{10}$/.test(phone)) {
     if (phoneEl) phoneEl.style.borderColor = 'var(--red)';
-    setOtpMessage('Enter a valid phone number before requesting OTP.', 'error');
+    setOtpMessage('Enter a valid 10-digit phone number.', 'error');
     return;
   }
 
@@ -1175,6 +1180,7 @@ async function requestCheckoutOtp() {
     if (!res.ok || !data.success) throw new Error(data.error || 'Could not send OTP');
 
     checkoutOtp = { challengeId: data.challenge_id, phone, verified: false };
+    saveCheckoutOtp();
     const demoText = data.dev_otp ? ` Demo OTP: <strong>${escapeHtml(data.dev_otp)}</strong>` : '';
     setOtpMessage(`OTP sent. It expires in ${data.expires_in_minutes} minutes.${demoText}`, 'success');
     document.getElementById('checkoutOtp')?.focus();
@@ -1207,10 +1213,12 @@ async function verifyCheckoutOtp() {
     if (!res.ok || !data.success) throw new Error(data.error || 'OTP verification failed');
 
     checkoutOtp.verified = true;
+    saveCheckoutOtp();
     if (otpEl) otpEl.style.borderColor = 'var(--green)';
     setOtpMessage('Phone verified. You can place the order now.', 'success');
   } catch (err) {
     checkoutOtp.verified = false;
+    saveCheckoutOtp();
     setOtpMessage(escapeHtml(err.message || 'OTP verification failed'), 'error');
   }
 }
@@ -1384,6 +1392,7 @@ function populateMobileNav() {
     <a href="${PAGE_PREFIX}products.html?category=Earring">Earring</a>
     <a href="${PAGE_PREFIX}products.html?category=Kada">Kada</a>
     <a href="${PAGE_PREFIX}products.html?category=Bracelet">Bracelet</a>
+    <a href="${PAGE_PREFIX}products.html?category=Necklace+Ad+Replica">Necklace Ad Replica</a>
     <a href="${PAGE_PREFIX}products.html">All Products</a>
     <a href="${PAGE_PREFIX}enquiry.html"><i class="fas fa-file-invoice"></i> Bulk Enquiry</a>
     <a href="${PAGE_PREFIX}about.html">About Us</a>
@@ -1409,7 +1418,7 @@ function subscribeNewsletter(form) {
   if (subscribers.includes(email)) { showToast('You are already subscribed!'); return; }
   subscribers.push(email);
   localStorage.setItem('jewellerySubscribers', JSON.stringify(subscribers));
-  showToast('Subscribed! Welcome to HemLabdhi jewells.');
+  showToast('Subscribed! Welcome to Hem Labdhi jewels.');
   form.querySelector('input[type="email"]').value = '';
 }
 

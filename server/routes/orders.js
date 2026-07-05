@@ -1,7 +1,7 @@
 const express = require('express');
 const crypto = require('crypto');
-const { get, all, run } = require('../db-helpers');
-const { requireAuth } = require('../middleware/auth');
+const { get, all, run, asyncHandler } = require('../db-helpers');
+const { requireAuth, requireAdmin } = require('../middleware/auth');
 const { asString, isPhone, isPincode, parsePositiveInt } = require('../validation');
 const { deliverOtp, shouldShowDemoOtp } = require('../services/otp-sender');
 
@@ -22,7 +22,7 @@ function safeEqual(a, b) {
   return left.length === right.length && crypto.timingSafeEqual(left, right);
 }
 
-router.post('/otp/request', requireAuth, async (req, res) => {
+router.post('/otp/request', requireAuth, asyncHandler(async (req, res) => {
   const phone = asString(req.body.phone, 20);
   if (!phone || !isPhone(phone)) {
     return res.status(400).json({ error: 'Valid phone number required for OTP' });
@@ -39,8 +39,8 @@ router.post('/otp/request', requireAuth, async (req, res) => {
     return res.status(503).json({ error: 'OTP delivery is not configured. Please contact admin.' });
   }
 
-  run("UPDATE checkout_otps SET used_at = datetime('now') WHERE client_id = ? AND used_at IS NULL", [req.client.id]);
-  const created = run(
+  await run("UPDATE checkout_otps SET used_at = datetime('now') WHERE client_id = ? AND used_at IS NULL", [req.client.id]);
+  const created = await run(
     `INSERT INTO checkout_otps (client_id, phone, otp_hash, otp_salt, expires_at)
      VALUES (?, ?, ?, ?, datetime('now', ?))`,
     [req.client.id, phone, hashOtp(code, salt), salt, `+${OTP_TTL_MINUTES} minutes`]
@@ -56,16 +56,16 @@ router.post('/otp/request', requireAuth, async (req, res) => {
   }
   if (delivery.mode !== 'demo') response.delivery = delivery.mode;
   res.json(response);
-});
+}));
 
-router.post('/otp/verify', requireAuth, (req, res) => {
+router.post('/otp/verify', requireAuth, asyncHandler(async (req, res) => {
   const challengeId = parsePositiveInt(req.body.challenge_id);
   const otp = asString(req.body.otp, 6);
   if (!challengeId || !/^\d{6}$/.test(otp)) {
     return res.status(400).json({ error: 'Valid OTP required' });
   }
 
-  const challenge = get(
+  const challenge = await get(
     'SELECT * FROM checkout_otps WHERE id = ? AND client_id = ? AND used_at IS NULL',
     [challengeId, req.client.id]
   );
@@ -78,11 +78,11 @@ router.post('/otp/verify', requireAuth, (req, res) => {
     return res.status(400).json({ error: 'Invalid OTP' });
   }
 
-  run("UPDATE checkout_otps SET verified_at = datetime('now') WHERE id = ?", [challengeId]);
+  await run("UPDATE checkout_otps SET verified_at = datetime('now') WHERE id = ?", [challengeId]);
   res.json({ success: true });
-});
+}));
 
-router.post('/', requireAuth, (req, res) => {
+router.post('/', requireAuth, asyncHandler(async (req, res) => {
   const name = asString(req.body.name, 120);
   const phone = asString(req.body.phone, 20);
   const address = asString(req.body.address, 500);
@@ -102,7 +102,7 @@ router.post('/', requireAuth, (req, res) => {
   if (items.length > 50) return res.status(400).json({ error: 'Too many order items' });
   if (!challengeId) return res.status(400).json({ error: 'Please verify OTP before placing order' });
 
-  const otpChallenge = get(
+  const otpChallenge = await get(
     `SELECT * FROM checkout_otps
      WHERE id = ? AND client_id = ? AND phone = ? AND verified_at IS NOT NULL AND used_at IS NULL`,
     [challengeId, req.client.id, phone]
@@ -119,7 +119,7 @@ router.post('/', requireAuth, (req, res) => {
     const qty = parsePositiveInt(item.qty, 99);
     if (!productId || !qty) return res.status(400).json({ error: 'Invalid order item' });
 
-    const priced = get(
+    const priced = await get(
       `SELECT products.id, products.name, pricing.price
        FROM products
        JOIN pricing ON pricing.product_id = products.id
@@ -145,7 +145,7 @@ router.post('/', requireAuth, (req, res) => {
   const coupon_code = asString(req.body.coupon_code, 32).toUpperCase();
   let discount_amount = 0;
   if (coupon_code) {
-    const coupon = get(
+    const coupon = await get(
       `SELECT * FROM coupons
        WHERE code = ? AND is_active = 1 AND (expires_at IS NULL OR expires_at > datetime('now'))`,
       [coupon_code]
@@ -158,56 +158,53 @@ router.post('/', requireAuth, (req, res) => {
   const total = Math.round((subtotal + shipping - discount_amount) * 100) / 100;
   if (total < 0) return res.status(400).json({ error: 'Invalid order total' });
 
-  const created = run(
+  const created = await run(
     `INSERT INTO orders (client_id, client_name, client_email, client_phone, shipping_address, shipping_city, shipping_state, shipping_pincode, items_count, subtotal, shipping, discount_amount, coupon_code, total)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [req.client.id, name, req.client.email, phone, address, city, state, pincode, cleanItems.length, subtotal, shipping, discount_amount, coupon_code, total]
   );
 
-  const order = get('SELECT * FROM orders WHERE id = ?', [created.lastInsertRowid]);
+  const order = await get('SELECT * FROM orders WHERE id = ?', [created.lastInsertRowid]);
   if (!order) return res.status(500).json({ error: 'Failed to create order' });
 
-  const stmt = `INSERT INTO order_items (order_id, product_id, product_name, price, qty) VALUES (?, ?, ?, ?, ?)`;
   for (const item of cleanItems) {
-    run(stmt, [order.id, item.product_id, item.product_name, item.price, item.qty]);
-    const existingStock = get('SELECT stock FROM product_stock WHERE product_id = ?', [item.product_id]);
+    await run('INSERT INTO order_items (order_id, product_id, product_name, price, qty) VALUES (?, ?, ?, ?, ?)',
+      [order.id, item.product_id, item.product_name, item.price, item.qty]);
+    const existingStock = await get('SELECT stock FROM product_stock WHERE product_id = ?', [item.product_id]);
     if (existingStock) {
-      run('UPDATE product_stock SET stock = MAX(0, stock - ?) WHERE product_id = ?', [item.qty, item.product_id]);
+      await run('UPDATE product_stock SET stock = MAX(0, stock - ?) WHERE product_id = ?', [item.qty, item.product_id]);
     }
   }
 
   if (coupon_code) {
-    run("UPDATE coupons SET used_count = used_count + 1 WHERE code = ? AND is_active = 1", [coupon_code]);
+    await run("UPDATE coupons SET used_count = used_count + 1 WHERE code = ? AND is_active = 1", [coupon_code]);
   }
-  run("UPDATE checkout_otps SET used_at = datetime('now') WHERE id = ?", [challengeId]);
+  await run("UPDATE checkout_otps SET used_at = datetime('now') WHERE id = ?", [challengeId]);
 
-  order.items = all('SELECT * FROM order_items WHERE order_id = ?', [order.id]);
+  order.items = await all('SELECT * FROM order_items WHERE order_id = ?', [order.id]);
 
   res.status(201).json({ success: true, order });
-});
+}));
 
-router.get('/my', requireAuth, (req, res) => {
-  const orders = all('SELECT * FROM orders WHERE client_id = ? ORDER BY created_at DESC', [req.client.id]);
+router.get('/my', requireAuth, asyncHandler(async (req, res) => {
+  const orders = await all('SELECT * FROM orders WHERE client_id = ? ORDER BY created_at DESC', [req.client.id]);
   for (const o of orders) {
-    o.items = all('SELECT * FROM order_items WHERE order_id = ?', [o.id]);
+    o.items = await all('SELECT * FROM order_items WHERE order_id = ?', [o.id]);
   }
   res.json({ orders });
-});
+}));
 
-// === Admin order routes ===
-const { requireAdmin } = require('../middleware/auth');
-
-router.get('/admin/all', requireAuth, requireAdmin, (req, res) => {
-  const orders = all('SELECT * FROM orders ORDER BY created_at DESC');
+router.get('/admin/all', requireAuth, requireAdmin, asyncHandler(async (req, res) => {
+  const orders = await all('SELECT * FROM orders ORDER BY created_at DESC');
   for (const o of orders) {
-    o.items = all('SELECT * FROM order_items WHERE order_id = ?', [o.id]);
-    const client = get('SELECT id, name, email, tier FROM clients WHERE id = ?', [o.client_id]);
+    o.items = await all('SELECT * FROM order_items WHERE order_id = ?', [o.id]);
+    const client = await get('SELECT id, name, email, tier FROM clients WHERE id = ?', [o.client_id]);
     o.client = client || null;
   }
   res.json({ orders });
-});
+}));
 
-router.put('/admin/:id/status', requireAuth, requireAdmin, (req, res) => {
+router.put('/admin/:id/status', requireAuth, requireAdmin, asyncHandler(async (req, res) => {
   const { status } = req.body;
   const orderId = parsePositiveInt(req.params.id);
   if (!orderId) return res.status(400).json({ error: 'Invalid order id' });
@@ -215,11 +212,11 @@ router.put('/admin/:id/status', requireAuth, requireAdmin, (req, res) => {
   if (!validStatuses.includes(status)) {
     return res.status(400).json({ error: 'Invalid status. Must be one of: ' + validStatuses.join(', ') });
   }
-  const existing = get('SELECT id FROM orders WHERE id = ?', [orderId]);
+  const existing = await get('SELECT id FROM orders WHERE id = ?', [orderId]);
   if (!existing) return res.status(404).json({ error: 'Order not found' });
-  run('UPDATE orders SET status = ? WHERE id = ?', [status, orderId]);
-  const order = get('SELECT * FROM orders WHERE id = ?', [orderId]);
+  await run('UPDATE orders SET status = ? WHERE id = ?', [status, orderId]);
+  const order = await get('SELECT * FROM orders WHERE id = ?', [orderId]);
   res.json({ success: true, order });
-});
+}));
 
 module.exports = router;

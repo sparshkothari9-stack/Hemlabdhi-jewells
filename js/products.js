@@ -12,6 +12,7 @@ const isNewNecklace = (id) => id >= 117;
 const isEarring = (id) => id >= 152 && id <= 216;
 const isKada = (id) => id >= 222 && id <= 242;
 const isBracelet = (id) => id >= 243 && id <= 252;
+const isReplica = (id) => id >= 253 && id <= 372;
 
 const products = Array.from({ length: 216 }, (_, i) => {
   const id = i + 1;
@@ -64,7 +65,7 @@ const products = Array.from({ length: 216 }, (_, i) => {
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
     sku: `${skuPrefix}-${String(seq).padStart(3, '0')}`
   };
-}).filter(p => (p.id >= 83 && p.id <= 151 && p.id !== 126) || isEarring(p.id) || isKada(p.id) || isBracelet(p.id));
+}).filter(p => (p.id >= 83 && p.id <= 151 && p.id !== 126) || isEarring(p.id) || isKada(p.id) || isBracelet(p.id) || isReplica(p.id));
 
 const earringColors = [
   { name: "Gold", image: `${IMG}product400.jpeg` },
@@ -222,29 +223,30 @@ for (let i = 0; i < 10; i++) {
   });
 }
 
-for (let i = 0; i < 7; i++) {
+for (let i = 0; i < 120; i++) {
   const id = 253 + i;
-  const seq = 35 + i;
+  const seq = i + 1;
   products.push({
     id,
-    name: `Designer Necklace ${String(seq).padStart(3, '0')}`,
-    category: "Necklace",
-    images: [`${IMG}product${485 + i}.jpeg`, `${IMG}product${492 + i}.jpeg`, `${IMG}product${499 + i}.jpeg`],
+    name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`,
+    category: "Necklace Ad Replica",
+    images: [`${IMG}product${539 + i}.jpeg`],
     video: null,
     badge: "New",
-    description: `Exquisite designer necklace piece from our premium collection. Crafted with attention to detail and high-quality materials.`,
+    description: `Exquisite necklace replica piece from our premium collection. Crafted with attention to detail and high-quality materials.`,
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-    sku: `PA-NK-${String(seq).padStart(3, '0')}`
+    sku: `PA-NR-${String(seq).padStart(3, '0')}`
   });
 }
 
 const categories = [
-  { name: "Necklace", image: `${IMG}product169.jpeg`, count: `41 Designs` },
+  { name: "Necklace", image: `${IMG}product169.jpeg`, count: `34 Designs` },
   { name: "Crowns", image: `${IMG}product83.jpeg`, count: `16 Designs` },
   { name: "Brooch", image: `${IMG}product99.jpeg`, count: `18 Designs` },
   { name: "Earring", image: `${IMG}product335.jpeg`, count: `70 Designs` },
   { name: "Kada", image: `${IMG}product444.jpeg`, count: `21 Designs` },
-  { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs` }
+  { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs` },
+  { name: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `120 Designs` }
 ];
 
 const heroSlides = [

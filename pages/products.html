@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Products - HemLabdhi jewells</title>
+  <title>All Products - Hem Labdhi jewels</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
@@ -28,7 +28,7 @@
       <a href="../index.html" style="font-size:13px;color:var(--text-secondary);"><i class="fas fa-chevron-left"></i> Home</a>
     </div>
     <div class="logo">
-      <a href="../index.html"><img src="../images/logo.svg" alt="HemLabdhi jewells" class="logo-img"></a>
+      <a href="../index.html"><img src="../images/logo.svg" alt="Hem Labdhi jewels" class="logo-img"></a>
     </div>
     <div class="header-right">
       <button class="header-icon" id="searchIcon" aria-label="Search"><i class="fas fa-search"></i></button>
@@ -53,8 +53,10 @@
     <div class="nav-item"><a href="products.html?category=Earring" class="nav-link">Earring</a></div>
     <div class="nav-item"><a href="products.html?category=Kada" class="nav-link">Kada</a></div>
     <div class="nav-item"><a href="products.html?category=Bracelet" class="nav-link">Bracelet</a></div>
+    <div class="nav-item"><a href="products.html?category=Necklace+Ad+Replica" class="nav-link">Necklace Ad Replica</a></div>
     <div class="nav-item"><a href="products.html" class="nav-link active">All Products</a></div>
-    <div class="nav-item"><a href="../login.html" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a></div>
+    <div class="nav-item" id="navLoginItem"><a href="../login.html" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a></div>
+    <script>if (localStorage.getItem('pa_token')) document.getElementById('navLoginItem').style.display = 'none';</script>
   </div>
 </nav>
 
@@ -79,6 +81,7 @@
           <label class="filter-option"><input type="checkbox" data-category="Earring" onchange="filterByCategory(this)"> Earring</label>
           <label class="filter-option"><input type="checkbox" data-category="Kada" onchange="filterByCategory(this)"> Kada</label>
           <label class="filter-option"><input type="checkbox" data-category="Bracelet" onchange="filterByCategory(this)"> Bracelet</label>
+          <label class="filter-option"><input type="checkbox" data-category="Necklace Ad Replica" onchange="filterByCategory(this)"> Necklace Ad Replica</label>
         </div>
 
         <button class="btn btn-dark" style="width:100%;margin-top:10px;" onclick="showAll()">Clear Filters</button>
@@ -115,6 +118,7 @@
       <label class="filter-option"><input type="checkbox" data-category="Earring" onchange="filterByCategory(this)"> Earring</label>
       <label class="filter-option"><input type="checkbox" data-category="Kada" onchange="filterByCategory(this)"> Kada</label>
       <label class="filter-option"><input type="checkbox" data-category="Bracelet" onchange="filterByCategory(this)"> Bracelet</label>
+      <label class="filter-option"><input type="checkbox" data-category="Necklace Ad Replica" onchange="filterByCategory(this)"> Necklace Ad Replica</label>
     </div>
     <button class="btn btn-dark" style="width:100%;margin-top:10px;" onclick="showAll(); toggleMobileFilter()">Clear Filters</button>
   </div>
@@ -150,6 +154,7 @@
           <li><a href="products.html?category=Earring">Earring</a></li>
           <li><a href="products.html?category=Kada">Kada</a></li>
           <li><a href="products.html?category=Bracelet">Bracelet</a></li>
+          <li><a href="products.html?category=Necklace+Ad+Replica">Necklace Ad Replica</a></li>
           <li><a href="products.html">All Products</a></li>
         </ul>
       </div>
@@ -163,7 +168,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>&copy; 2026 - HemLabdhi jewells. All rights reserved.</span>
+      <span>&copy; 2026 - Hem Labdhi jewels. All rights reserved.</span>
       <div class="footer-bottom-links">
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>

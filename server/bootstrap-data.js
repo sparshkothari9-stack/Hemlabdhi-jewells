@@ -1,12 +1,7 @@
 const bcrypt = require('bcryptjs');
-const { get, all } = require('./db-helpers');
-const { getDB, save } = require('./db');
+const { get, all, run } = require('./db-helpers');
 
-function exec(sql, params = []) {
-  getDB.__syncDb.run(sql, params);
-}
-
-function insertDefaultUsers() {
+async function insertDefaultUsers() {
   const adminEmail = process.env.ADMIN_EMAIL || 'sparshkothari9@gmail.com';
   const adminPass = process.env.ADMIN_PASSWORD || 'admin@123';
   const clientPass = process.env.CLIENT_PASSWORD || 'client@123';
@@ -18,8 +13,9 @@ function insertDefaultUsers() {
   ];
 
   for (const c of clients) {
-    if (!get('SELECT id FROM clients WHERE email = ?', [c.email])) {
-      exec('INSERT INTO clients (name, email, password, tier, is_admin) VALUES (?, ?, ?, ?, ?)',
+    const existing = await get('SELECT id FROM clients WHERE email = ?', [c.email]);
+    if (!existing) {
+      await run('INSERT INTO clients (name, email, password, tier, is_admin) VALUES (?, ?, ?, ?, ?)',
         [c.name, c.email, c.password, c.tier, c.is_admin]);
     }
   }
@@ -102,59 +98,56 @@ function buildProducts() {
     extraProducts.push({ id, name: `Designer Bracelet ${String(seq).padStart(3, '0')}`, category: 'Bracelet', images: JSON.stringify([`${IMG}product${465 + i}.jpeg`, `${IMG}product${475 + i}.jpeg`]), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer bracelet piece from our premium collection.', sku: `PA-BCL-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 120; i++) {
     const id = 253 + i;
-    const seq = 35 + i;
-    extraProducts.push({ id, name: `Designer Necklace ${String(seq).padStart(3, '0')}`, category: 'Necklace', images: JSON.stringify([`${IMG}product${485 + i}.jpeg`, `${IMG}product${492 + i}.jpeg`, `${IMG}product${499 + i}.jpeg`]), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Exquisite designer necklace piece from our premium collection.', sku: `PA-NK-${String(seq).padStart(3, '0')}`, badge: 'New' });
+    const seq = i + 1;
+    extraProducts.push({ id, name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`, category: 'Necklace Ad Replica', images: JSON.stringify([`${IMG}product${539 + i}.jpeg`]), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Exquisite necklace replica piece from our premium collection.', sku: `PA-NR-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
   return [...generated, ...extraProducts];
 }
 
-function insertProducts() {
-  for (const p of buildProducts()) {
-    if (!get('SELECT id FROM products WHERE id = ?', [p.id])) {
-      exec('INSERT INTO products (id, name, category, sku, badge, images, features, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [p.id, p.name, p.category, p.sku, p.badge, p.images, p.features, p.description]);
-    }
-  }
-}
-
-function setMissingPrices() {
-  const products = all('SELECT id, category FROM products ORDER BY id');
-  const clients = all('SELECT id, tier FROM clients WHERE is_admin = 0 ORDER BY id');
-  const baseByCategory = {
-    Necklace: 8500,
-    Crowns: 12000,
-    Brooch: 4500,
-    Earring: 3200,
-    Kada: 2800,
-    Bracelet: 5500
-  };
-  const tierMultiplier = {
-    wholesale: 0.9,
-    distributor: 0.82,
-    retailer: 1
-  };
-
-  for (const client of clients) {
-    for (const product of products) {
-      if (get('SELECT id FROM pricing WHERE client_id = ? AND product_id = ?', [client.id, product.id])) continue;
-
-      const base = baseByCategory[product.category] || 5000;
-      const multiplier = tierMultiplier[client.tier] || 1;
-      const variation = (product.id % 11) * 75;
-      const price = Math.round((base + variation) * multiplier);
-      exec('INSERT INTO pricing (client_id, product_id, price) VALUES (?, ?, ?)', [client.id, product.id, price]);
-    }
+async function insertMany(sql, rows) {
+  for (const row of rows) {
+    await run(sql, row);
   }
 }
 
 async function ensureSeedData() {
-  insertDefaultUsers();
-  insertProducts();
-  setMissingPrices();
-  save();
+  await insertDefaultUsers();
+  const products = buildProducts();
+  const existing = await all('SELECT id FROM products');
+  const existingIds = new Set(existing.map(r => r.id));
+  const newProducts = products.filter(p => !existingIds.has(p.id));
+  if (newProducts.length > 0) {
+    await insertMany(
+      'INSERT INTO products (id, name, category, sku, badge, images, features, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      newProducts.map(p => [p.id, p.name, p.category, p.sku, p.badge, p.images, p.features, p.description])
+    );
+  }
+  const missingProducts = await all('SELECT p.id FROM products p LEFT JOIN pricing pr ON pr.product_id = p.id GROUP BY p.id HAVING COUNT(pr.id) = 0');
+  if (missingProducts.length > 0) {
+    const priceProducts = await all('SELECT id, category FROM products WHERE id IN (' + missingProducts.map(() => '?').join(',') + ')', missingProducts.map(p => p.id));
+    const clients = await all('SELECT id, tier FROM clients WHERE is_admin = 0 ORDER BY id');
+    const baseByCategory = {
+      Necklace: 8500, Crowns: 12000, Brooch: 4500,
+      Earring: 3200, Kada: 2800, Bracelet: 5500,
+      'Necklace Ad Replica': 3500
+    };
+    const tierMultiplier = { wholesale: 0.9, distributor: 0.82, retailer: 1 };
+    const priceRows = [];
+    for (const client of clients) {
+      for (const product of priceProducts) {
+        const base = baseByCategory[product.category] || 5000;
+        const multiplier = tierMultiplier[client.tier] || 1;
+        const variation = (product.id % 11) * 75;
+        priceRows.push([client.id, product.id, Math.round((base + variation) * multiplier)]);
+      }
+    }
+    if (priceRows.length > 0) {
+      await insertMany('INSERT INTO pricing (client_id, product_id, price) VALUES (?, ?, ?)', priceRows);
+    }
+  }
 }
 
 module.exports = { ensureSeedData };

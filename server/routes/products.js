@@ -1,19 +1,19 @@
 const express = require('express');
-const { get, all, run } = require('../db-helpers');
+const { get, all, asyncHandler } = require('../db-helpers');
 const { requireAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
-router.get('/', requireAuth, (req, res) => {
+router.get('/', requireAuth, asyncHandler(async (req, res) => {
   const clientId = req.client.id;
 
-  const pricing = all('SELECT product_id, price FROM pricing WHERE client_id = ?', [clientId]);
+  const pricing = await all('SELECT product_id, price FROM pricing WHERE client_id = ?', [clientId]);
   const priceMap = {};
   for (const p of pricing) {
     priceMap[p.product_id] = p.price;
   }
 
-  const products = all('SELECT id, name, description, features, sku, category, images, badge FROM products ORDER BY id');
+  const products = await all('SELECT id, name, description, features, sku, category, images, badge FROM products ORDER BY id');
   const result = products.map(p => {
     let images, features;
     try { images = JSON.parse(p.images); } catch { images = [p.images]; }
@@ -32,15 +32,16 @@ router.get('/', requireAuth, (req, res) => {
   });
 
   res.json({ products: result });
-});
+}));
 
-router.get('/categories', requireAuth, (req, res) => {
-  const categories = all('SELECT DISTINCT category FROM products ORDER BY category');
-  const catData = categories.map(c => {
-    const cnt = get('SELECT COUNT(*) as cnt FROM products WHERE category = ?', [c.category]);
-    return { name: c.category, count: `${cnt.cnt} Designs` };
-  });
+router.get('/categories', requireAuth, asyncHandler(async (req, res) => {
+  const categories = await all('SELECT DISTINCT category FROM products ORDER BY category');
+  const catData = [];
+  for (const c of categories) {
+    const cnt = await get('SELECT COUNT(*) as cnt FROM products WHERE category = ?', [c.category]);
+    catData.push({ name: c.category, count: `${cnt.cnt} Designs` });
+  }
   res.json({ categories: catData });
-});
+}));
 
 module.exports = router;
