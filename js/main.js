@@ -595,7 +595,7 @@ function renderProducts(containerId, productsToRender) {
     const stockBadge = stock ? (stock.stock <= 0 ? '<div class="product-card-badge sold-out">Sold Out</div>' : stock.stock <= stock.low_stock_threshold ? '<div class="product-card-badge low-stock-badge">Only ' + stock.stock + ' left</div>' : '') : '';
     const badge = stockBadge || (p.badge ? `<div class="product-card-badge sale">${p.badge}</div>` : '');
     return `
-      <div class="product-card animate-on-scroll" onclick="window.location.href='${PAGE_PREFIX}product-detail.html?id=${p.id}'" role="button" tabindex="0" aria-label="${p.name}">
+      <div class="product-card animate-on-scroll" data-product-id="${p.id}" onclick="window.location.href='${PAGE_PREFIX}product-detail.html?id=${p.id}'" role="button" tabindex="0" aria-label="${p.name}">
         ${badge}
         <button class="wishlist-btn ${wished ? 'active' : ''}" data-product-id="${p.id}" onclick="event.stopPropagation(); toggleWishlist(${p.id})" aria-label="${wished ? 'Remove from' : 'Add to'} wishlist"><i class="fa${wished ? 's' : 'r'} fa-heart"></i></button>
         <div class="product-card-image">

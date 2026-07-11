@@ -3234,3 +3234,14 @@ img {
   .product-grid { grid-template-columns: repeat(4, 1fr); gap: 25px; }
   .category-grid { gap: 25px; }
 }
+
+.product-card[data-product-id="162"] .product-card-image img,
+.product-card[data-product-id="165"] .product-card-image img,
+.product-card[data-product-id="174"] .product-card-image img,
+.product-card[data-product-id="186"] .product-card-image img,
+.product-card[data-product-id="188"] .product-card-image img,
+.product-card[data-product-id="190"] .product-card-image img,
+.product-card[data-product-id="193"] .product-card-image img,
+.product-card[data-product-id="211"] .product-card-image img {
+  object-position: center 75%;
+}
