@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Hem Labdhi jewels</title>
+  <title>Admin Panel - Hem Labdhi Jewels</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Jost:wght@600&display=swap" rel="stylesheet">
@@ -11,6 +11,10 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="shortcut icon" href="images/product83.jpeg" type="image/x-icon">
   <style>
+    @media (max-width: 768px) {
+      .admin-tabs { flex-wrap: wrap; }
+      .admin-tab { padding: 10px 12px; font-size: 13px; }
+    }
     .admin-page { padding: 30px 0; }
     .admin-header {
       display: flex;
@@ -240,22 +244,18 @@
     }
     .bulk-actions .btn { font-size: 12px; padding: 8px 16px; }
 
-    @media (max-width: 768px) {
-      .add-client-form .form-row { grid-template-columns: 1fr; }
-      .pricing-row { grid-template-columns: 80px 1fr 100px; }
-      .admin-header { flex-direction: column; align-items: flex-start; }
-    }
   </style>
 </head>
 <body>
 
+<div class="admin-main">
 <header class="header" style="position:static;">
   <div class="header-inner">
     <div class="header-left">
       <a href="index.html" style="font-size:13px;color:var(--text-secondary);"><i class="fas fa-arrow-left"></i> Back to Store</a>
     </div>
     <div class="logo">
-      <a href="index.html"><img src="images/logo.svg" alt="Hem Labdhi jewels" class="logo-img"></a>
+      <a href="index.html"><img src="images/logo.svg" alt="Hem Labdhi Jewels" class="logo-img"></a>
     </div>
     <div class="header-right">
       <span style="font-size:13px;color:var(--text-secondary);" id="adminUserDisplay"></span>
@@ -277,10 +277,12 @@
     <button class="admin-tab" data-tab="orders" onclick="switchTab('orders')">Orders</button>
     <button class="admin-tab" data-tab="coupons" onclick="switchTab('coupons')">Coupons</button>
     <button class="admin-tab" data-tab="enquiries" onclick="switchTab('enquiries')">Enquiries</button>
+    <button class="admin-tab" data-tab="products" onclick="switchTab('products')">Products</button>
+    <button class="admin-tab" data-tab="settings" onclick="switchTab('settings')">Settings</button>
   </div>
 
   <!-- DASHBOARD TAB -->
-  <div class="admin-panel" id="panel-dashboard">
+  <div class="admin-panel active" id="panel-dashboard">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:25px;">
       <div class="stat-card"><h3>Total Orders</h3><div class="stat-value" id="statOrders">-</div></div>
       <div class="stat-card"><h3>Revenue</h3><div class="stat-value" id="statRevenue">-</div></div>
@@ -299,7 +301,7 @@
   </div>
 
   <!-- CLIENTS TAB -->
-  <div class="admin-panel active" id="panel-clients">
+  <div class="admin-panel" id="panel-clients">
     <div class="add-client-form">
       <h3>Add New Client</h3>
       <form onsubmit="return addClient(event)">
@@ -432,6 +434,104 @@
     </div>
     <div id="enquiriesList"><p style="color:var(--text-secondary);">Loading...</p></div>
   </div>
+
+  <!-- PRODUCTS TAB -->
+  <div class="admin-panel" id="panel-products">
+    <div class="add-client-form">
+      <h3 id="productFormTitle">Add New Product</h3>
+      <form onsubmit="return saveProduct(event)">
+        <input type="hidden" id="editProductId" value="">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Product ID *</label>
+            <input type="number" id="productId" required min="1" placeholder="e.g. 500">
+          </div>
+          <div class="form-group">
+            <label>Name *</label>
+            <input type="text" id="productName" required placeholder="Product name">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Category *</label>
+            <select id="productCategory">
+              <option value="">Select category</option>
+              <option value="Crowns">Crowns</option>
+              <option value="Brooch">Brooch</option>
+              <option value="Earring">Earring</option>
+              <option value="Kada">Kada</option>
+              <option value="Bracelet">Bracelet</option>
+              <option value="Necklace Ad Replica">Necklace Ad Replica</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>SKU</label>
+            <input type="text" id="productSku" placeholder="e.g. PA-BCL-011">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Badge</label>
+            <input type="text" id="productBadge" placeholder="e.g. New, Sale">
+          </div>
+          <div class="form-group">
+            <label>Image paths (comma-separated)</label>
+            <input type="text" id="productImages" placeholder="images/product500.jpeg, images/product501.jpeg">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="productDescription" rows="3" placeholder="Product description"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Features (comma-separated)</label>
+          <input type="text" id="productFeatures" placeholder="Premium Finish, Gold Plated, Hypoallergenic">
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button type="submit" class="btn" id="productSaveBtn">Add Product</button>
+          <button type="button" class="btn" style="display:none;" id="productCancelBtn" onclick="cancelEditProduct()">Cancel</button>
+        </div>
+        <div class="admin-error" id="productFormError"></div>
+      </form>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;align-items:center;">
+      <input type="text" id="productsSearch" placeholder="Search products..." oninput="filterProducts()" style="padding:10px 15px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:14px;flex:1;max-width:350px;">
+    </div>
+    <div id="productsList"><p style="color:var(--text-secondary);">Loading...</p></div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div class="admin-panel" id="panel-settings">
+    <div class="add-client-form">
+      <h3>Store Settings</h3>
+      <form onsubmit="return saveSettings(event)">
+        <div class="form-group">
+          <label>WhatsApp Number</label>
+          <input type="text" id="settingWhatsapp" placeholder="919321671416">
+        </div>
+        <div class="form-group">
+          <label>Free Shipping Above (₹)</label>
+          <input type="number" id="settingFreeShipping" placeholder="5000" min="0">
+        </div>
+        <div class="form-group">
+          <label>Shipping Charge (₹)</label>
+          <input type="number" id="settingShippingCharge" placeholder="199" min="0">
+        </div>
+        <div class="form-group">
+          <label>Store Name</label>
+          <input type="text" id="settingStoreName" placeholder="Hem Labdhi Jewels">
+        </div>
+        <div class="form-group">
+          <label>Admin Email</label>
+          <input type="email" id="settingAdminEmail" placeholder="admin@example.com">
+        </div>
+        <button type="submit" class="btn">Save Settings</button>
+        <div class="admin-success" id="settingsStatus"></div>
+      </form>
+    </div>
+  </div>
+</div>
 </div>
 
 <style>
@@ -486,6 +586,12 @@
   .tracking-input input { flex: 1; padding: 8px 12px; border: 1px solid var(--border-color); font-family: var(--font-body); font-size: 13px; }
   .tracking-input input:focus { outline: none; border-color: var(--gold); }
   .tracking-input button { padding: 8px 16px; font-size: 12px; }
+  .product-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--white); padding: 12px 18px; border-radius: var(--radius-md);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 6px;
+    flex-wrap: wrap; gap: 10px;
+  }
 </style>
 
 <script>
@@ -536,14 +642,20 @@ let allClients = [];
 
 function switchTab(name) {
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector('.admin-tab[data-tab="' + name + '"]').classList.add('active');
+  const tab = document.querySelector(`.admin-tab[data-tab="${name}"]`);
+  if (!tab) return;
+  tab.classList.add('active');
   document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + name).classList.add('active');
+  const panel = document.getElementById('panel-' + name);
+  if (!panel) return;
+  panel.classList.add('active');
   if (name === 'dashboard') loadDashboard();
   if (name === 'pricing') loadPricingClients();
   if (name === 'inventory') loadInventory();
   if (name === 'coupons') loadCoupons();
   if (name === 'enquiries') loadEnquiries();
+  if (name === 'products') loadProducts();
+  if (name === 'settings') loadSettings();
 }
 
 async function apiFetch(url, options) {
@@ -849,6 +961,166 @@ function showMessage(msg) {
   setTimeout(() => el.remove(), 2500);
 }
 
+// ===== PRODUCTS =====
+let adminProducts = [];
+let editingProductId = null;
+
+async function loadProducts() {
+  try {
+    const data = await apiFetch('/api/admin/products');
+    adminProducts = data.products || [];
+    renderProducts();
+  } catch (err) {
+    document.getElementById('productsList').innerHTML = '<p style="color:var(--red);">Error: ' + escapeHtml(err.message) + '</p>';
+  }
+}
+
+function renderProducts() {
+  const list = document.getElementById('productsList');
+  if (adminProducts.length === 0) {
+    list.innerHTML = '<p style="color:var(--text-secondary);">No products yet.</p>';
+    return;
+  }
+  list.innerHTML = '<div style="display:flex;flex-direction:column;gap:6px;">' + adminProducts.map(p => {
+    const imgSrc = Array.isArray(p.images) && p.images[0] ? p.images[0] : '';
+    const features = Array.isArray(p.features) ? p.features.join(', ') : '';
+    return `<div class="product-row" data-name="${escapeHtml((p.name||'').toLowerCase())}">
+      <div style="display:flex;align-items:center;gap:12px;flex:1;">
+        ${imgSrc ? `<img src="${escapeHtml(imgSrc)}" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" loading="lazy">` : '<div style="width:40px;height:40px;background:var(--light-gray);border-radius:4px;"></div>'}
+        <div>
+          <div style="font-weight:600;font-size:14px;">${escapeHtml(p.sku || p.id)} - ${escapeHtml(p.name)}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">ID: ${p.id} | ${escapeHtml(p.category)}${p.badge ? ' | <span style="color:var(--gold);">' + escapeHtml(p.badge) + '</span>' : ''}</div>
+          ${features ? `<div style="font-size:11px;color:var(--text-secondary);">${escapeHtml(features)}</div>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn" style="font-size:11px;padding:6px 12px;" onclick="editProduct(${p.id})">Edit</button>
+        <button class="btn" style="font-size:11px;padding:6px 12px;border-color:var(--red);color:var(--red);" onclick="deleteProduct(${p.id})">Delete</button>
+      </div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+function filterProducts() {
+  const q = document.getElementById('productsSearch').value.toLowerCase().trim();
+  document.querySelectorAll('.product-row').forEach(row => {
+    row.style.display = (!q || row.dataset.name.includes(q)) ? 'flex' : 'none';
+  });
+}
+
+async function saveProduct(e) {
+  e.preventDefault();
+  const id = parseInt(document.getElementById('productId').value);
+  const name = document.getElementById('productName').value.trim();
+  const category = document.getElementById('productCategory').value;
+  const sku = document.getElementById('productSku').value.trim();
+  const badge = document.getElementById('productBadge').value.trim();
+  const imagesStr = document.getElementById('productImages').value.trim();
+  const description = document.getElementById('productDescription').value.trim();
+  const featuresStr = document.getElementById('productFeatures').value.trim();
+  const errorEl = document.getElementById('productFormError');
+
+  if (!id || !name || !category) { errorEl.textContent = 'ID, name, and category required'; return; }
+  errorEl.textContent = '';
+
+  const images = imagesStr ? imagesStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const features = featuresStr ? featuresStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const body = { id, name, category, sku, badge, description, images, features };
+
+  try {
+    if (editingProductId) {
+      await apiFetch('/api/admin/products/' + editingProductId, { method: 'PUT', body: JSON.stringify(body) });
+    } else {
+      await apiFetch('/api/admin/products', { method: 'POST', body: JSON.stringify(body) });
+    }
+    resetProductForm();
+    loadProducts();
+    errorEl.style.color = 'var(--green)'; errorEl.textContent = editingProductId ? 'Product updated!' : 'Product added!';
+    setTimeout(() => { errorEl.textContent = ''; errorEl.style.color = ''; }, 3000);
+  } catch (err) { errorEl.textContent = err.message; }
+  return false;
+}
+
+function editProduct(id) {
+  const p = adminProducts.find(x => x.id === id);
+  if (!p) return;
+  editingProductId = id;
+  document.getElementById('productId').value = p.id;
+  document.getElementById('productId').disabled = true;
+  document.getElementById('productName').value = p.name || '';
+  document.getElementById('productCategory').value = p.category || '';
+  document.getElementById('productSku').value = p.sku || '';
+  document.getElementById('productBadge').value = p.badge || '';
+  document.getElementById('productImages').value = Array.isArray(p.images) ? p.images.join(', ') : '';
+  document.getElementById('productDescription').value = p.description || '';
+  document.getElementById('productFeatures').value = Array.isArray(p.features) ? p.features.join(', ') : '';
+  document.getElementById('productFormTitle').textContent = 'Edit Product';
+  document.getElementById('productSaveBtn').textContent = 'Update Product';
+  document.getElementById('productCancelBtn').style.display = 'inline-block';
+  document.getElementById('productFormError').textContent = '';
+}
+
+function cancelEditProduct() {
+  resetProductForm();
+}
+
+function resetProductForm() {
+  editingProductId = null;
+  document.getElementById('productId').disabled = false;
+  document.getElementById('productId').value = '';
+  document.getElementById('productName').value = '';
+  document.getElementById('productCategory').value = '';
+  document.getElementById('productSku').value = '';
+  document.getElementById('productBadge').value = '';
+  document.getElementById('productImages').value = '';
+  document.getElementById('productDescription').value = '';
+  document.getElementById('productFeatures').value = '';
+  document.getElementById('productFormTitle').textContent = 'Add New Product';
+  document.getElementById('productSaveBtn').textContent = 'Add Product';
+  document.getElementById('productCancelBtn').style.display = 'none';
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Delete product #' + id + '? This will also remove pricing and stock data.')) return;
+  try { await apiFetch('/api/admin/products/' + id, { method: 'DELETE' }); loadProducts(); } catch (err) { alert(err.message); }
+}
+
+// ===== SETTINGS =====
+async function loadSettings() {
+  try {
+    const data = await apiFetch('/api/settings');
+    const s = data.settings || {};
+    document.getElementById('settingWhatsapp').value = s.whatsapp_number || '';
+    document.getElementById('settingFreeShipping').value = s.free_shipping_above || '';
+    document.getElementById('settingShippingCharge').value = s.shipping_charge || '';
+    document.getElementById('settingStoreName').value = s.store_name || '';
+    document.getElementById('settingAdminEmail').value = s.admin_email || '';
+  } catch (err) { /* ignore */ }
+}
+
+async function saveSettings(e) {
+  e.preventDefault();
+  const statusEl = document.getElementById('settingsStatus');
+  const settings = {
+    whatsapp_number: document.getElementById('settingWhatsapp').value.trim(),
+    free_shipping_above: document.getElementById('settingFreeShipping').value.trim(),
+    shipping_charge: document.getElementById('settingShippingCharge').value.trim(),
+    store_name: document.getElementById('settingStoreName').value.trim(),
+    admin_email: document.getElementById('settingAdminEmail').value.trim()
+  };
+  statusEl.textContent = 'Saving...';
+  try {
+    await apiFetch('/api/settings', { method: 'PUT', body: JSON.stringify({ settings }) });
+    statusEl.textContent = 'Settings saved!';
+    statusEl.style.color = 'var(--green)';
+    setTimeout(() => { statusEl.textContent = ''; }, 3000);
+  } catch (err) {
+    statusEl.textContent = 'Error: ' + err.message;
+    statusEl.style.color = 'var(--red)';
+  }
+  return false;
+}
+
 // ===== COUPONS =====
 async function loadCoupons() {
   try {
@@ -928,6 +1200,8 @@ async function initAdmin() {
   loadClients();
   loadPricingClients();
   loadOrders();
+  loadProducts();
+  loadSettings();
 }
 
 initAdmin();

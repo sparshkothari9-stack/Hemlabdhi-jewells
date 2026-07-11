@@ -5,7 +5,7 @@ function getProvider() {
 }
 
 function shouldShowDemoOtp() {
-  return process.env.NODE_ENV !== 'production' || process.env.SHOW_DEMO_OTP === 'true';
+  return process.env.SHOW_DEMO_OTP === 'true';
 }
 
 function digitsOnly(phone) {
@@ -38,7 +38,7 @@ async function sendTwilioOtp(phone, code, ttlMinutes) {
 
   const body = new URLSearchParams({
     To: toE164(phone),
-    Body: `Your Hem Labdhi jewels OTP is ${code}. It expires in ${ttlMinutes} minutes.`
+    Body: `Your Hem Labdhi Jewels OTP is ${code}. It expires in ${ttlMinutes} minutes.`
   });
   if (messagingServiceSid) {
     body.set('MessagingServiceSid', messagingServiceSid);
@@ -109,7 +109,7 @@ async function sendWebhookOtp(phone, code, ttlMinutes) {
       phone: toE164(phone),
       code,
       ttl_minutes: ttlMinutes,
-      message: `Your Hem Labdhi jewels OTP is ${code}. It expires in ${ttlMinutes} minutes.`
+      message: `Your Hem Labdhi Jewels OTP is ${code}. It expires in ${ttlMinutes} minutes.`
     })
   });
 

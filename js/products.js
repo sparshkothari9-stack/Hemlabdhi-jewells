@@ -12,7 +12,7 @@ const isNewNecklace = (id) => id >= 117;
 const isEarring = (id) => id >= 152 && id <= 216;
 const isKada = (id) => id >= 222 && id <= 242;
 const isBracelet = (id) => id >= 243 && id <= 252;
-const isReplica = (id) => id >= 253 && id <= 372;
+const isReplica = (id) => id >= 253 && id <= 395;
 
 const products = Array.from({ length: 216 }, (_, i) => {
   const id = i + 1;
@@ -66,7 +66,52 @@ const products = Array.from({ length: 216 }, (_, i) => {
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
     sku: `${skuPrefix}-${String(seq).padStart(3, '0')}`
   };
-}).filter(p => (p.id >= 83 && p.id <= 151 && p.id !== 126) || (isEarring(p.id) && p.id !== 199) || isKada(p.id) || isBracelet(p.id) || isReplica(p.id));
+}).filter(p => (p.id >= 83 && p.id <= 116) || (isEarring(p.id) && p.id !== 199) || isKada(p.id) || isBracelet(p.id) || isReplica(p.id));
+
+const replicaColors = [
+  { name: "Maroon", color: "#800000" },
+  { name: "Green", color: "#008000" },
+  { name: "Pink", color: "#FFC0CB" },
+  { name: "Rani", color: "#E30B5C" },
+  { name: "Black", color: "#000000" },
+  { name: "Montana", color: "#2C3E50" },
+  { name: "Rose", color: "#FF007F" },
+  { name: "Mint", color: "#98FF98" },
+  { name: "Rose mint", color: "#E8B4B8" },
+  { name: "White", color: "#FFFFFF" }
+];
+
+for (let i = 0; i < 120; i++) {
+  const id = 253 + i;
+  const seq = i + 1;
+  products.push({
+    id,
+    name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`,
+    category: "Necklace Ad Replica",
+    images: [`${IMG}product${539 + i}.jpeg`],
+    colors: replicaColors,
+    video: null,
+    badge: "New",
+    description: `Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials.`,
+    sku: `PA-NR-${String(seq).padStart(3, '0')}`
+  });
+}
+for (let i = 0; i < 23; i++) {
+  const id = 373 + i;
+  const seq = 121 + i;
+  products.push({
+    id,
+    name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`,
+    category: "Necklace Ad Replica",
+    images: [`${IMG}product${659 + i}.jpeg`],
+    colors: replicaColors,
+    video: null,
+    badge: "New",
+    description: `Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials.`,
+    sku: `PA-NR-${String(seq).padStart(3, '0')}`
+  });
+}
+
 
 const earringColors = [
   { name: "Gold", image: `${IMG}product400.jpeg` },
@@ -224,30 +269,13 @@ for (let i = 0; i < 10; i++) {
   });
 }
 
-for (let i = 0; i < 120; i++) {
-  const id = 253 + i;
-  const seq = i + 1;
-  products.push({
-    id,
-    name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`,
-    category: "Necklace Ad Replica",
-    images: [`${IMG}product${539 + i}.jpeg`],
-    video: null,
-    badge: "New",
-    description: `Exquisite necklace replica piece from our premium collection. Crafted with attention to detail and high-quality materials.`,
-    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-    sku: `PA-NR-${String(seq).padStart(3, '0')}`
-  });
-}
-
 const categories = [
-  { name: "Necklace", image: `${IMG}product169.jpeg`, count: `34 Designs` },
+  { name: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `143 Designs` },
   { name: "Crowns", image: `${IMG}product83.jpeg`, count: `16 Designs` },
   { name: "Brooch", image: `${IMG}product99.jpeg`, count: `18 Designs` },
   { name: "Earring", image: `${IMG}product335.jpeg`, count: `69 Designs` },
   { name: "Kada", image: `${IMG}product444.jpeg`, count: `21 Designs` },
-  { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs` },
-  { name: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `120 Designs` }
+  { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs` }
 ];
 
 const heroSlides = [

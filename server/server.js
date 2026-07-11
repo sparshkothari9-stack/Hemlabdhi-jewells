@@ -15,6 +15,7 @@ const productRoutes = require('./routes/products');
 const adminRoutes = require('./routes/admin');
 const orderRoutes = require('./routes/orders');
 const featureRoutes = require('./routes/features');
+const reviewRoutes = require('./routes/reviews');
 
 const app = express();
 const PORT = parseInt(process.env.PORT, 10) || 3000;
@@ -25,8 +26,22 @@ const allowedOrigins = (process.env.CORS_ORIGINS || '')
 
 app.disable('x-powered-by');
 app.use(helmet({
-  contentSecurityPolicy: false,
-  crossOriginEmbedderPolicy: false
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
+      fontSrc: ["'self'", "cdnjs.cloudflare.com", "fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      connectSrc: ["'self'"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      formAction: ["'self'"],
+      baseUri: ["'self'"],
+      upgradeInsecureRequests: []
+    }
+  }
 }));
 app.use(cors({
   origin(origin, callback) {
@@ -64,6 +79,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api', featureRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', env: isProduction ? 'production' : 'development' });

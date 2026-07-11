@@ -23,7 +23,7 @@ const { getDB } = require('./db');
     process.exit(1);
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL || 'sparshkothari9@gmail.com';
+  const adminEmail = process.env.ADMIN_EMAIL || 'hemlabdhijewels@gmail.com';
   const adminPass = process.env.ADMIN_PASSWORD;
   const clientPass = process.env.CLIENT_PASSWORD;
 

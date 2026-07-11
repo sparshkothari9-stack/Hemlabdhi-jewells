@@ -14,7 +14,7 @@ function generateOTP() {
 }
 
 function getChallengeKey() {
-  const secret = process.env.JWT_SECRET || 'development-otp-challenge-secret';
+  const secret = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
   return crypto.createHash('sha256').update(secret).digest();
 }
 
@@ -65,9 +65,8 @@ async function setMissingPricesForClient(client) {
     `INSERT OR IGNORE INTO pricing (client_id, product_id, price)
      SELECT ?, p.id,
        ROUND((
-         CASE p.category
-           WHEN 'Necklace' THEN 8500
-           WHEN 'Crowns' THEN 12000
+          CASE p.category
+            WHEN 'Crowns' THEN 12000
            WHEN 'Brooch' THEN 4500
            WHEN 'Earring' THEN 3200
            WHEN 'Kada' THEN 2800
@@ -90,7 +89,7 @@ router.post('/send-otp', asyncHandler(async (req, res) => {
   if (!phone || !isPhone(phone)) {
     return res.status(400).json({ error: 'Valid 10-digit phone number required' });
   }
-  const derivedEmail = phone.replace(/[^0-9]/g, '') + '@customer.Hemlabdhi';
+  const derivedEmail = phone.replace(/[^0-9]/g, '') + '@customer.HemLabdhiJewels';
   const existingClient = await get('SELECT id FROM clients WHERE phone = ? OR email = ?', [phone, derivedEmail]);
   const otp = generateOTP();
   let delivery;
@@ -141,7 +140,7 @@ router.post('/verify-otp', asyncHandler(async (req, res) => {
   let client = await get('SELECT * FROM clients WHERE phone = ?', [phone]);
   if (!client) {
     const name = asString(req.body.name, 120) || 'Customer ' + phone.slice(-4);
-    const email = phone.replace(/[^0-9]/g, '') + '@customer.Hemlabdhi';
+    const email = phone.replace(/[^0-9]/g, '') + '@customer.HemLabdhiJewels';
     client = await get('SELECT * FROM clients WHERE email = ?', [email]);
     if (client) {
       await run('UPDATE clients SET phone = ? WHERE id = ?', [phone, client.id]);

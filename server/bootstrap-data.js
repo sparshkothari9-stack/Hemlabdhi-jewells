@@ -2,21 +2,41 @@ const bcrypt = require('bcryptjs');
 const { get, all, run } = require('./db-helpers');
 
 async function insertDefaultUsers() {
-  const adminEmail = process.env.ADMIN_EMAIL || 'sparshkothari9@gmail.com';
-  const adminPass = process.env.ADMIN_PASSWORD || 'admin@123';
-  const clientPass = process.env.CLIENT_PASSWORD || 'client@123';
+  const adminEmail = process.env.ADMIN_EMAIL || 'hemlabdhijewels@gmail.com';
+  const isProd = process.env.NODE_ENV === 'production';
+  const adminPass = process.env.ADMIN_PASSWORD;
+  const clientPass = process.env.CLIENT_PASSWORD;
+  if (isProd) {
+    if (!adminPass || adminPass.length < 8) throw new Error('ADMIN_PASSWORD must be at least 8 characters in production');
+    if (!clientPass || clientPass.length < 8) throw new Error('CLIENT_PASSWORD must be at least 8 characters in production');
+  }
+
+  const devAdminPass = adminPass || 'admin@123';
+  const devClientPass = clientPass || 'client@123';
 
   const clients = [
-    { name: 'Admin', email: adminEmail, password: bcrypt.hashSync(adminPass, 10), tier: 'admin', is_admin: 1 },
-    { name: 'Rajesh Jewellers', email: 'rajesh@example.com', password: bcrypt.hashSync(clientPass, 10), tier: 'wholesale', is_admin: 0 },
-    { name: 'Priya Retail', email: 'priya@example.com', password: bcrypt.hashSync(clientPass, 10), tier: 'retailer', is_admin: 0 }
+    { name: 'Admin', email: adminEmail, password: bcrypt.hashSync(adminPass || devAdminPass, 10), tier: 'admin', is_admin: 1 },
+    { name: 'Rajesh Jewellers', email: 'rajesh@example.com', password: bcrypt.hashSync(clientPass || devClientPass, 10), tier: 'wholesale', is_admin: 0 },
+    { name: 'Priya Retail', email: 'priya@example.com', password: bcrypt.hashSync(clientPass || devClientPass, 10), tier: 'retailer', is_admin: 0 }
   ];
 
   for (const c of clients) {
-    const existing = await get('SELECT id FROM clients WHERE email = ?', [c.email]);
-    if (!existing) {
-      await run('INSERT INTO clients (name, email, password, tier, is_admin) VALUES (?, ?, ?, ?, ?)',
-        [c.name, c.email, c.password, c.tier, c.is_admin]);
+    if (c.is_admin) {
+      const existing = await get('SELECT id FROM clients WHERE is_admin = 1 LIMIT 1');
+      if (existing) {
+        await run('UPDATE clients SET name = ?, email = ?, password = ?, tier = ? WHERE id = ?',
+          [c.name, c.email, c.password, c.tier, existing.id]);
+        await run('DELETE FROM clients WHERE is_admin = 1 AND id != ?', [existing.id]);
+      } else {
+        await run('INSERT INTO clients (name, email, password, tier, is_admin) VALUES (?, ?, ?, ?, ?)',
+          [c.name, c.email, c.password, c.tier, c.is_admin]);
+      }
+    } else {
+      const existing = await get('SELECT id FROM clients WHERE email = ?', [c.email]);
+      if (!existing) {
+        await run('INSERT INTO clients (name, email, password, tier, is_admin) VALUES (?, ?, ?, ?, ?)',
+          [c.name, c.email, c.password, c.tier, c.is_admin]);
+      }
     }
   }
 }
@@ -25,7 +45,6 @@ function buildProducts() {
   const IMG = 'images/';
   const isCrown = id => id >= 83 && id <= 98;
   const isBrooch = id => id >= 99 && id <= 116;
-  const isNewNecklace = id => id >= 117;
   const isEarring = id => id >= 152 && id <= 216;
 
   const generated = Array.from({ length: 216 }, (_, i) => {
@@ -61,12 +80,6 @@ function buildProducts() {
       imgs = [`${IMG}product${id}.jpeg`, `${IMG}product${id + 52}.jpeg`];
     }
 
-    if (isNewNecklace(id) && !isEarring(id)) {
-      seq = id <= 125 ? id - 116 : id - 117;
-      imgs = [(id === 151 ? `${IMG}product271.jpeg` : `${IMG}product${id + 52}.jpeg`), `${IMG}product${236 + seq}.jpeg`, `${IMG}product${300 + seq}.jpeg`];
-      name = `Designer Necklace ${String(seq).padStart(3, '0')}`;
-    }
-
     return {
       id,
       name,
@@ -77,7 +90,7 @@ function buildProducts() {
       features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']),
       sku: `${skuPrefix}-${String(seq).padStart(3, '0')}`
     };
-  }).filter(p => (p.id >= 83 && p.id <= 151 && p.id !== 126) || (p.id >= 152 && p.id <= 216 && p.id !== 199));
+  }).filter(p => (p.id >= 83 && p.id <= 116) || (p.id >= 152 && p.id <= 216 && p.id !== 199));
 
   const extraProducts = [
     { id: 217, name: 'Designer Earring 065', category: 'Earring', images: JSON.stringify(Array.from({ length: 9 }, (_, i) => `${IMG}product${400 + i}.jpeg`)), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer earring piece available in multiple colors.', sku: 'PA-ER-065', badge: 'New' },
@@ -102,7 +115,7 @@ function buildProducts() {
   for (let i = 0; i < 120; i++) {
     const id = 253 + i;
     const seq = i + 1;
-    extraProducts.push({ id, name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`, category: 'Necklace Ad Replica', images: JSON.stringify([`${IMG}product${539 + i}.jpeg`]), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Exquisite necklace replica piece from our premium collection.', sku: `PA-NR-${String(seq).padStart(3, '0')}`, badge: 'New' });
+    extraProducts.push({ id, name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`, category: 'Necklace Ad Replica', images: JSON.stringify([`${IMG}product${539 + i}.jpeg`]), description: 'Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White.', sku: `PA-NR-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
   return [...generated, ...extraProducts];
@@ -131,7 +144,7 @@ async function ensureSeedData() {
     const priceProducts = await all('SELECT id, category FROM products WHERE id IN (' + missingProducts.map(() => '?').join(',') + ')', missingProducts.map(p => p.id));
     const clients = await all('SELECT id, tier FROM clients WHERE is_admin = 0 ORDER BY id');
     const baseByCategory = {
-      Necklace: 8500, Crowns: 12000, Brooch: 4500,
+      Crowns: 12000, Brooch: 4500,
       Earring: 3200, Kada: 2800, Bracelet: 5500,
       'Necklace Ad Replica': 3500
     };

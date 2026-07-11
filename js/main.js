@@ -52,24 +52,6 @@ function saveCart() {
   localStorage.setItem('jewelleryCart', JSON.stringify(cart));
 }
 
-function addToCart(productId, qty = 1) {
-  const product = products.find(p => p.id === productId);
-  if (!product) return;
-  const price = getProductPrice(product);
-  if (!price) { showToast('Please login to see prices and add items'); return; }
-  const existing = cart.find(item => item.id === productId);
-  if (existing) {
-    existing.qty += qty;
-  } else {
-    cart.push({ id: productId, qty });
-  }
-  saveCart();
-  updateCartUI();
-  showToast(`${product.name} added to cart!`);
-  const drawer = document.getElementById('cartDrawer');
-  if (drawer) openCartDrawer();
-}
-
 function removeFromCart(productId) {
   cart = cart.filter(item => item.id !== productId);
   saveCart();
@@ -173,7 +155,6 @@ function renderWishlistDrawer() {
         <div class="cart-drawer-item-info">
           <h4 style="cursor:pointer" onclick="window.location.href='${PAGE_PREFIX}product-detail.html?id=${product.id}'">${product.name}</h4>
           <div style="display:flex;gap:8px;margin-top:8px">
-            <button class="btn" style="padding:6px 12px;font-size:11px" onclick="addToCart(${product.id}); toggleWishlist(${product.id})">Add to Cart</button>
             <button class="cart-item-remove" onclick="toggleWishlist(${product.id})">Remove</button>
           </div>
         </div>
@@ -222,22 +203,36 @@ function searchProducts(query) {
 }
 
 // ===== REVIEWS =====
-function getReviews(productId) {
+let _reviewsCache = {};
+
+async function loadAllReviews() {
   try {
-    const data = localStorage.getItem('jewelleryReviews');
-    const all = data ? JSON.parse(data) : {};
-    if (typeof all !== 'object' || Array.isArray(all)) return [];
-    return Array.isArray(all[productId]) ? all[productId] : [];
-  } catch { return []; }
+    const res = await fetch(API_BASE + '/api/reviews');
+    const data = await res.json();
+    _reviewsCache = data.reviews || {};
+  } catch { _reviewsCache = {}; }
 }
 
-function saveReview(productId, review) {
+function getReviews(productId) {
+  return _reviewsCache[productId] || [];
+}
+
+async function saveReview(productId, review) {
   try {
-    const data = localStorage.getItem('jewelleryReviews');
-    const all = data ? JSON.parse(data) : {};
-    if (!all[productId]) all[productId] = [];
-    all[productId].push(review);
-    localStorage.setItem('jewelleryReviews', JSON.stringify(all));
+    const res = await fetch(API_BASE + '/api/reviews/' + productId, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: review.name, text: review.text, rating: review.rating })
+    });
+    if (res.ok) {
+      if (!_reviewsCache[productId]) _reviewsCache[productId] = [];
+      _reviewsCache[productId].unshift({
+        name: sanitize(review.name || ''),
+        text: sanitize(review.text || ''),
+        rating: Number(review.rating) || 0,
+        date: review.date || new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+      });
+    }
   } catch {}
 }
 
@@ -300,19 +295,15 @@ function renderCartDrawer() {
     return;
   }
   if (footer) footer.style.display = 'block';
-  let subtotal = 0;
   container.innerHTML = cart.map(item => {
     const product = products.find(p => p.id === item.id);
     if (!product) return '';
-    const price = getProductPrice(product);
-    if (!price) return '';
-    subtotal += price * item.qty;
     return `
       <div class="cart-drawer-item">
         <img src="${product.images[0]}" alt="${product.name}" loading="lazy">
         <div class="cart-drawer-item-info">
           <h4>${product.name}</h4>
-          <div style="font-size:14px;font-weight:600;margin-bottom:6px;">&#8377;${price.toLocaleString()}</div>
+          <div class="cart-price-note"><i class="fab fa-whatsapp"></i> Message for price</div>
           <div class="cart-item-qty">
             <button onclick="updateQty(${product.id}, ${item.qty - 1})">-</button>
             <span>${item.qty}</span>
@@ -324,7 +315,7 @@ function renderCartDrawer() {
     `;
   }).join('');
   const totalEl = document.getElementById('cartDrawerTotal');
-  if (totalEl) totalEl.innerHTML = `<div class="order-totals"><div class="order-total-row order-total-final"><span>Subtotal</span><span>&#8377;${subtotal.toLocaleString()}</span></div></div>`;
+  if (totalEl) totalEl.innerHTML = '<div class="cart-price-help">Prices are shared on WhatsApp after reviewing your selected items.</div>';
 }
 
 function renderCartPage() {
@@ -367,7 +358,7 @@ function renderCartPage() {
 
 function checkout() {
   if (cart.length === 0) { showToast('Your cart is empty!'); return; }
-  window.location.href = PAGE_PREFIX + 'checkout.html';
+  openCartWhatsApp();
 }
 
 function renderCartSummary() {
@@ -377,23 +368,9 @@ function renderCartSummary() {
     container.innerHTML = '<p style="color:var(--text-secondary);font-size:14px;">Your cart is empty</p>';
     return;
   }
-  let subtotal = 0;
-  cart.forEach(item => {
-    const product = products.find(p => p.id === item.id);
-    if (!product) return;
-    const price = getProductPrice(product);
-    if (!price) return;
-    subtotal += price * item.qty;
-  });
-  if (subtotal === 0) { container.innerHTML = '<p style="color:var(--text-secondary);font-size:14px;">No priced items in cart</p>'; return; }
-  const shipping = subtotal >= 5000 ? 0 : 199;
-  const total = subtotal + shipping;
   container.innerHTML = `
-    <div class="order-totals">
-      <div class="order-total-row"><span>Subtotal</span><span>&#8377;${subtotal.toLocaleString()}</span></div>
-      <div class="order-total-row"><span>Shipping</span><span>${shipping === 0 ? '<span style="color:var(--green)">FREE</span>' : '&#8377;' + shipping}</span></div>
-      <div class="order-total-row order-total-final"><span>Total</span><span>&#8377;${total.toLocaleString()}</span></div>
-    </div>
+    <p class="cart-price-help">Prices are not shown online. Send your cart on WhatsApp and we will reply with item prices.</p>
+    <button class="btn whatsapp-cart-btn" type="button" onclick="openCartWhatsApp()"><i class="fab fa-whatsapp"></i><span>Message on WhatsApp for prices</span></button>
   `;
 }
 
@@ -492,7 +469,7 @@ function placeOrder() {
       saveCart();
       updateCartUI();
       appliedCoupon = null;
-      setTimeout(() => { window.location.href = '../index.html'; }, 2000);
+      setTimeout(() => { window.location.href = ROOT_PREFIX + 'index.html'; }, 2000);
     } else {
       showToast(data.error || 'Failed to place order');
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Place Order'; }
@@ -504,13 +481,9 @@ function placeOrder() {
   });
 }
 
-function getRandomPrice() {
-  return Math.floor(Math.random() * 15000) + 1999;
-}
-
 function getProductPrice(product) {
-  if (product._serverPrice != null) return product._serverPrice;
-  if (serverPrices && serverPrices[product.id] != null) return serverPrices[product.id];
+  if (product && product._serverPrice != null) return product._serverPrice;
+  if (product && serverPrices && serverPrices[product.id] != null) return serverPrices[product.id];
   return null;
 }
 
@@ -521,6 +494,29 @@ function getProductUrl(productId) {
 function getPriceWhatsAppUrl(product) {
   const msg = `Hi, I want the price for ${product.name} (${product.sku}). ${getProductUrl(product.id)}`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+function getCartWhatsAppUrl() {
+  const lines = cart
+    .map(item => {
+      const product = products.find(p => p.id === item.id);
+      if (!product) return null;
+      return `- ${product.name} (${product.sku}) x ${item.qty}: ${getProductUrl(product.id)}`;
+    })
+    .filter(Boolean);
+  const msg = lines.length
+    ? `Hi, please share prices for these items:\n${lines.join('\n')}`
+    : 'Hi, I want to know product prices.';
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+
+function openCartWhatsApp() {
+  if (cart.length === 0) { showToast('Your cart is empty!'); return; }
+  window.open(getCartWhatsAppUrl(), '_blank');
+}
+
+function priceRequestHTML(product, extraClass = '') {
+  return `<a class="price-request ${extraClass}" href="${getPriceWhatsAppUrl(product)}" target="_blank" onclick="event.stopPropagation();"><i class="fab fa-whatsapp"></i><span>Message on WhatsApp for price</span></a>`;
 }
 
 async function initAuth() {
@@ -594,10 +590,7 @@ function renderProducts(containerId, productsToRender) {
     const wished = isInWishlist(p.id);
     const avgRating = getAverageRating(p.id);
     const reviewCount = getReviews(p.id).length;
-    const price = getProductPrice(p);
-    const priceHTML = price
-      ? `&#8377;${price.toLocaleString()}`
-      : `<a href="${getPriceWhatsAppUrl(p)}" target="_blank" onclick="event.stopPropagation();" style="color:var(--gold);font-size:12px;text-decoration:underline;"><i class="fab fa-whatsapp"></i> Contact on WhatsApp for price</a>`;
+    const priceHTML = priceRequestHTML(p);
     const stock = stockData[p.id];
     const stockBadge = stock ? (stock.stock <= 0 ? '<div class="product-card-badge sold-out">Sold Out</div>' : stock.stock <= stock.low_stock_threshold ? '<div class="product-card-badge low-stock-badge">Only ' + stock.stock + ' left</div>' : '') : '';
     const badge = stockBadge || (p.badge ? `<div class="product-card-badge sale">${p.badge}</div>` : '');
@@ -606,13 +599,12 @@ function renderProducts(containerId, productsToRender) {
         ${badge}
         <button class="wishlist-btn ${wished ? 'active' : ''}" data-product-id="${p.id}" onclick="event.stopPropagation(); toggleWishlist(${p.id})" aria-label="${wished ? 'Remove from' : 'Add to'} wishlist"><i class="fa${wished ? 's' : 'r'} fa-heart"></i></button>
         <div class="product-card-image">
-          <img src="${p.images[0]}" alt="${p.name}" loading="lazy">
+          <img src="${p.images[0]}" alt="${p.name}" loading="lazy" onclick="event.stopPropagation(); showImagePopup(this)">
           <img class="img-hover" src="${p.images[1] || p.images[0]}" alt="${p.name}" loading="lazy">
           <div class="product-card-actions">
             <button class="btn quick-view-btn" onclick="event.stopPropagation(); openQuickView(${p.id})">Quick View</button>
-            <button class="btn btn-dark" onclick="event.stopPropagation(); addToCart(${p.id})">Add to Cart</button>
-            <button class="btn" style="font-size:11px;padding:6px 10px;margin-top:4px;" onclick="event.stopPropagation(); window.open('${getPriceWhatsAppUrl(p)}', '_blank')">WhatsApp Price</button>
-            <button class="btn" style="font-size:11px;padding:6px 10px;margin-top:4px;" onclick="event.stopPropagation(); window.location.href='${PAGE_PREFIX}enquiry.html?products=${p.id}'">Enquire</button>
+            <button class="btn compact-action" onclick="event.stopPropagation(); window.open('${getPriceWhatsAppUrl(p)}', '_blank')"><i class="fab fa-whatsapp"></i> Price</button>
+            <button class="btn compact-action" onclick="event.stopPropagation(); window.location.href='${PAGE_PREFIX}enquiry.html?products=${p.id}'">Enquire</button>
           </div>
         </div>
         <div class="product-card-body">
@@ -624,6 +616,7 @@ function renderProducts(containerId, productsToRender) {
     `;
   }).join('');
   container.querySelectorAll('.animate-on-scroll:not(.visible)').forEach(el => el.classList.add('visible'));
+  container.querySelectorAll('.product-card-image img:first-child').forEach(initLongPress);
 }
 
 function renderFeaturedProducts() {
@@ -644,13 +637,23 @@ function renderCategories() {
   if (!grid) return;
   grid.innerHTML = categories.map((cat, i) => `
     <div class="category-card animate-on-scroll delay-${i + 1}" onclick="window.location.href='${PAGE_PREFIX}products.html?category=${encodeURIComponent(cat.name)}'">
-      <img src="${cat.image}" alt="${cat.name}">
+      <img src="${cat.image}" alt="${cat.name}" loading="lazy" onclick="event.stopPropagation(); showImagePopup(this)">
       <div class="category-card-overlay">
         <h3>${cat.name}</h3>
         <span>${cat.count}</span>
       </div>
     </div>
   `).join('');
+  grid.querySelectorAll('.category-card img').forEach(initLongPress);
+}
+
+const _preloadedImages = {};
+
+function preloadImage(src) {
+  if (_preloadedImages[src]) return;
+  _preloadedImages[src] = true;
+  const img = new Image();
+  img.src = src;
 }
 
 let _productImages = [];
@@ -686,14 +689,16 @@ function renderRecentlyViewed() {
   if (recent.length === 0) { container.style.display = 'none'; return; }
   container.style.display = 'block';
   const items = recent.map(id => products.find(p => p.id === id)).filter(Boolean);
-  container.querySelector('.recent-grid').innerHTML = items      .map(p => `
+  const recentGrid = container.querySelector('.recent-grid');
+  recentGrid.innerHTML = items.map(p => `
     <div class="recent-card animate-on-scroll" onclick="window.location.href='${PAGE_PREFIX}product-detail.html?id=${p.id}'">
-      <img src="${p.images[0]}" alt="${p.name}">
+      <img src="${p.images[0]}" alt="${p.name}" loading="lazy" onclick="event.stopPropagation(); showImagePopup(this)">
       <div class="recent-card-body">
         <h4>${p.name}</h4>
       </div>
     </div>
   `).join('');
+  recentGrid.querySelectorAll('.recent-card img').forEach(initLongPress);
 }
 
 // ===== QUICK VIEW =====
@@ -703,10 +708,7 @@ function openQuickView(id) {
   const overlay = document.getElementById('quickViewOverlay');
   const modal = document.getElementById('quickViewModal');
   if (!overlay || !modal) return;
-  const quickPrice = getProductPrice(p);
-  const quickPriceHTML = quickPrice
-    ? `<div class="quick-view-price">&#8377;${quickPrice.toLocaleString()}</div>`
-    : `<a href="${getPriceWhatsAppUrl(p)}" target="_blank" style="color:var(--gold);display:inline-block;margin:10px 0;text-decoration:underline;font-size:12px;"><i class="fab fa-whatsapp"></i> Contact on WhatsApp for price</a>`;
+  const quickPriceHTML = priceRequestHTML(p, 'price-request-large');
   modal.innerHTML = `
     <div class="quick-view-close" onclick="closeQuickView()">&times;</div>
     <div class="quick-view-layout">
@@ -718,7 +720,6 @@ function openQuickView(id) {
         <h3>${p.name}</h3>
         ${quickPriceHTML}
         <p class="quick-view-desc">${p.description}</p>
-        <button class="btn" onclick="addToCart(${p.id}); closeQuickView()">Add to Cart</button>
         <button class="btn" onclick="window.open('${getPriceWhatsAppUrl(p)}', '_blank')"><i class="fab fa-whatsapp"></i> WhatsApp Price</button>
         <button class="btn btn-dark" onclick="closeQuickView(); window.location.href='${PAGE_PREFIX}product-detail.html?id=${p.id}'">View Details</button>
       </div>
@@ -726,6 +727,10 @@ function openQuickView(id) {
   `;
   overlay.classList.add('active');
   modal.classList.add('active');
+  setTimeout(() => {
+    const qvImg = modal.querySelector('.quick-view-image img');
+    if (qvImg) initLongPress(qvImg);
+  }, 100);
 }
 
 function closeQuickView() {
@@ -738,13 +743,13 @@ function shareOnWhatsApp(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
   const url = encodeURIComponent(window.location.origin + '/' + PAGE_PREFIX + 'product-detail.html?id=' + id);
-  const text = encodeURIComponent(`Check out this ${p.name} at Hem Labdhi jewels!`);
+  const text = encodeURIComponent(`Check out this ${p.name} at Hem Labdhi Jewels!`);
   window.open(`https://wa.me/919321671416?text=${text}%20${url}`, '_blank');
 }
 
 // ===== VIDEO CALL =====
 function videoCall(productName) {
-  let msg = 'Hi! I visited Hem Labdhi jewels and would like a video call demonstration. Please video call me back.';
+  let msg = 'Hi! I visited Hem Labdhi Jewels and would like a video call demonstration. Please video call me back.';
   if (productName) {
     msg = `Hi! I'm interested in ${productName} and would like a video call demonstration. Please video call me back.`;
   }
@@ -769,17 +774,16 @@ function renderProductDetail() {
   }
   _productImages = product.images;
   _currentImageIndex = 0;
+  const _cache = document.createElement('img'); _cache.src = product.images[0];
+  _productImages.forEach((imgSrc) => preloadImage(imgSrc));
   trackRecentlyViewed(product.id);
-  document.title = `${product.name} - Hem Labdhi jewels`;
+  document.title = `${product.name} - Hem Labdhi Jewels`;
   const avgRating = getAverageRating(product.id);
   const reviews = getReviews(product.id);
   const related = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
   const youMayAlsoLike = getYouMayAlsoLike(product, 4);
   const wished = isInWishlist(product.id);
-  const price = getProductPrice(product);
-  const priceHTML = price
-    ? `&#8377;${price.toLocaleString()}`
-    : `<a href="${getPriceWhatsAppUrl(product)}" target="_blank" style="color:var(--gold);text-decoration:underline;"><i class="fab fa-whatsapp"></i> Contact on WhatsApp for price</a>`;
+  const priceHTML = priceRequestHTML(product, 'price-request-large');
   const stock = stockData[product.id];
   const stockHTML = stock ? (stock.stock <= 0 ? '<div style="color:var(--red);font-weight:600;margin-bottom:8px;">Sold Out</div>' : stock.stock <= stock.low_stock_threshold ? `<div style="color:var(--red);font-weight:600;margin-bottom:8px;">Only ${stock.stock} left in stock</div>` : `<div style="color:var(--green);font-size:13px;margin-bottom:8px;">In Stock (${stock.stock} available)</div>`) : '';
   container.innerHTML = `
@@ -806,7 +810,7 @@ function renderProductDetail() {
                 <source src="${product.video}" type="video/mp4">
               </video>
             ` : ''}
-            <img id="mainImage" src="${product.images[0]}" alt="${product.name}" onclick="openLightbox()" style="cursor:pointer">
+            <img id="mainImage" src="${product.images[0]}" alt="${product.name}" onclick="openLightbox()" style="cursor:pointer" decoding="async">
             ${product.images.length > 1 ? `
               <button class="slide-arrow slide-arrow-prev" onclick="event.stopPropagation(); prevImage()" aria-label="Previous image"><i class="fas fa-chevron-left"></i></button>
               <button class="slide-arrow slide-arrow-next" onclick="event.stopPropagation(); nextImage()" aria-label="Next image"><i class="fas fa-chevron-right"></i></button>
@@ -815,7 +819,7 @@ function renderProductDetail() {
           </div>
           <div class="product-detail-thumbs" id="productThumbs">
             ${product.images.map((img, i) => `
-              <img src="${img}" alt="${product.name}" class="${i === 0 ? 'active' : ''}" onclick="showProductImage('${img}', this)" loading="lazy">
+              <img src="${img}" alt="${product.name}" class="${i === 0 ? 'active' : ''}" onclick="showProductImage('${img}', this)">
             `).join('')}
             ${product.video ? `
               <div class="video-thumb" onclick="showProductVideo('${product.video}', this)" style="width:80px;height:80px;background:#1c1c1c;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid transparent;color:var(--gold);font-size:24px;">
@@ -841,7 +845,7 @@ function renderProductDetail() {
             <div class="color-swatches">
               ${product.colors.map((c, i) => `
                 <button class="color-swatch ${i === 0 ? 'active' : ''}" onclick="selectColor(${product.id}, ${i})" title="${c.name}" aria-label="${c.name}">
-                  <img src="${c.image}" alt="${c.name}">
+                  ${c.color ? `<span style="display:block;width:100%;height:100%;border-radius:50%;background:${c.color}"></span>` : `<img src="${c.image}" alt="${c.name}">`}
                 </button>
               `).join('')}
             </div>
@@ -857,9 +861,8 @@ function renderProductDetail() {
               </div>
               <button class="wishlist-btn ${wished ? 'active' : ''}" data-product-id="${product.id}" onclick="toggleWishlist(${product.id})" style="position:static;font-size:22px;width:44px;height:44px" aria-label="${wished ? 'Remove from' : 'Add to'} wishlist"><i class="fa${wished ? 's' : 'r'} fa-heart"></i></button>
             </div>
-            <button class="btn" onclick="addToCart(${product.id}, parseInt(document.getElementById('detailQty').value))">Add to Cart</button>
-            <button class="btn btn-dark" onclick="addToCart(${product.id}, parseInt(document.getElementById('detailQty').value)); setTimeout(() => window.location.href='checkout.html', 300)">Buy It Now</button>
-            <button class="btn share-btn" onclick="shareOnWhatsApp(${product.id})"><i class="fab fa-whatsapp"></i> Share on WhatsApp</button>
+            <button class="btn btn-dark whatsapp-cart-btn" onclick="window.open('${getPriceWhatsAppUrl(product)}', '_blank')"><i class="fab fa-whatsapp"></i><span>Message on WhatsApp for price</span></button>
+            <button class="btn share-btn" onclick="shareOnWhatsApp(${product.id})"><i class="fab fa-whatsapp"></i> Share</button>
             <button class="btn video-call-btn" onclick="videoCall('${product.name.replace(/'/g, "\\'")}')"><i class="fas fa-video"></i> Video Call</button>
             <button class="btn" onclick="window.location.href='${PAGE_PREFIX}enquiry.html?products=${product.id}'"><i class="fas fa-file-invoice"></i> Bulk Enquiry</button>
           </div>
@@ -913,11 +916,13 @@ function renderProductDetail() {
       mainImg.addEventListener('click', function(e) {
         openLightbox();
       });
+      initLongPress(mainImg);
     }
     const mainContainer = document.getElementById('mainMediaContainer');
     if (mainContainer) {
       initSwipe(mainContainer, () => prevImage(), () => nextImage());
     }
+    document.querySelectorAll('.product-detail-thumbs img').forEach(t => initLongPress(t));
   }, 50);
   if (related.length > 0) {
     renderProducts('relatedProducts', related);
@@ -943,18 +948,19 @@ function initStarSelector() {
     el.addEventListener('click', function() {
       selectedRating = parseInt(this.dataset.star);
       container.querySelectorAll('i').forEach(i => {
-        i.className = parseInt(i.dataset.star) <= selectedRating ? 'fas fa-star' : 'far fa-star';
+        const filled = parseInt(i.dataset.star) <= selectedRating;
+        i.className = filled ? 'fas fa-star active' : 'far fa-star';
       });
     });
   });
 }
 
-function submitReview(productId) {
+async function submitReview(productId) {
   const name = document.getElementById('reviewName')?.value.trim() || 'Anonymous';
   const text = document.getElementById('reviewText')?.value.trim();
   if (!text) { showToast('Please write a review'); return; }
   if (selectedRating === 0) { showToast('Please select a rating'); return; }
-  saveReview(productId, { name, rating: selectedRating, text, date: new Date().toLocaleDateString() });
+  await saveReview(productId, { name, rating: selectedRating, text });
   showToast('Review submitted! Thank you.');
   renderProductDetail();
 }
@@ -970,7 +976,7 @@ function selectColor(productId, idx) {
   const video = document.getElementById('mainVideo');
   const container = document.getElementById('mainMediaContainer');
   if (container) container.classList.remove('zoomed');
-  if (mainImg) { mainImg.style.display = 'block'; mainImg.src = color.image; }
+  if (mainImg) { mainImg.style.display = 'block'; mainImg.src = color.image || product.images[0]; }
   if (video) video.style.display = 'none';
   document.querySelectorAll('.color-swatch').forEach((b, i) => {
     b.classList.toggle('active', i === idx);
@@ -993,6 +999,8 @@ function showProductImage(src, thumb) {
   if (video) video.style.display = 'none';
   _currentImageIndex = _productImages.indexOf(src);
   if (_currentImageIndex === -1) _currentImageIndex = 0;
+  if (_productImages[_currentImageIndex + 1]) preloadImage(_productImages[_currentImageIndex + 1]);
+  if (_productImages[_currentImageIndex - 1]) preloadImage(_productImages[_currentImageIndex - 1]);
   document.querySelectorAll('.product-detail-thumbs img, .product-detail-thumbs .video-thumb').forEach(t => t.style.borderColor = 'transparent');
   if (thumb) thumb.style.borderColor = 'var(--gold)';
 }
@@ -1006,6 +1014,8 @@ function prevImage() {
   const video = document.getElementById('mainVideo');
   if (img) { img.style.display = 'block'; img.src = _productImages[_currentImageIndex]; }
   if (video) video.style.display = 'none';
+  if (_productImages[_currentImageIndex + 1]) preloadImage(_productImages[_currentImageIndex + 1]);
+  if (_productImages[_currentImageIndex - 1]) preloadImage(_productImages[_currentImageIndex - 1]);
   const thumbs = document.querySelectorAll('.product-detail-thumbs img');
   thumbs.forEach((t, i) => t.style.borderColor = i === _currentImageIndex ? 'var(--gold)' : 'transparent');
 }
@@ -1019,6 +1029,8 @@ function nextImage() {
   const video = document.getElementById('mainVideo');
   if (img) { img.style.display = 'block'; img.src = _productImages[_currentImageIndex]; }
   if (video) video.style.display = 'none';
+  if (_productImages[_currentImageIndex + 1]) preloadImage(_productImages[_currentImageIndex + 1]);
+  if (_productImages[_currentImageIndex - 1]) preloadImage(_productImages[_currentImageIndex - 1]);
   const thumbs = document.querySelectorAll('.product-detail-thumbs img');
   thumbs.forEach((t, i) => t.style.borderColor = i === _currentImageIndex ? 'var(--gold)' : 'transparent');
 }
@@ -1060,6 +1072,8 @@ function openLightbox() {
   const img = document.getElementById('lightboxImage');
   if (img && _productImages.length > 0) {
     img.src = _productImages[_currentImageIndex];
+    if (_productImages[_currentImageIndex + 1]) preloadImage(_productImages[_currentImageIndex + 1]);
+    if (_productImages[_currentImageIndex - 1]) preloadImage(_productImages[_currentImageIndex - 1]);
   }
   const counter = document.getElementById('lightboxCounter');
   if (counter) {
@@ -1067,6 +1081,10 @@ function openLightbox() {
   }
   overlay.classList.add('active');
   document.body.style.overflow = 'hidden';
+  setTimeout(() => {
+    const lbImg = document.getElementById('lightboxImage');
+    if (lbImg) initLongPress(lbImg);
+  }, 100);
 }
 
 function closeLightbox() {
@@ -1080,6 +1098,8 @@ function lightboxNav(dir) {
   _currentImageIndex = (_currentImageIndex + dir + _productImages.length) % _productImages.length;
   const img = document.getElementById('lightboxImage');
   if (img) img.src = _productImages[_currentImageIndex];
+  if (_productImages[_currentImageIndex + 1]) preloadImage(_productImages[_currentImageIndex + 1]);
+  if (_productImages[_currentImageIndex - 1]) preloadImage(_productImages[_currentImageIndex - 1]);
   const counter = document.getElementById('lightboxCounter');
   if (counter) counter.textContent = `${_currentImageIndex + 1} / ${_productImages.length}`;
   const thumbs = document.querySelectorAll('.product-detail-thumbs img');
@@ -1103,6 +1123,61 @@ function initSwipe(el, onLeft, onRight) {
       else onLeft();
     }
   }, { passive: true });
+}
+
+// ===== LONG PRESS ON IMAGES =====
+let _longPressTimer = null;
+let _longPressSrc = '';
+
+function initLongPress(imgEl) {
+  if (!imgEl) return;
+  imgEl.addEventListener('touchstart', function(e) {
+    _longPressSrc = this.src || this.querySelector('img')?.src || '';
+    if (!_longPressSrc) return;
+    _longPressTimer = setTimeout(() => {
+      showImagePopup(_longPressSrc);
+    }, 800);
+  }, { passive: true });
+  imgEl.addEventListener('touchmove', function() {
+    if (_longPressTimer) { clearTimeout(_longPressTimer); _longPressTimer = null; }
+  }, { passive: true });
+  imgEl.addEventListener('touchend', function() {
+    if (_longPressTimer) { clearTimeout(_longPressTimer); _longPressTimer = null; }
+  }, { passive: true });
+  imgEl.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    showImagePopup(this.src || this.querySelector('img')?.src || '');
+  });
+}
+
+function showImagePopup(el) {
+  const src = typeof el === 'string' ? el : (el?.src || el?.currentSrc || '');
+  if (!src) return;
+  const existing = document.getElementById('imagePopup');
+  if (existing) existing.remove();
+
+  const popup = document.createElement('div');
+  popup.id = 'imagePopup';
+  popup.className = 'image-popup';
+  popup.innerHTML = `
+    <div class="image-popup-overlay" onclick="closeImagePopup()"></div>
+    <div class="image-popup-card">
+      <div class="image-popup-preview"><img src="${src}" alt=""></div>
+      <div class="image-popup-actions">
+        <a class="btn" href="${src}" download target="_blank"><i class="fas fa-download"></i> Save Image</a>
+        <a class="btn btn-dark" href="${src}" target="_blank"><i class="fas fa-expand"></i> View Full Size</a>
+        <button class="btn" onclick="closeImagePopup()"><i class="fas fa-times"></i> Close</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(popup);
+  popup.classList.add('active');
+}
+
+function closeImagePopup() {
+  const popup = document.getElementById('imagePopup');
+  if (popup) popup.classList.remove('active');
+  setTimeout(() => { const p = document.getElementById('imagePopup'); if (p) p.remove(); }, 300);
 }
 
 // ===== COUPON =====
@@ -1307,34 +1382,23 @@ function renderCheckoutOrderTotal() {
     container.innerHTML = '<p style="color:var(--text-secondary);">Your cart is empty. <a href="products.html" style="color:var(--gold);">Shop now</a></p>';
     return;
   }
-  let subtotal = 0;
   const itemsHtml = cartData.map(item => {
     const product = products.find(p => p.id === item.id);
     if (!product) return '';
-    const price = getProductPrice(product);
-    if (!price) return '';
-    const lineTotal = price * item.qty;
-    subtotal += lineTotal;
     return `
       <div class="order-item">
         <img src="${product.images[0]}" alt="${product.name}" loading="lazy">
         <div class="order-item-info">
           <h4>${product.name}</h4>
-          <div class="qty">Qty: ${item.qty} x &#8377;${price.toLocaleString()}</div>
+          <div class="qty">Qty: ${item.qty}</div>
+          <div class="cart-price-note"><i class="fab fa-whatsapp"></i> Message for price</div>
         </div>
       </div>
     `;
   }).join('');
-  const shipping = subtotal >= 5000 ? 0 : 199;
-  const discount = appliedCoupon ? appliedCoupon.discount : 0;
-  const total = Math.max(0, subtotal + shipping - discount);
   container.innerHTML = itemsHtml + `
-    <div class="order-totals">
-      <div class="order-total-row"><span>Subtotal</span><span>&#8377;${subtotal.toLocaleString()}</span></div>
-      <div class="order-total-row"><span>Shipping</span><span>${shipping === 0 ? 'FREE' : '&#8377;' + shipping}</span></div>
-      ${discount > 0 ? `<div class="order-total-row" style="color:var(--green);"><span>Discount (${appliedCoupon.code})</span><span>-&#8377;${discount.toLocaleString()}</span></div>` : ''}
-      <div class="order-total-row order-total-final"><span>Total</span><span>&#8377;${total.toLocaleString()}</span></div>
-    </div>
+    <p class="cart-price-help">Prices are shared on WhatsApp after reviewing your selected items.</p>
+    <button class="btn whatsapp-cart-btn" type="button" onclick="openCartWhatsApp()"><i class="fab fa-whatsapp"></i><span>Message on WhatsApp for prices</span></button>
   `;
 }
 
@@ -1393,13 +1457,12 @@ function populateMobileNav() {
   const ordersLink = isLoggedIn() ? `<a href="${PAGE_PREFIX}my-orders.html"><i class="fas fa-box"></i> My Orders</a>` : '';
   links.innerHTML = `
     <a href="${ROOT_PREFIX}index.html">Home</a>
-    <a href="${PAGE_PREFIX}products.html?category=Necklace">Necklace</a>
+    <a href="${PAGE_PREFIX}products.html?category=Necklace+Ad+Replica">Necklace Ad Replica</a>
     <a href="${PAGE_PREFIX}products.html?category=Crowns">Crowns</a>
     <a href="${PAGE_PREFIX}products.html?category=Brooch">Brooch</a>
     <a href="${PAGE_PREFIX}products.html?category=Earring">Earring</a>
     <a href="${PAGE_PREFIX}products.html?category=Kada">Kada</a>
     <a href="${PAGE_PREFIX}products.html?category=Bracelet">Bracelet</a>
-    <a href="${PAGE_PREFIX}products.html?category=Necklace+Ad+Replica">Necklace Ad Replica</a>
     <a href="${PAGE_PREFIX}products.html">All Products</a>
     <a href="${PAGE_PREFIX}enquiry.html"><i class="fas fa-file-invoice"></i> Bulk Enquiry</a>
     <a href="${PAGE_PREFIX}about.html">About Us</a>
@@ -1425,7 +1488,7 @@ function subscribeNewsletter(form) {
   if (subscribers.includes(email)) { showToast('You are already subscribed!'); return; }
   subscribers.push(email);
   localStorage.setItem('jewellerySubscribers', JSON.stringify(subscribers));
-  showToast('Subscribed! Welcome to Hem Labdhi jewels.');
+  showToast('Subscribed! Welcome to Hem Labdhi Jewels.');
   form.querySelector('input[type="email"]').value = '';
 }
 
@@ -1455,22 +1518,24 @@ function initKeyboardNav() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', function() {
   initCart();
   initWishlist();
-  await initAuth();
+  initAuth();
   initAnnouncementSlider();
   initHeroSlider();
   populateMobileNav();
-  renderCategories();
-  renderFeaturedProducts();
-  renderAllProducts();
-  renderProductDetail();
-  renderCartPage();
-  renderRecentlyViewed();
+  loadAllReviews().then(() => {
+    renderCategories();
+    renderFeaturedProducts();
+    renderAllProducts();
+    renderProductDetail();
+    renderCartPage();
+    renderRecentlyViewed();
+  });
   initScrollAnimations();
   initKeyboardNav();
-  await initCheckoutValidation();
+  initCheckoutValidation();
   renderCheckoutOrderTotal();
 
   document.getElementById('cartIcon')?.addEventListener('click', openCartDrawer);

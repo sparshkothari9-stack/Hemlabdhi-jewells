@@ -139,6 +139,18 @@ async function initTables() {
     try { await client.execute(`ALTER TABLE orders ADD COLUMN ${col} TEXT DEFAULT ''`); } catch {}
   }
   try { await client.execute('ALTER TABLE orders ADD COLUMN discount_amount REAL DEFAULT 0'); } catch {}
+  try { await client.execute(`CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL DEFAULT '')`); } catch {}
+  try {
+    await client.execute(`CREATE TABLE IF NOT EXISTS reviews (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      product_id INTEGER NOT NULL,
+      name TEXT NOT NULL DEFAULT 'Anonymous',
+      text TEXT NOT NULL,
+      rating INTEGER NOT NULL DEFAULT 5,
+      date TEXT NOT NULL DEFAULT (date('now')),
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    )`);
+  } catch {}
 }
 
 module.exports = { getClient };

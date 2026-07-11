@@ -1,7 +1,7 @@
 const express = require('express');
 const { get, all, run, asyncHandler } = require('../db-helpers');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
-const { asString, parsePositiveInt } = require('../validation');
+const { asString, sanitize, parsePositiveInt } = require('../validation');
 
 const router = express.Router();
 
@@ -40,7 +40,7 @@ router.get('/orders/:id/notes', requireAuth, requireAdmin, asyncHandler(async (r
 router.post('/orders/:id/notes', requireAuth, requireAdmin, asyncHandler(async (req, res) => {
   const orderId = parsePositiveInt(req.params.id);
   if (!orderId) return res.status(400).json({ error: 'Invalid order id' });
-  const note = asString(req.body.note, 1000);
+  const note = sanitize(asString(req.body.note, 1000));
   if (!note) return res.status(400).json({ error: 'Note required' });
   await run('INSERT INTO order_notes (order_id, note) VALUES (?, ?)', [orderId, note]);
   res.json({ success: true });
@@ -68,11 +68,11 @@ router.get('/dashboard', requireAuth, requireAdmin, asyncHandler(async (req, res
 }));
 
 router.post('/enquiries', asyncHandler(async (req, res) => {
-  const name = asString(req.body.name, 120);
-  const email = asString(req.body.email, 254);
-  const phone = asString(req.body.phone, 20);
-  const products = asString(req.body.products, 2000);
-  const message = asString(req.body.message, 2000);
+  const name = sanitize(asString(req.body.name, 120));
+  const email = sanitize(asString(req.body.email, 254));
+  const phone = sanitize(asString(req.body.phone, 20));
+  const products = sanitize(asString(req.body.products, 2000));
+  const message = sanitize(asString(req.body.message, 2000));
   if (!name || !email || !products) return res.status(400).json({ error: 'Name, email, and products required' });
   const clientId = req.client?.id || null;
   await run('INSERT INTO enquiries (client_id, client_name, client_email, client_phone, products, message) VALUES (?, ?, ?, ?, ?, ?)',
@@ -105,7 +105,7 @@ router.get('/coupons', requireAuth, asyncHandler(async (req, res) => {
 }));
 
 router.post('/coupons', requireAuth, requireAdmin, asyncHandler(async (req, res) => {
-  const code = asString(req.body.code, 32).toUpperCase().replace(/\s+/g, '');
+  const code = sanitize(asString(req.body.code, 32).toUpperCase().replace(/\s+/g, ''));
   const discount_percent = Math.min(100, Math.max(1, parseInt(req.body.discount_percent) || 10));
   const min_amount = Math.max(0, parseFloat(req.body.min_amount) || 0);
   const max_uses = Math.max(1, parseInt(req.body.max_uses) || 100);
@@ -187,6 +187,28 @@ router.get('/orders/:id/invoice', requireAuth, asyncHandler(async (req, res) => 
   const items = await all('SELECT * FROM order_items WHERE order_id = ?', [orderId]);
   const notes = await all('SELECT * FROM order_notes WHERE order_id = ?', [orderId]);
   res.json({ order, items, notes });
+}));
+
+// ===== SETTINGS =====
+router.get('/settings', requireAuth, requireAdmin, asyncHandler(async (req, res) => {
+  const rows = await all('SELECT key, value FROM settings');
+  const settings = {};
+  for (const r of rows) settings[r.key] = r.value;
+  res.json({ settings });
+}));
+
+router.put('/settings', requireAuth, requireAdmin, asyncHandler(async (req, res) => {
+  const { settings } = req.body;
+  if (!settings || typeof settings !== 'object') return res.status(400).json({ error: 'Settings object required' });
+  for (const [key, value] of Object.entries(settings)) {
+    const existing = await get('SELECT key FROM settings WHERE key = ?', [key]);
+    if (existing) {
+      await run('UPDATE settings SET value = ? WHERE key = ?', [String(value), key]);
+    } else {
+      await run('INSERT INTO settings (key, value) VALUES (?, ?)', [key, String(value)]);
+    }
+  }
+  res.json({ success: true });
 }));
 
 module.exports = router;

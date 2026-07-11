@@ -5,15 +5,11 @@ const { requireAuth } = require('../middleware/auth');
 const router = express.Router();
 
 router.get('/', requireAuth, asyncHandler(async (req, res) => {
-  const clientId = req.client.id;
-
-  const pricing = await all('SELECT product_id, price FROM pricing WHERE client_id = ?', [clientId]);
-  const priceMap = {};
-  for (const p of pricing) {
-    priceMap[p.product_id] = p.price;
-  }
-
   const products = await all('SELECT id, name, description, features, sku, category, images, badge FROM products ORDER BY id');
+  const prices = await all('SELECT product_id, price FROM pricing WHERE client_id = ?', [req.client.id]);
+  const priceMap = {};
+  for (const p of prices) priceMap[p.product_id] = p.price;
+
   const result = products.map(p => {
     let images, features;
     try { images = JSON.parse(p.images); } catch { images = [p.images]; }

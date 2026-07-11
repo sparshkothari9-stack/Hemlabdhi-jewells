@@ -41,8 +41,19 @@ function normalizeTier(value) {
   return VALID_TIERS.has(tier) ? tier : null;
 }
 
+function sanitize(value) {
+  if (typeof value !== 'string') return '';
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 module.exports = {
   asString,
+  sanitize,
   normalizeEmail,
   isEmail,
   isPhone,
