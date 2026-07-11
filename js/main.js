@@ -645,6 +645,7 @@ function renderCategories() {
     </div>
   `).join('');
   grid.querySelectorAll('.category-card img').forEach(initLongPress);
+  observeNewAnimations(grid);
 }
 
 const _preloadedImages = {};
@@ -1492,15 +1493,21 @@ function subscribeNewsletter(form) {
   form.querySelector('input[type="email"]').value = '';
 }
 
+let _scrollObserver;
 function initScrollAnimations() {
-  const observer = new IntersectionObserver((entries) => {
+  _scrollObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
       }
     });
   }, { threshold: 0.1 });
-  document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+  document.querySelectorAll('.animate-on-scroll').forEach(el => _scrollObserver.observe(el));
+}
+
+function observeNewAnimations(container) {
+  if (!_scrollObserver) return;
+  container.querySelectorAll('.animate-on-scroll:not(.visible)').forEach(el => _scrollObserver.observe(el));
 }
 
 function initKeyboardNav() {
@@ -1525,15 +1532,15 @@ document.addEventListener('DOMContentLoaded', function() {
   initAnnouncementSlider();
   initHeroSlider();
   populateMobileNav();
+  initScrollAnimations();
+  renderCategories();
+  renderFeaturedProducts();
+  renderAllProducts();
   loadAllReviews().then(() => {
-    renderCategories();
-    renderFeaturedProducts();
-    renderAllProducts();
     renderProductDetail();
     renderCartPage();
     renderRecentlyViewed();
   });
-  initScrollAnimations();
   initKeyboardNav();
   initCheckoutValidation();
   renderCheckoutOrderTotal();
