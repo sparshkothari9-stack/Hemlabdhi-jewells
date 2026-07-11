@@ -3243,5 +3243,5 @@ img {
 .product-card[data-product-id="190"] .product-card-image img,
 .product-card[data-product-id="193"] .product-card-image img,
 .product-card[data-product-id="211"] .product-card-image img {
-  object-position: center 75%;
+  object-position: center bottom;
 }
