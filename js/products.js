@@ -1,5 +1,14 @@
 const IMG = typeof IMG_PREFIX !== 'undefined' ? IMG_PREFIX : 'images/';
 
+const BOX_QTY = {
+  'Kada': 10,
+  'Necklace Ad Replica': 10,
+  'Earring': 12,
+  'Brooch': 12,
+  'Bracelet': 10,
+  'Crowns': 1
+};
+
 const productVideos = {
   1: `${IMG}video1.mp4`,
   2: `${IMG}video2.mp4`,
@@ -27,14 +36,14 @@ const products = Array.from({ length: 216 }, (_, i) => {
     name = `Designer Earring ${String(seq).padStart(3, '0')}`;
     category = "Earring";
     skuPrefix = "PA-ER";
-    desc = `Elegant designer earring piece from our premium collection. Crafted with attention to detail and high-quality materials.`;
+    desc = `Elegant designer earring piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.`;
     imgs = [`${IMG}product${id + 183}.jpeg`];
   } else if (brooch) {
     seq = id - 98;
     name = `Designer Brooch ${String(seq).padStart(3, '0')}`;
     category = "Brooch";
     skuPrefix = "PA-BR";
-    desc = `Elegant designer brooch piece from our premium collection. Crafted with attention to detail and high-quality materials.`;
+    desc = `Elegant designer brooch piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.`;
     imgs = [`${IMG}product${2*id-99}.jpeg`, `${IMG}product${2*id-98}.jpeg`, `${IMG}product${id + 52}.jpeg`];
   } else if (crown) {
     seq = id - 82;
@@ -64,7 +73,8 @@ const products = Array.from({ length: 216 }, (_, i) => {
     badge: "New",
     description: desc,
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-    sku: `${skuPrefix}-${String(seq).padStart(3, '0')}`
+    sku: `${skuPrefix}-${String(seq).padStart(3, '0')}`,
+    boxQty: BOX_QTY[category] || 1
   };
 }).filter(p => (p.id >= 83 && p.id <= 116) || (isEarring(p.id) && p.id !== 199) || isKada(p.id) || isBracelet(p.id) || isReplica(p.id));
 
@@ -92,8 +102,9 @@ for (let i = 0; i < 120; i++) {
     colors: replicaColors,
     video: null,
     badge: "New",
-    description: `Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials.`,
-    sku: `PA-NR-${String(seq).padStart(3, '0')}`
+    description: `Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    sku: `PA-NR-${String(seq).padStart(3, '0')}`,
+    boxQty: 10
   });
 }
 for (let i = 0; i < 23; i++) {
@@ -107,8 +118,9 @@ for (let i = 0; i < 23; i++) {
     colors: replicaColors,
     video: null,
     badge: "New",
-    description: `Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials.`,
-    sku: `PA-NR-${String(seq).padStart(3, '0')}`
+    description: `Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    sku: `PA-NR-${String(seq).padStart(3, '0')}`,
+    boxQty: 10
   });
 }
 
@@ -133,9 +145,10 @@ products.push({
   colors: earringColors,
   video: null,
   badge: "New",
-  description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials.",
+  description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.",
   features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-  sku: "PA-ER-065"
+  sku: "PA-ER-065",
+  boxQty: 12
 });
 
 const earringColors2 = [
@@ -156,9 +169,10 @@ products.push({
   colors: earringColors2,
   video: null,
   badge: "New",
-  description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials.",
+  description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.",
   features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-  sku: "PA-ER-066"
+  sku: "PA-ER-066",
+  boxQty: 12
 });
 
 const earringColors3 = [
@@ -182,9 +196,10 @@ products.push({
   colors: earringColors3,
   video: null,
   badge: "New",
-  description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials.",
+  description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.",
   features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-  sku: "PA-ER-067"
+  sku: "PA-ER-067",
+  boxQty: 12
 });
 
 const earringColors4 = [
@@ -205,9 +220,10 @@ products.push({
   colors: earringColors4,
   video: null,
   badge: "New",
-  description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials.",
+  description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.",
   features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-  sku: "PA-ER-068"
+  sku: "PA-ER-068",
+  boxQty: 12
 });
 
 const earringColors5 = [
@@ -232,9 +248,10 @@ products.push({
   colors: earringColors5,
   video: null,
   badge: "New",
-  description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials.",
+  description: "Elegant designer earring piece available in multiple colors. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.",
   features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-  sku: "PA-ER-069"
+  sku: "PA-ER-069",
+  boxQty: 12
 });
 
 for (let i = 0; i < 21; i++) {
@@ -247,9 +264,10 @@ for (let i = 0; i < 21; i++) {
     images: [`${IMG}product${444 + i}.jpeg`],
     video: null,
     badge: "New",
-    description: `Elegant designer kada set from our premium collection. Crafted with attention to detail and high-quality materials.`,
+    description: `Elegant designer kada set from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-    sku: `PA-KD-${String(seq).padStart(3, '0')}`
+    sku: `PA-KD-${String(seq).padStart(3, '0')}`,
+    boxQty: 10
   });
 }
 
@@ -263,19 +281,20 @@ for (let i = 0; i < 10; i++) {
     images: [`${IMG}product${465 + i}.jpeg`, `${IMG}product${475 + i}.jpeg`],
     video: null,
     badge: "New",
-    description: `Elegant designer bracelet piece from our premium collection. Crafted with attention to detail and high-quality materials.`,
+    description: `Elegant designer bracelet piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-    sku: `PA-BCL-${String(seq).padStart(3, '0')}`
+    sku: `PA-BCL-${String(seq).padStart(3, '0')}`,
+    boxQty: 10
   });
 }
 
 const categories = [
-  { name: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `143 Designs` },
-  { name: "Crowns", image: `${IMG}product83.jpeg`, count: `16 Designs` },
-  { name: "Brooch", image: `${IMG}product99.jpeg`, count: `18 Designs` },
-  { name: "Earring", image: `${IMG}product335.jpeg`, count: `69 Designs` },
-  { name: "Kada", image: `${IMG}product444.jpeg`, count: `21 Designs` },
-  { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs` }
+  { name: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `143 Designs`, boxQty: 10 },
+  { name: "Crowns", image: `${IMG}product83.jpeg`, count: `16 Designs`, boxQty: 1 },
+  { name: "Brooch", image: `${IMG}product99.jpeg`, count: `18 Designs`, boxQty: 12 },
+  { name: "Earring", image: `${IMG}product335.jpeg`, count: `69 Designs`, boxQty: 12 },
+  { name: "Kada", image: `${IMG}product444.jpeg`, count: `21 Designs`, boxQty: 10 },
+  { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs`, boxQty: 10 }
 ];
 
 const heroSlides = [

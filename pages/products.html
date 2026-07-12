@@ -7,10 +7,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="../css/style.css">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="../css/style.min.css">
   <link rel="shortcut icon" href="../images/product83.jpeg" type="image/x-icon">
   <script>if (!localStorage.getItem('pa_token')) { window.location.replace('../login.html'); }</script>
+  <style>
+    .category-info-popup{position:fixed;inset:0;z-index:7000;display:flex;align-items:center;justify-content:center}
+    .category-info-popup-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+    .category-info-popup-card{position:relative;background:#fff;border-radius:12px;max-width:400px;width:90%;padding:35px 30px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:popupSlideIn .3s ease}
+    .category-info-popup-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:28px;cursor:pointer;color:#666;line-height:1}
+    .category-info-popup-close:hover{color:#d0b070}
+    .category-info-popup-icon{font-size:48px;color:#d0b070;margin-bottom:15px}
+    .category-info-popup-card h3{font-family:'Jost',sans-serif;font-size:22px;margin-bottom:8px;color:#1c1c1c}
+    .category-info-popup-card p{font-size:14px;color:#666;line-height:1.6;margin-bottom:15px}
+    .category-info-popup-qty{display:inline-block;background:linear-gradient(135deg,#1c1c1c,#2a2a2a);color:#d0b070;padding:12px 24px;border-radius:8px;font-family:'Jost',sans-serif;font-size:18px;font-weight:600;letter-spacing:1px}
+    .category-info-popup-qty span{font-size:28px;font-weight:700;margin:0 4px}
+    @keyframes popupSlideIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+  </style>
 </head>
 <body>
 
@@ -239,10 +254,50 @@
 <div class="quick-view-overlay" id="quickViewOverlay" onclick="closeQuickView()"></div>
 <div class="quick-view-modal" id="quickViewModal"></div>
 
+<div class="category-info-popup" id="categoryInfoPopup" style="display:none;">
+  <div class="category-info-popup-overlay" onclick="closeCategoryPopup()"></div>
+  <div class="category-info-popup-card">
+    <button class="category-info-popup-close" onclick="closeCategoryPopup()">&times;</button>
+    <div class="category-info-popup-icon"><i class="fas fa-box-open"></i></div>
+    <h3 id="categoryPopupTitle"></h3>
+    <p id="categoryPopupDesc"></p>
+    <div class="category-info-popup-qty" id="categoryPopupQty"></div>
+    <button class="btn" onclick="closeCategoryPopup()" style="width:100%;margin-top:12px;">Got It</button>
+  </div>
+</div>
+
 <script>var IMG_PREFIX = '../images/';</script>
-<script src="../js/products.js"></script>
-<script src="../js/main.js"></script>
+<script src="../js/products.min.js" defer></script>
+<script src="../js/main.min.js" defer></script>
 <script>
+const CATEGORY_BOX_INFO = {
+  'Necklace Ad Replica': { qty: 10, label: 'pieces per box', desc: 'Each box of Necklace Ad Replica contains 10 pieces. Available in 10 beautiful colors: Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White.' },
+  'Kada': { qty: 10, label: 'pieces per box', desc: 'Each box of Kada contains 10 pieces. Premium quality with gold plating and tarnish-resistant finish.' },
+  'Earring': { qty: 12, label: 'pieces per box', desc: 'Each box of Earrings contains 12 pieces. Available in multiple stunning colors.' },
+  'Brooch': { qty: 12, label: 'pieces per box', desc: 'Each box of Brooch contains 12 pieces. Elegant designer pieces for every occasion.' },
+  'Bracelet': { qty: 10, label: 'pieces per box', desc: 'Each box of Bracelets contains 10 pieces. Premium finish with hypoallergenic materials.' },
+  'Crowns': { qty: 1, label: 'piece', desc: 'Each crown is individually packed. Regal designer pieces from our premium collection.' }
+};
+
+function showCategoryPopup(category) {
+  const info = CATEGORY_BOX_INFO[category];
+  if (!info) return;
+  const popup = document.getElementById('categoryInfoPopup');
+  const title = document.getElementById('categoryPopupTitle');
+  const desc = document.getElementById('categoryPopupDesc');
+  const qty = document.getElementById('categoryPopupQty');
+  if (!popup || !title || !desc || !qty) return;
+  title.textContent = category;
+  desc.textContent = info.desc;
+  qty.innerHTML = `Box Packing: <span>${info.qty}</span> ${info.label}`;
+  popup.style.display = 'flex';
+}
+
+function closeCategoryPopup() {
+  const popup = document.getElementById('categoryInfoPopup');
+  if (popup) popup.style.display = 'none';
+}
+
 let currentProducts = [];
 let activeFilters = [];
 
@@ -296,6 +351,7 @@ function sortProducts(val) {
     document.querySelectorAll('.filter-option input[data-category]').forEach(cb => {
       if (cb.dataset.category === cat) cb.checked = true;
     });
+    showCategoryPopup(cat);
   } else {
     currentProducts = [...products];
   }

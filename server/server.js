@@ -4,6 +4,7 @@ require('express-async-errors');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
+const compression = require('compression');
 const path = require('path');
 const { init } = require('./db-helpers');
 const { createRateLimiter } = require('./middleware/security');
@@ -52,15 +53,22 @@ app.use(cors({
     return callback(null, /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin));
   }
 }));
+app.use(compression({ level: 6, threshold: 1024 }));
 app.use(express.json({ limit: '50kb' }));
 
 app.use(express.static(path.join(__dirname, '..'), {
   maxAge: isProduction ? '1y' : 0,
   etag: true,
   lastModified: true,
-  setHeaders(res, path) {
-    if (path.endsWith('.html')) {
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('.html')) {
       res.set('Cache-Control', 'no-cache');
+    } else if (filePath.match(/\.(js|css)$/)) {
+      res.set('Cache-Control', isProduction ? 'public, max-age=31536000, immutable' : 'no-cache');
+    } else if (filePath.match(/\.(jpeg|jpg|png|gif|webp|svg|ico)$/)) {
+      res.set('Cache-Control', isProduction ? 'public, max-age=31536000, immutable' : 'public, max-age=3600');
+    } else if (filePath.match(/\.(woff|woff2|ttf|eot)$/)) {
+      res.set('Cache-Control', 'public, max-age=31536000, immutable');
     }
   }
 }));

@@ -641,6 +641,7 @@ function renderCategories() {
       <div class="category-card-overlay">
         <h3>${cat.name}</h3>
         <span>${cat.count}</span>
+        ${cat.boxQty > 1 ? `<span style="display:block;margin-top:4px;font-size:11px;color:rgba(255,255,255,0.85);background:rgba(0,0,0,0.4);padding:3px 8px;border-radius:4px;width:fit-content"><i class="fas fa-box-open" style="margin-right:4px"></i>${cat.boxQty} per box</span>` : ''}
       </div>
     </div>
   `).join('');
@@ -837,6 +838,7 @@ function renderProductDetail() {
           <div class="product-detail-description">
             ${stockHTML}
             <p>${product.description}</p>
+            ${product.boxQty && product.boxQty > 1 ? `<div style="margin-top:12px;padding:10px 14px;background:rgba(208,176,112,0.08);border:1px solid rgba(208,176,112,0.25);border-radius:6px;display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--black)"><i class="fas fa-box-open" style="color:var(--gold);font-size:18px"></i> Box Packing: ${product.boxQty} pieces per box</div>` : ''}
             ${product.features ? `<ul style="margin-top:15px;padding-left:20px;list-style:disc">${product.features.map(f => `<li style="margin-bottom:5px">${f}</li>`).join('')}</ul>` : ''}
             <p style="margin-top:15px"><strong>SKU:</strong> ${product.sku}</p>
           </div>
