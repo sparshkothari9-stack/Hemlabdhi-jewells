@@ -8,3 +8,4 @@ server/pavanart.db
 Thumbs.db
 
 .vercel
+compress-images.js

@@ -326,11 +326,57 @@ function closeCategoryPopup() {
 
 let currentProducts = [];
 let activeFilters = [];
+let displayedCount = 0;
+const PAGE_SIZE = 24;
 
-function doRender(arr) {
-  renderProducts('allProducts', arr);
+function doRender(arr, append) {
+  const container = document.getElementById('allProducts');
+  if (!container) return;
+  if (!append) {
+    displayedCount = 0;
+    container.innerHTML = '';
+  }
+  const slice = arr.slice(displayedCount, displayedCount + PAGE_SIZE);
+  const tmp = document.createElement('div');
+  tmp.innerHTML = renderProductsHTML(slice);
+  while (tmp.firstChild) container.appendChild(tmp.firstChild);
+  displayedCount += slice.length;
   const el = document.getElementById('productCount');
-  if (el) el.textContent = `Showing ${arr.length} products`;
+  if (el) el.textContent = `Showing ${displayedCount} of ${arr.length} products`;
+  let btn = document.getElementById('loadMoreBtn');
+  if (displayedCount < arr.length) {
+    if (!btn) {
+      btn = document.createElement('div');
+      btn.id = 'loadMoreWrap';
+      btn.style.textAlign = 'center';
+      btn.style.marginTop = '30px';
+      btn.innerHTML = '<button id="loadMoreBtn" class="btn" onclick="loadMoreProducts()">Load More (' + (arr.length - displayedCount) + ' remaining)</button>';
+      container.parentNode.appendChild(btn);
+    }
+    btn.querySelector('#loadMoreBtn').textContent = 'Load More (' + (arr.length - displayedCount) + ' remaining)';
+    btn.style.display = '';
+  } else if (btn) {
+    btn.style.display = 'none';
+  }
+  observeNewAnimations(container);
+  container.querySelectorAll('.product-card-image img:first-child').forEach(initLongPress);
+}
+
+function loadMoreProducts() {
+  doRender(currentProducts, true);
+}
+
+function renderProductsHTML(productsToRender) {
+  return productsToRender.map(p => {
+    const wished = isInWishlist(p.id);
+    const avgRating = getAverageRating(p.id);
+    const reviewCount = getReviews(p.id).length;
+    const priceHTML = priceRequestHTML(p);
+    const stock = stockData[p.id];
+    const stockBadge = stock ? (stock.stock <= 0 ? '<div class="product-card-badge sold-out">Sold Out</div>' : stock.stock <= stock.low_stock_threshold ? '<div class="product-card-badge low-stock-badge">Only ' + stock.stock + ' left</div>' : '') : '';
+    const badge = stockBadge || (p.badge ? '<div class="product-card-badge sale">' + p.badge + '</div>' : '');
+    return '<div class="product-card animate-on-scroll visible" data-product-id="' + p.id + '" onclick="window.location.href=\'' + PAGE_PREFIX + 'product-detail.html?id=' + p.id + '\'" role="button" tabindex="0" aria-label="' + escapeHtml(p.name) + '">' + badge + '<button class="wishlist-btn ' + (wished ? 'active' : '') + '" data-product-id="' + p.id + '" onclick="event.stopPropagation(); toggleWishlist(' + p.id + ')" aria-label="' + (wished ? 'Remove from' : 'Add to') + ' wishlist"><i class="fa' + (wished ? 's' : 'r') + ' fa-heart"></i></button><div class="product-card-image"><img src="' + p.images[0] + '" alt="' + escapeHtml(p.name) + '" loading="lazy" onclick="event.stopPropagation(); showImagePopup(this)"><img class="img-hover" src="' + (p.images[1] || p.images[0]) + '" alt="' + escapeHtml(p.name) + '" loading="lazy"><div class="product-card-actions"><button class="btn quick-view-btn" onclick="event.stopPropagation(); openQuickView(' + p.id + ')">Quick View</button><button class="btn compact-action" onclick="event.stopPropagation(); window.open(\'' + getPriceWhatsAppUrl(p) + '\', \'_blank\')"><i class="fab fa-whatsapp"></i> Price</button><button class="btn compact-action" onclick="event.stopPropagation(); window.location.href=\'' + PAGE_PREFIX + 'enquiry.html?products=' + p.id + '\'">Enquire</button></div></div><div class="product-card-body"><h3 class="product-card-title">' + escapeHtml(p.name) + '</h3><div class="product-card-rating">' + starHTML(Math.round(avgRating)) + ' ' + (reviewCount > 0 ? '<span>(' + reviewCount + ')</span>' : '') + '</div><div class="product-card-price">' + priceHTML + '</div></div></div>';
+  }).join('');
 }
 
 function filterByCategory(el) {
@@ -362,10 +408,10 @@ function showAll() {
 }
 
 function sortProducts(val) {
-  const sorted = val === 'name'
+  currentProducts = val === 'name'
     ? [...currentProducts].sort((a, b) => a.name.localeCompare(b.name))
     : [...currentProducts];
-  doRender(sorted);
+  doRender(currentProducts);
 }
 
 (function initPage() {

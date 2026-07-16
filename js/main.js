@@ -620,7 +620,7 @@ function renderProducts(containerId, productsToRender) {
 }
 
 function renderFeaturedProducts() {
-  renderProducts('featuredProducts', products);
+  renderProducts('featuredProducts', products.slice(0, 20));
 }
 
 function renderAllProducts() {
