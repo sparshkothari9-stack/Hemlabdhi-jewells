@@ -85,7 +85,7 @@ const authLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 20, messa
 const writeLimiter = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 80 });
 
 app.use('/api', apiLimiter);
-app.use('/api/auth/login', authLimiter);
+app.use('/api/auth', authLimiter);
 app.use('/api/admin', writeLimiter);
 app.use('/api/orders', writeLimiter);
 

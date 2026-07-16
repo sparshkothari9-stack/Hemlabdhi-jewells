@@ -4,54 +4,8 @@ const crypto = require('crypto');
 const { get, all, run, asyncHandler } = require('../db-helpers');
 const { generateToken, requireAuth } = require('../middleware/auth');
 const { asString, normalizeEmail, isEmail, isPhone, isPincode } = require('../validation');
-const { deliverOtp, shouldShowDemoOtp } = require('../services/otp-sender');
 
 const router = express.Router();
-const OTP_TTL_MINUTES = 5;
-
-function generateOTP() {
-  return String(crypto.randomInt(100000, 999999));
-}
-
-function getChallengeKey() {
-  const secret = process.env.JWT_SECRET || crypto.randomBytes(32).toString('hex');
-  return crypto.createHash('sha256').update(secret).digest();
-}
-
-function base64Url(buffer) {
-  return Buffer.from(buffer).toString('base64url');
-}
-
-function encryptOtpChallenge(payload) {
-  const iv = crypto.randomBytes(12);
-  const cipher = crypto.createCipheriv('aes-256-gcm', getChallengeKey(), iv);
-  const encrypted = Buffer.concat([
-    cipher.update(JSON.stringify(payload), 'utf8'),
-    cipher.final()
-  ]);
-  const tag = cipher.getAuthTag();
-  return [base64Url(iv), base64Url(tag), base64Url(encrypted)].join('.');
-}
-
-function decryptOtpChallenge(challenge) {
-  const parts = asString(challenge, 2000).split('.');
-  if (parts.length !== 3) return null;
-  try {
-    const [iv, tag, encrypted] = parts.map(part => Buffer.from(part, 'base64url'));
-    const decipher = crypto.createDecipheriv('aes-256-gcm', getChallengeKey(), iv);
-    decipher.setAuthTag(tag);
-    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]).toString('utf8');
-    return JSON.parse(decrypted);
-  } catch {
-    return null;
-  }
-}
-
-function sameOtp(left, right) {
-  const a = Buffer.from(String(left || ''));
-  const b = Buffer.from(String(right || ''));
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
-}
 
 async function setMissingPricesForClient(client) {
   if (!client || client.is_admin) return;
@@ -112,100 +66,12 @@ router.post('/quick-login', asyncHandler(async (req, res) => {
       console.log(`[QuickLogin] New client created: ${name} (${phone})`);
     }
   } else {
-    if (name && name !== client.name) {
+    if (name !== client.name) {
       await run('UPDATE clients SET name = ? WHERE id = ?', [name, client.id]);
       client = await get('SELECT * FROM clients WHERE id = ?', [client.id]);
     }
   }
   await setMissingPricesForClient(client);
-  const token = generateToken(client);
-  res.json({
-    token,
-    client: {
-      id: client.id,
-      name: client.name,
-      email: client.email,
-      tier: client.tier,
-      is_admin: !!client.is_admin
-    }
-  });
-}));
-
-router.post('/send-otp', asyncHandler(async (req, res) => {
-  const phone = asString(req.body.phone, 20);
-  if (!phone || !isPhone(phone)) {
-    return res.status(400).json({ error: 'Valid 10-digit phone number required' });
-  }
-  const derivedEmail = phone.replace(/[^0-9]/g, '') + '@customer.HemLabdhiJewels';
-  const existingClient = await get('SELECT id FROM clients WHERE phone = ? OR email = ?', [phone, derivedEmail]);
-  const otp = generateOTP();
-  let delivery;
-  try {
-    delivery = await deliverOtp(phone, otp, OTP_TTL_MINUTES);
-  } catch (err) {
-    console.error('[OTP]', err.message);
-    return res.status(503).json({ error: 'OTP delivery is not configured. Please contact admin.' });
-  }
-
-  const result = {
-    success: true,
-    message: 'OTP sent to ' + phone,
-    isRegistered: !!existingClient,
-    challenge: encryptOtpChallenge({
-      phone,
-      otp,
-      exp: Date.now() + OTP_TTL_MINUTES * 60 * 1000
-    }),
-    expires_in_minutes: OTP_TTL_MINUTES
-  };
-  if (shouldShowDemoOtp()) {
-    result.otp = otp;
-    result.dev = true;
-  }
-  if (delivery.mode !== 'demo') result.delivery = delivery.mode;
-  console.log(`[OTP] ${phone} -> ${shouldShowDemoOtp() ? otp : 'sent'}${shouldShowDemoOtp() ? ' (DEV MODE - shown in response)' : ''}`);
-  res.json(result);
-}));
-
-router.post('/verify-otp', asyncHandler(async (req, res) => {
-  const phone = asString(req.body.phone, 20);
-  const otp = asString(req.body.otp, 10);
-  const challenge = decryptOtpChallenge(req.body.challenge);
-  if (!phone || !otp) {
-    return res.status(400).json({ error: 'Phone and OTP required' });
-  }
-  if (!challenge || challenge.phone !== phone) {
-    return res.status(400).json({ error: 'No OTP sent for this number. Please request one.' });
-  }
-  if (!challenge.exp || challenge.exp < Date.now()) {
-    return res.status(400).json({ error: 'OTP expired. Please request a new one.' });
-  }
-  if (!sameOtp(challenge.otp, otp)) {
-    return res.status(401).json({ error: 'Invalid OTP' });
-  }
-
-  let client = await get('SELECT * FROM clients WHERE phone = ?', [phone]);
-  if (!client) {
-    const name = asString(req.body.name, 120) || 'Customer ' + phone.slice(-4);
-    const email = phone.replace(/[^0-9]/g, '') + '@customer.HemLabdhiJewels';
-    client = await get('SELECT * FROM clients WHERE email = ?', [email]);
-    if (client) {
-      await run('UPDATE clients SET phone = ? WHERE id = ?', [phone, client.id]);
-      client = await get('SELECT * FROM clients WHERE id = ?', [client.id]);
-    } else {
-      const tempPass = crypto.randomBytes(16).toString('hex');
-      const hashed = bcrypt.hashSync(tempPass, 10);
-      const created = await run(
-        'INSERT INTO clients (name, email, password, tier, phone) VALUES (?, ?, ?, ?, ?)',
-        [name, email, hashed, 'retailer', phone]
-      );
-      client = await get('SELECT * FROM clients WHERE id = ?', [created.lastInsertRowid]);
-      if (!client) return res.status(500).json({ error: 'Failed to create account' });
-      console.log(`[OTP] New client created: ${name} (${phone})`);
-    }
-  }
-  await setMissingPricesForClient(client);
-
   const token = generateToken(client);
   res.json({
     token,
