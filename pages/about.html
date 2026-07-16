@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>About Us - Hem Labdhi Jewels</title>
+  <meta name="description" content="Learn about Hem Labdhi Jewels - Premium fashion jewellery brand crafting 175+ designer pieces. Discover our story and craftsmanship.">
+  <link rel="canonical" href="https://jewellery-weld-iota.vercel.app/about.html">
+  <meta property="og:title" content="About Us | Hem Labdhi Jewels">
+  <meta property="og:description" content="Learn about Hem Labdhi Jewels - Premium fashion jewellery brand crafting 175+ designer pieces. Discover our story and craftsmanship.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jewellery-weld-iota.vercel.app/about.html">
+  <meta property="og:image" content="../images/product83.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="About Us | Hem Labdhi Jewels">
+  <meta name="twitter:description" content="Learn about Hem Labdhi Jewels - Premium fashion jewellery brand crafting 175+ designer pieces. Discover our story and craftsmanship.">
+  <meta name="twitter:image" content="../images/product83.jpeg">
+  <title>About Us | Hem Labdhi Jewels</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
@@ -85,11 +96,11 @@
       <button class="header-icon" id="searchIcon" aria-label="Search"><i class="fas fa-search"></i></button>
       <button class="header-icon" id="wishlistIcon" aria-label="Wishlist" style="position:relative">
         <i class="far fa-heart"></i>
-        <span class="cart-count wishlist-count" style="display:none">0</span>
+        <span class="cart-count wishlist-count" style="display:none" aria-live="polite">0</span>
       </button>
       <button class="header-icon" id="cartIcon" aria-label="Cart">
         <i class="fas fa-shopping-bag"></i>
-        <span class="cart-count">0</span>
+        <span class="cart-count" aria-live="polite">0</span>
       </button>
     </div>
   </div>
@@ -131,7 +142,7 @@
           Hem Labdhi Jewels was founded with a singular vision — to bridge the gap between designer luxury and everyday affordability. What started as a passion project has grown into one of India's most trusted fashion jewellery brands, serving both individual customers and businesses across the country.
         </p>
         <p class="about-text">
-          We specialize in handcrafted necklaces, crowns, brooches, earrings, kadas, and bracelets — each piece designed to reflect contemporary trends while maintaining timeless elegance. Our collection of 169+ designs is curated for women who appreciate quality, craftsmanship, and style.
+          We specialize in handcrafted necklaces, crowns, brooches, earrings, kadas, and bracelets — each piece designed to reflect contemporary trends while maintaining timeless elegance. Our collection of 175+ designs is curated for women who appreciate quality, craftsmanship, and style.
         </p>
       </div>
     </div>
@@ -189,11 +200,11 @@
 <div class="container">
   <div class="stats-grid">
     <div class="stat-card">
-      <div class="num">169+</div>
+      <div class="num">175+</div>
       <div class="label">Unique Designs</div>
     </div>
     <div class="stat-card">
-      <div class="num">6</div>
+      <div class="num">8</div>
       <div class="label">Categories</div>
     </div>
     <div class="stat-card">
@@ -290,7 +301,7 @@
 
 <div class="search-overlay" id="searchOverlay">
   <div class="search-overlay-header">
-    <button class="search-close" id="searchClose">&times;</button>
+    <button class="search-close" id="searchClose" aria-label="Close">&times;</button>
   </div>
   <div class="search-input-wrap">
     <input type="text" id="searchInput" placeholder="Search products..." autocomplete="off">
@@ -302,7 +313,7 @@
 <div class="wishlist-drawer" id="wishlistDrawer">
   <div class="cart-drawer-header">
     <h3>Wishlist</h3>
-    <button class="cart-drawer-close" id="wishlistDrawerClose">&times;</button>
+    <button class="cart-drawer-close" id="wishlistDrawerClose" aria-label="Close">&times;</button>
   </div>
   <div class="cart-drawer-items" id="wishlistDrawerItems">
     <div class="cart-drawer-empty"><div class="empty-icon">&#10084;</div><p>Your wishlist is empty</p></div>
@@ -313,7 +324,7 @@
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-drawer-header">
     <h3>Shopping Cart</h3>
-    <button class="cart-drawer-close" id="cartDrawerClose">&times;</button>
+    <button class="cart-drawer-close" id="cartDrawerClose" aria-label="Close">&times;</button>
   </div>
   <div class="cart-drawer-items" id="cartDrawerItems">
     <div class="cart-drawer-empty"><div class="empty-icon">&#128722;</div><p>Your cart is empty</p></div>

@@ -10,7 +10,7 @@ const router = express.Router();
 const OTP_TTL_MINUTES = 5;
 
 function generateOTP() {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  return String(crypto.randomInt(100000, 999999));
 }
 
 function getChallengeKey() {

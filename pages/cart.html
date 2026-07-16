@@ -3,7 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shopping Cart - Hem Labdhi Jewels</title>
+  <meta name="description" content="Shopping cart | Hem Labdhi Jewels - Premium Fashion Jewellery">
+  <link rel="canonical" href="https://jewellery-weld-iota.vercel.app/pages/cart.html">
+  <meta property="og:title" content="Shopping Cart | Hem Labdhi Jewels">
+  <meta property="og:description" content="Shopping cart | Hem Labdhi Jewels - Premium Fashion Jewellery">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jewellery-weld-iota.vercel.app/pages/cart.html">
+  <meta property="og:image" content="../images/product83.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Shopping Cart | Hem Labdhi Jewels">
+  <meta name="twitter:description" content="Shopping cart | Hem Labdhi Jewels - Premium Fashion Jewellery">
+  <meta name="twitter:image" content="../images/product83.jpeg">
+  <title>Shopping Cart | Hem Labdhi Jewels</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
@@ -35,11 +46,11 @@
       <button class="header-icon" id="searchIcon" aria-label="Search"><i class="fas fa-search"></i></button>
       <button class="header-icon" id="wishlistIcon" aria-label="Wishlist" style="position:relative">
         <i class="far fa-heart"></i>
-        <span class="cart-count wishlist-count" style="display:none">0</span>
+        <span class="cart-count wishlist-count" style="display:none" aria-live="polite">0</span>
       </button>
       <button class="header-icon" id="cartIcon" aria-label="Cart">
         <i class="fas fa-shopping-bag"></i>
-        <span class="cart-count">0</span>
+        <span class="cart-count" aria-live="polite">0</span>
       </button>
     </div>
   </div>
@@ -143,7 +154,7 @@
 
 <div class="search-overlay" id="searchOverlay">
   <div class="search-overlay-header">
-    <button class="search-close" id="searchClose">&times;</button>
+    <button class="search-close" id="searchClose" aria-label="Close">&times;</button>
   </div>
   <div class="search-input-wrap">
     <input type="text" id="searchInput" placeholder="Search products..." autocomplete="off">
@@ -155,7 +166,7 @@
 <div class="wishlist-drawer" id="wishlistDrawer">
   <div class="cart-drawer-header">
     <h3>Wishlist</h3>
-    <button class="cart-drawer-close" id="wishlistDrawerClose">&times;</button>
+    <button class="cart-drawer-close" id="wishlistDrawerClose" aria-label="Close">&times;</button>
   </div>
   <div class="cart-drawer-items" id="wishlistDrawerItems">
     <div class="cart-drawer-empty"><div class="empty-icon">&#10084;</div><p>Your wishlist is empty</p></div>
@@ -167,7 +178,7 @@
 <div class="cart-drawer" id="cartDrawer">
   <div class="cart-drawer-header">
     <h3>Shopping Cart</h3>
-    <button class="cart-drawer-close" id="cartDrawerClose">&times;</button>
+    <button class="cart-drawer-close" id="cartDrawerClose" aria-label="Close">&times;</button>
   </div>
   <div class="cart-drawer-items" id="cartDrawerItems">
     <div class="cart-drawer-empty"><div class="empty-icon">&#128722;</div><p>Your cart is empty</p></div>

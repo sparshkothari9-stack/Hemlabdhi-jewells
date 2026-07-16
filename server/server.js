@@ -31,7 +31,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com", "cdnjs.cloudflare.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "cdnjs.cloudflare.com", "fonts.googleapis.com"],
       fontSrc: ["'self'", "cdnjs.cloudflare.com", "fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "blob:"],
@@ -44,6 +44,13 @@ app.use(helmet({
     }
   }
 }));
+
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  next();
+});
+
 app.use(cors({
   origin(origin, callback) {
     if (!origin) return callback(null, true);
@@ -100,8 +107,8 @@ app.use('/api', (req, res) => {
 app.use((err, req, res, next) => {
   console.error('[ERROR]', err.message, err.stack);
   if (res.headersSent) return next(err);
-  res.status(err.status || 500).json({
-    error: err.message || 'Internal server error'
+  res.status(err.statusCode || 500).json({
+    error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message
   });
 });
 

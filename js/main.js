@@ -712,7 +712,7 @@ function openQuickView(id) {
   if (!overlay || !modal) return;
   const quickPriceHTML = priceRequestHTML(p, 'price-request-large');
   modal.innerHTML = `
-    <div class="quick-view-close" onclick="closeQuickView()">&times;</div>
+    <div class="quick-view-close" onclick="closeQuickView()" aria-label="Close">&times;</div>
     <div class="quick-view-layout">
       <div class="quick-view-image">
         <img src="${p.images[0]}" alt="${p.name}">

@@ -1,6 +1,8 @@
+Sitemap: https://jewellery-weld-iota.vercel.app/sitemap.xml
 User-agent: *
 Disallow: /admin.html
 Disallow: /login.html
+Disallow: /pages/my-orders.html
 Disallow: /pages/cart.html
 Disallow: /pages/checkout.html
 Disallow: /api/

@@ -140,8 +140,19 @@ router.post('/', requireAuth, asyncHandler(async (req, res) => {
     subtotal += Number(priced.price) * qty;
   }
 
+  for (const item of cleanItems) {
+    const stockRow = await get('SELECT stock FROM product_stock WHERE product_id = ?', [item.product_id]);
+    const available = stockRow ? stockRow.stock : 0;
+    if (available < item.qty) {
+      return res.status(400).json({ error: `Insufficient stock for ${item.product_name}` });
+    }
+  }
+
   subtotal = Math.round(subtotal * 100) / 100;
-  const shipping = subtotal >= 5000 ? 0 : 199;
+  const settings = await get('SELECT free_shipping_above, shipping_charge FROM settings LIMIT 1');
+  const freeShippingAbove = settings?.free_shipping_above || 5000;
+  const shippingCharge = settings?.shipping_charge || 199;
+  const shipping = subtotal >= freeShippingAbove ? 0 : shippingCharge;
   const coupon_code = asString(req.body.coupon_code, 32).toUpperCase();
   let discount_amount = 0;
   if (coupon_code) {
