@@ -139,6 +139,27 @@ function buildProducts() {
     extraProducts.push({ id, name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs2), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
+  for (let i = 0; i < 1; i++) {
+    const id = 503 + i;
+    const seq = i + 3;
+    const maangTikaImgs3 = Array.from({ length: 6 }, (_, j) => `${IMG}product${758 + j}.jpeg`);
+    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs3), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq).padStart(3, '0')}`, badge: 'New' });
+  }
+
+  for (let i = 0; i < 1; i++) {
+    const id = 504 + i;
+    const seq = i + 4;
+    const maangTikaImgs4 = Array.from({ length: 6 }, (_, j) => `${IMG}product${764 + j}.jpeg`);
+    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs4), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq).padStart(3, '0')}`, badge: 'New' });
+  }
+
+  for (let i = 0; i < 1; i++) {
+    const id = 505 + i;
+    const seq = i + 5;
+    const maangTikaImgs5 = Array.from({ length: 6 }, (_, j) => `${IMG}product${770 + j}.jpeg`);
+    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs5), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq).padStart(3, '0')}`, badge: 'New' });
+  }
+
   return [...generated, ...extraProducts];
 }
 

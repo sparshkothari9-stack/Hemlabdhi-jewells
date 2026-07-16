@@ -347,6 +347,63 @@ for (let i = 0; i < 1; i++) {
   });
 }
 
+for (let i = 0; i < 1; i++) {
+  const id = 503 + i;
+  const seq = i + 3;
+  const imgCount = 6;
+  const maangTikaImgs3 = Array.from({ length: imgCount }, (_, j) => `${IMG}product${758 + j}.jpeg`);
+  products.push({
+    id,
+    name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`,
+    category: "Maang Tika",
+    images: maangTikaImgs3,
+    video: null,
+    badge: "New",
+    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
+    sku: `PA-MT-${String(seq).padStart(3, '0')}`,
+    boxQty: 10
+  });
+}
+
+for (let i = 0; i < 1; i++) {
+  const id = 504 + i;
+  const seq = i + 4;
+  const imgCount = 6;
+  const maangTikaImgs4 = Array.from({ length: imgCount }, (_, j) => `${IMG}product${764 + j}.jpeg`);
+  products.push({
+    id,
+    name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`,
+    category: "Maang Tika",
+    images: maangTikaImgs4,
+    video: null,
+    badge: "New",
+    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
+    sku: `PA-MT-${String(seq).padStart(3, '0')}`,
+    boxQty: 10
+  });
+}
+
+for (let i = 0; i < 1; i++) {
+  const id = 505 + i;
+  const seq = i + 5;
+  const imgCount = 6;
+  const maangTikaImgs5 = Array.from({ length: imgCount }, (_, j) => `${IMG}product${770 + j}.jpeg`);
+  products.push({
+    id,
+    name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`,
+    category: "Maang Tika",
+    images: maangTikaImgs5,
+    video: null,
+    badge: "New",
+    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
+    sku: `PA-MT-${String(seq).padStart(3, '0')}`,
+    boxQty: 10
+  });
+}
+
 const categories = [
   { name: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `143 Designs`, boxQty: 10 },
   { name: "Crowns", image: `${IMG}product83.jpeg`, count: `16 Designs`, boxQty: 1 },
@@ -355,7 +412,7 @@ const categories = [
   { name: "Kada", image: `${IMG}product444.jpeg`, count: `21 Designs`, boxQty: 10 },
   { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs`, boxQty: 10 },
   { name: "Hand Panjas", image: `${IMG}product682.jpeg`, count: `1 Designs`, boxQty: 10 },
-  { name: "Maang Tika", image: `${IMG}product746.jpeg`, count: `2 Designs`, boxQty: 10 }
+  { name: "Maang Tika", image: `${IMG}product746.jpeg`, count: `5 Designs`, boxQty: 10 }
 ];
 
 const heroSlides = [
