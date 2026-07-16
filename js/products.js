@@ -290,11 +290,10 @@ for (let i = 0; i < 10; i++) {
   });
 }
 
-for (let i = 0; i < 1; i++) {
+for (let i = 0; i < 32; i++) {
   const id = 500 + i;
   const seq = i + 1;
-  const imgCount = 64;
-  const handPanjasImgs = Array.from({ length: imgCount }, (_, j) => `${IMG}product${682 + j}.jpeg`);
+  const handPanjasImgs = [`${IMG}product${682 + i}.jpeg`, `${IMG}product${714 + i}.jpeg`];
   products.push({
     id,
     name: `Designer Hand Panja ${String(seq).padStart(3, '0')}`,
@@ -309,92 +308,15 @@ for (let i = 0; i < 1; i++) {
   });
 }
 
-for (let i = 0; i < 1; i++) {
-  const id = 501 + i;
+for (let i = 0; i < 5; i++) {
+  const id = 532 + i;
   const seq = i + 1;
-  const imgCount = 6;
-  const maangTikaImgs = Array.from({ length: imgCount }, (_, j) => `${IMG}product${746 + j}.jpeg`);
+  const maangTikaImgs = Array.from({ length: 6 }, (_, j) => `${IMG}product${746 + (i * 6) + j}.jpeg`);
   products.push({
     id,
-    name: `Designer Maang Tika ${String(seq + 1).padStart(3, '0')}`,
+    name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`,
     category: "Maang Tika",
     images: maangTikaImgs,
-    video: null,
-    badge: "New",
-    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
-    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-    sku: `PA-MT-${String(seq + 1).padStart(3, '0')}`,
-    boxQty: 10
-  });
-}
-
-for (let i = 0; i < 1; i++) {
-  const id = 502 + i;
-  const seq = i + 1;
-  const imgCount = 6;
-  const maangTikaImgs2 = Array.from({ length: imgCount }, (_, j) => `${IMG}product${752 + j}.jpeg`);
-  products.push({
-    id,
-    name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`,
-    category: "Maang Tika",
-    images: maangTikaImgs2,
-    video: null,
-    badge: "New",
-    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
-    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-    sku: `PA-MT-${String(seq).padStart(3, '0')}`,
-    boxQty: 10
-  });
-}
-
-for (let i = 0; i < 1; i++) {
-  const id = 503 + i;
-  const seq = i + 3;
-  const imgCount = 6;
-  const maangTikaImgs3 = Array.from({ length: imgCount }, (_, j) => `${IMG}product${758 + j}.jpeg`);
-  products.push({
-    id,
-    name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`,
-    category: "Maang Tika",
-    images: maangTikaImgs3,
-    video: null,
-    badge: "New",
-    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
-    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-    sku: `PA-MT-${String(seq).padStart(3, '0')}`,
-    boxQty: 10
-  });
-}
-
-for (let i = 0; i < 1; i++) {
-  const id = 504 + i;
-  const seq = i + 4;
-  const imgCount = 6;
-  const maangTikaImgs4 = Array.from({ length: imgCount }, (_, j) => `${IMG}product${764 + j}.jpeg`);
-  products.push({
-    id,
-    name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`,
-    category: "Maang Tika",
-    images: maangTikaImgs4,
-    video: null,
-    badge: "New",
-    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
-    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
-    sku: `PA-MT-${String(seq).padStart(3, '0')}`,
-    boxQty: 10
-  });
-}
-
-for (let i = 0; i < 1; i++) {
-  const id = 505 + i;
-  const seq = i + 5;
-  const imgCount = 6;
-  const maangTikaImgs5 = Array.from({ length: imgCount }, (_, j) => `${IMG}product${770 + j}.jpeg`);
-  products.push({
-    id,
-    name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`,
-    category: "Maang Tika",
-    images: maangTikaImgs5,
     video: null,
     badge: "New",
     description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
@@ -411,7 +333,7 @@ const categories = [
   { name: "Earring", image: `${IMG}product335.jpeg`, count: `69 Designs`, boxQty: 12 },
   { name: "Kada", image: `${IMG}product444.jpeg`, count: `21 Designs`, boxQty: 10 },
   { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs`, boxQty: 10 },
-  { name: "Hand Panjas", image: `${IMG}product682.jpeg`, count: `1 Designs`, boxQty: 10 },
+  { name: "Hand Panjas", image: `${IMG}product682.jpeg`, count: `32 Designs`, boxQty: 10 },
   { name: "Maang Tika", image: `${IMG}product746.jpeg`, count: `5 Designs`, boxQty: 10 }
 ];
 

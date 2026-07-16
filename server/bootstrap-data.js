@@ -118,46 +118,18 @@ function buildProducts() {
     extraProducts.push({ id, name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`, category: 'Necklace Ad Replica', images: JSON.stringify([`${IMG}product${539 + i}.jpeg`]), description: 'Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White.', sku: `PA-NR-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
-  for (let i = 0; i < 1; i++) {
+  for (let i = 0; i < 32; i++) {
     const id = 500 + i;
     const seq = i + 1;
-    const handPanjasImgs = Array.from({ length: 64 }, (_, j) => `${IMG}product${682 + j}.jpeg`);
+    const handPanjasImgs = [`${IMG}product${682 + i}.jpeg`, `${IMG}product${714 + i}.jpeg`];
     extraProducts.push({ id, name: `Designer Hand Panja ${String(seq).padStart(3, '0')}`, category: 'Hand Panjas', images: JSON.stringify(handPanjasImgs), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer hand panja piece from our premium collection.', sku: `PA-HP-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
-  for (let i = 0; i < 1; i++) {
-    const id = 501 + i;
+  for (let i = 0; i < 5; i++) {
+    const id = 532 + i;
     const seq = i + 1;
-    const maangTikaImgs = Array.from({ length: 6 }, (_, j) => `${IMG}product${746 + j}.jpeg`);
-    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq + 1).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq + 1).padStart(3, '0')}`, badge: 'New' });
-  }
-
-  for (let i = 0; i < 1; i++) {
-    const id = 502 + i;
-    const seq = i + 1;
-    const maangTikaImgs2 = Array.from({ length: 6 }, (_, j) => `${IMG}product${752 + j}.jpeg`);
-    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs2), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq).padStart(3, '0')}`, badge: 'New' });
-  }
-
-  for (let i = 0; i < 1; i++) {
-    const id = 503 + i;
-    const seq = i + 3;
-    const maangTikaImgs3 = Array.from({ length: 6 }, (_, j) => `${IMG}product${758 + j}.jpeg`);
-    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs3), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq).padStart(3, '0')}`, badge: 'New' });
-  }
-
-  for (let i = 0; i < 1; i++) {
-    const id = 504 + i;
-    const seq = i + 4;
-    const maangTikaImgs4 = Array.from({ length: 6 }, (_, j) => `${IMG}product${764 + j}.jpeg`);
-    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs4), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq).padStart(3, '0')}`, badge: 'New' });
-  }
-
-  for (let i = 0; i < 1; i++) {
-    const id = 505 + i;
-    const seq = i + 5;
-    const maangTikaImgs5 = Array.from({ length: 6 }, (_, j) => `${IMG}product${770 + j}.jpeg`);
-    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs5), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq).padStart(3, '0')}`, badge: 'New' });
+    const maangTikaImgs = Array.from({ length: 6 }, (_, j) => `${IMG}product${746 + (i * 6) + j}.jpeg`);
+    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
   return [...generated, ...extraProducts];
