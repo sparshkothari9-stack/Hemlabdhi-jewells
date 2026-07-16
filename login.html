@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare" crossorigin>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
   <link rel="stylesheet" href="css/style.min.css">
@@ -33,46 +33,26 @@
       <a href="index.html"><img src="images/logo.svg" alt="Hem Labdhi Jewels" class="logo-img"></a>
     </div>
     <h2>Sign In</h2>
-    <p id="loginSubtitle">Enter your phone number to receive a one-time password</p>
+    <p>Enter your details to access wholesale pricing</p>
 
     <div class="login-tabs">
-      <button class="login-tab active" onclick="switchLoginTab('otp')">Phone OTP</button>
+      <button class="login-tab active" onclick="switchLoginTab('phone')">Phone Login</button>
       <button class="login-tab" onclick="switchLoginTab('email')">Email Login</button>
     </div>
 
     <div class="login-error" id="loginError"></div>
 
     <div id="loginTabOTP">
-      <div id="stepPhone">
-        <div class="form-group">
-          <label for="loginPhone"><i class="fas fa-phone"></i> Phone Number</label>
-          <input type="tel" id="loginPhone" placeholder="+91 9876543210" autocomplete="tel">
-        </div>
-        <button class="btn" onclick="sendOTP()">Send OTP</button>
-        <div class="login-loading" id="otpSending">Sending OTP...</div>
+      <div class="form-group">
+        <label for="loginPhone"><i class="fas fa-phone"></i> Phone Number</label>
+        <input type="tel" id="loginPhone" placeholder="+91 9876543210" autocomplete="tel">
       </div>
-
-      <div id="stepOTP" style="display:none;">
-        <div class="otp-info">
-          OTP sent to <strong id="otpPhoneDisplay"></strong>
-          <a href="#" onclick="resetLogin()" class="otp-change-link">Change</a>
-        </div>
-        <div class="otp-dev-display" id="otpDevDisplay"></div>
-        <div class="form-group">
-          <label for="loginOTP"><i class="fas fa-key"></i> Enter OTP</label>
-          <input type="text" id="loginOTP" placeholder="6-digit OTP" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
-        </div>
-        <div class="form-group" id="loginNameGroup">
-          <label for="loginName"><i class="fas fa-user"></i> Your Name <span class="login-name-note">(only if new)</span></label>
-          <input type="text" id="loginName" placeholder="Enter your name for first-time signup" autocomplete="name">
-        </div>
-        <button class="btn" onclick="verifyOTP()">Verify & Sign In</button>
-        <div class="login-loading" id="otpVerifying">Verifying...</div>
-        <div class="resend-link">
-          <a href="#" onclick="resendOTP()" id="resendLink">Resend OTP</a>
-          <span class="cooldown" id="resendCooldown"></span>
-        </div>
+      <div class="form-group">
+        <label for="loginName"><i class="fas fa-user"></i> Your Name</label>
+        <input type="text" id="loginName" placeholder="Enter your name" autocomplete="name">
       </div>
+      <button class="btn" onclick="handleQuickLogin()">Sign In</button>
+      <div class="login-loading" id="phoneLoggingIn">Signing in...</div>
     </div>
 
     <div id="loginTabEmail" style="display:none;">
@@ -96,10 +76,6 @@
 const API_BASE = window.location.origin;
 const PRODUCTS_URL = 'pages/products.html';
 const ADMIN_URL = 'admin.html';
-let currentPhone = '';
-let currentChallenge = '';
-let otpCooldown = 0;
-let resendTimer = null;
 
 if (localStorage.getItem('pa_token')) {
   redirectAfterLogin();
@@ -136,137 +112,46 @@ function hideError() {
 function switchLoginTab(tab) {
   document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
   document.querySelector('.login-tab[onclick*="' + tab + '"]').classList.add('active');
-  document.getElementById('loginTabOTP').style.display = tab === 'otp' ? 'block' : 'none';
+  document.getElementById('loginTabOTP').style.display = tab === 'phone' ? 'block' : 'none';
   document.getElementById('loginTabEmail').style.display = tab === 'email' ? 'block' : 'none';
-  document.getElementById('loginSubtitle').textContent = tab === 'otp'
-    ? 'Enter your phone number to receive a one-time password'
-    : 'Sign in with your email and password for admin access';
   hideError();
 }
 
-async function sendOTP() {
+async function handleQuickLogin() {
   const phoneInput = document.getElementById('loginPhone');
   const phone = normalizePhone(phoneInput.value);
+  const name = document.getElementById('loginName').value.trim();
   if (!/^\d{10}$/.test(phone)) {
     showError('Please enter a valid 10-digit phone number');
     phoneInput.focus();
     return;
   }
-  hideError();
-  setLoading('otpSending', true);
-  try {
-    const res = await fetch(API_BASE + '/api/auth/send-otp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone })
-    });
-    const data = await res.json();
-    setLoading('otpSending', false);
-    if (data.success) {
-      currentPhone = phone;
-      currentChallenge = data.challenge || '';
-      document.getElementById('stepPhone').style.display = 'none';
-      document.getElementById('stepOTP').style.display = 'block';
-      document.getElementById('otpPhoneDisplay').textContent = phone;
-      const devEl = document.getElementById('otpDevDisplay');
-      devEl.textContent = '';
-      devEl.style.display = 'none';
-      if (data.dev && data.otp) {
-        devEl.textContent = data.otp;
-        devEl.style.display = 'block';
-      }
-      const nameGroup = document.getElementById('loginNameGroup');
-      const nameField = document.getElementById('loginName');
-      if (data.isRegistered) {
-        if (nameGroup) nameGroup.style.display = 'none';
-        if (nameField) nameField.value = '';
-      } else {
-        if (nameGroup) nameGroup.style.display = 'block';
-      }
-      startResendCooldown();
-    } else {
-      showError(data.error || 'Failed to send OTP');
-    }
-  } catch (err) {
-    setLoading('otpSending', false);
-    showError('Could not connect to server. Please try again.');
-  }
-}
-
-async function verifyOTP() {
-  const otp = document.getElementById('loginOTP').value.trim();
-  if (!otp || otp.length < 4) {
-    showError('Please enter the OTP');
+  if (!name) {
+    showError('Please enter your name');
+    document.getElementById('loginName').focus();
     return;
   }
   hideError();
-  setLoading('otpVerifying', true);
+  setLoading('phoneLoggingIn', true);
   try {
-    const body = { phone: currentPhone, otp, challenge: currentChallenge };
-    const nameInput = document.getElementById('loginName');
-    if (nameInput && nameInput.value.trim()) {
-      body.name = nameInput.value.trim();
-    }
-    const res = await fetch(API_BASE + '/api/auth/verify-otp', {
+    const res = await fetch(API_BASE + '/api/auth/quick-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify({ phone, name })
     });
     const data = await res.json();
-    setLoading('otpVerifying', false);
+    setLoading('phoneLoggingIn', false);
     if (data.token) {
       localStorage.setItem('pa_token', data.token);
       localStorage.setItem('pa_client', JSON.stringify(data.client));
       redirectAfterLogin(data.client);
     } else {
-      showError(data.error || 'Verification failed');
+      showError(data.error || 'Login failed');
     }
   } catch (err) {
-    setLoading('otpVerifying', false);
+    setLoading('phoneLoggingIn', false);
     showError('Could not connect to server. Please try again.');
   }
-}
-
-function resetLogin() {
-  document.getElementById('stepPhone').style.display = 'block';
-  document.getElementById('stepOTP').style.display = 'none';
-  document.getElementById('loginOTP').value = '';
-  document.getElementById('otpDevDisplay').style.display = 'none';
-  const nameGroup = document.getElementById('loginNameGroup');
-  if (nameGroup) nameGroup.style.display = 'block';
-  const nameField = document.getElementById('loginName');
-  if (nameField) nameField.value = '';
-  currentPhone = '';
-  currentChallenge = '';
-  hideError();
-}
-
-async function resendOTP() {
-  if (otpCooldown > 0) return;
-  document.getElementById('loginOTP').value = '';
-  document.getElementById('otpDevDisplay').style.display = 'none';
-  hideError();
-  await sendOTP();
-}
-
-function startResendCooldown() {
-  otpCooldown = 30;
-  const link = document.getElementById('resendLink');
-  const cd = document.getElementById('resendCooldown');
-  link.style.display = 'none';
-  cd.style.display = 'inline';
-  cd.textContent = 'Resend in ' + otpCooldown + 's';
-  if (resendTimer) clearInterval(resendTimer);
-  resendTimer = setInterval(() => {
-    otpCooldown--;
-    cd.textContent = 'Resend in ' + otpCooldown + 's';
-    if (otpCooldown <= 0) {
-      clearInterval(resendTimer);
-      resendTimer = null;
-      link.style.display = 'inline';
-      cd.style.display = 'none';
-    }
-  }, 1000);
 }
 
 async function handleEmailLogin() {

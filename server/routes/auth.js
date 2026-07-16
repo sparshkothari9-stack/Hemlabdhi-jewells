@@ -84,6 +84,53 @@ async function setMissingPricesForClient(client) {
   );
 }
 
+router.post('/quick-login', asyncHandler(async (req, res) => {
+  const phone = asString(req.body.phone, 20);
+  const name = asString(req.body.name, 120);
+  if (!phone || !isPhone(phone)) {
+    return res.status(400).json({ error: 'Valid 10-digit phone number required' });
+  }
+  if (!name) {
+    return res.status(400).json({ error: 'Name is required' });
+  }
+  let client = await get('SELECT * FROM clients WHERE phone = ?', [phone]);
+  if (!client) {
+    const email = phone.replace(/[^0-9]/g, '') + '@customer.HemLabdhiJewels';
+    client = await get('SELECT * FROM clients WHERE email = ?', [email]);
+    if (client) {
+      await run('UPDATE clients SET phone = ?, name = ? WHERE id = ?', [phone, name, client.id]);
+      client = await get('SELECT * FROM clients WHERE id = ?', [client.id]);
+    } else {
+      const tempPass = crypto.randomBytes(16).toString('hex');
+      const hashed = bcrypt.hashSync(tempPass, 10);
+      const created = await run(
+        'INSERT INTO clients (name, email, password, tier, phone) VALUES (?, ?, ?, ?, ?)',
+        [name, email, hashed, 'retailer', phone]
+      );
+      client = await get('SELECT * FROM clients WHERE id = ?', [created.lastInsertRowid]);
+      if (!client) return res.status(500).json({ error: 'Failed to create account' });
+      console.log(`[QuickLogin] New client created: ${name} (${phone})`);
+    }
+  } else {
+    if (name && name !== client.name) {
+      await run('UPDATE clients SET name = ? WHERE id = ?', [name, client.id]);
+      client = await get('SELECT * FROM clients WHERE id = ?', [client.id]);
+    }
+  }
+  await setMissingPricesForClient(client);
+  const token = generateToken(client);
+  res.json({
+    token,
+    client: {
+      id: client.id,
+      name: client.name,
+      email: client.email,
+      tier: client.tier,
+      is_admin: !!client.is_admin
+    }
+  });
+}));
+
 router.post('/send-otp', asyncHandler(async (req, res) => {
   const phone = asString(req.body.phone, 20);
   if (!phone || !isPhone(phone)) {
