@@ -1,6 +1,6 @@
 {
-  "outputDirectory": ".",
   "buildCommand": "npm run build",
+  "installCommand": "cd server && npm ci && cd .. && npm install",
   "rewrites": [
     {
       "source": "/api/(.*)",
