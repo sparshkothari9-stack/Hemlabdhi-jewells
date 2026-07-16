@@ -623,6 +623,17 @@ function renderFeaturedProducts() {
   renderProducts('featuredProducts', products.slice(0, 20));
 }
 
+function renderNewCollections() {
+  var el = document.getElementById('newCollections');
+  if (!el) return;
+  var handPanjas = products.filter(function(p) { return p.category === 'Hand Panjas'; }).slice(0, 4);
+  var maangTika = products.filter(function(p) { return p.category === 'Maang Tika'; }).slice(0, 2);
+  var items = handPanjas.concat(maangTika);
+  el.innerHTML = items.map(function(p) {
+    return '<a class="new-collections-card" href="' + PAGE_PREFIX + 'product-detail.html?id=' + p.id + '"><img src="' + p.images[0] + '" alt="' + sanitize(p.name) + '" loading="lazy"><div class="new-collections-overlay"><h3>' + sanitize(p.name) + '</h3><span>' + sanitize(p.category) + '</span><div class="box-info"><i class="fas fa-box-open" style="margin-right:4px"></i>' + (BOX_QTY[p.category] || 1) + ' per box</div></div></a>';
+  }).join('');
+}
+
 function renderAllProducts() {
   const urlParams = new URLSearchParams(window.location.search);
   const catFilter = urlParams.get('category');
@@ -1538,6 +1549,7 @@ document.addEventListener('DOMContentLoaded', function() {
   populateMobileNav();
   initScrollAnimations();
   renderCategories();
+  renderNewCollections();
   renderFeaturedProducts();
   renderAllProducts();
   loadAllReviews().then(() => {
