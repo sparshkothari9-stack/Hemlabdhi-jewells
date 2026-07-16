@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bulk enquiry form for Hem Labdhi Jewels wholesale and retail partners.">
+  <link rel="canonical" href="https://jewellery-weld-iota.vercel.app/pages/enquiry.html">
+  <meta property="og:title" content="Bulk Enquiry | Hem Labdhi Jewels">
+  <meta property="og:description" content="Bulk enquiry form for Hem Labdhi Jewels wholesale and retail partners.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jewellery-weld-iota.vercel.app/pages/enquiry.html">
+  <meta property="og:image" content="https://jewellery-weld-iota.vercel.app/images/product83.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Bulk Enquiry | Hem Labdhi Jewels">
+  <meta name="twitter:description" content="Bulk enquiry form for Hem Labdhi Jewels wholesale and retail partners.">
+  <meta name="twitter:image" content="https://jewellery-weld-iota.vercel.app/images/product83.jpeg">
+  <title>Bulk Enquiry | Hem Labdhi Jewels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="../css/style.min.css">
+  <link rel="shortcut icon" href="../images/product83.jpeg" type="image/x-icon">
+  <style>
+    .enquiry-products { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .enquiry-product-tag {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--white);
+      border: 1px solid var(--border-color); border-radius: 20px; font-size: 13px;
+    }
+    .enquiry-product-tag .remove { cursor: pointer; color: var(--red); font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<div class="announcement-bar">
+  <div class="announcement-slider">
+    <div class="announcement-slide">THESE ARE JUST A GLIMPSE OF FEW PRODUCTS WE HAVE PLENTY MORE DESIGNS IN EACH CATEGORY</div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <a href="../index.html" style="font-size:13px;color:var(--text-secondary);"><i class="fas fa-arrow-left"></i> Back to Store</a>
+    </div>
+    <div class="logo">
+      <a href="../index.html"><img src="../images/logo.svg" alt="Hem Labdhi Jewels" class="logo-img"></a>
+    </div>
+  </div>
+</header>
+
+<section class="section" style="padding-top:20px;">
+  <div class="container" style="max-width:700px;">
+    <h1 style="font-family:var(--font-heading);font-size:24px;margin-bottom:6px;">Bulk Order Enquiry</h1>
+    <p style="color:var(--text-secondary);margin-bottom:25px;">Interested in bulk ordering or wholesale pricing? Send us your requirements and we'll get back to you.</p>
+
+    <div style="margin-bottom:20px;">
+      <h3 style="font-size:15px;margin-bottom:10px;">Selected Products</h3>
+      <div id="enquirySelectedProducts" class="enquiry-products">
+        <p style="color:var(--text-secondary);font-size:14px;">Browse products and click "Add to Enquiry" to add them here.</p>
+      </div>
+    </div>
+
+    <div style="background:var(--white);padding:25px;border-radius:var(--radius-md);box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+      <div class="form-group">
+        <label>Your Name *</label>
+        <input type="text" id="enqName" placeholder="Enter your full name" style="width:100%;padding:12px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:14px;">
+      </div>
+      <div class="form-group" style="margin-top:15px;">
+        <label>Email *</label>
+        <input type="email" id="enqEmail" placeholder="your@email.com" style="width:100%;padding:12px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:14px;">
+      </div>
+      <div class="form-group" style="margin-top:15px;">
+        <label>Phone (optional)</label>
+        <input type="tel" id="enqPhone" placeholder="+91 9876543210" style="width:100%;padding:12px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:14px;">
+      </div>
+      <div class="form-group" style="margin-top:15px;">
+        <label>Message (optional)</label>
+        <textarea id="enqMessage" rows="4" placeholder="Tell us about your requirements, quantity, timeline..." style="width:100%;padding:12px;border:1px solid var(--border-color);font-family:var(--font-body);font-size:14px;"></textarea>
+      </div>
+      <button class="btn btn-dark" onclick="submitEnquiry()" style="margin-top:15px;width:100%;padding:14px;">Submit Enquiry</button>
+      <div id="enquiryStatus" style="margin-top:10px;font-size:14px;"></div>
+    </div>
+
+    <div style="margin-top:30px;">
+      <a href="products.html" class="btn" style="text-decoration:none;"><i class="fas fa-search"></i> Browse Products</a>
+    </div>
+  </div>
+</section>
+
+<script>var IMG_PREFIX = '../images/';</script>
+<script src="../js/products.min.js?v=3" defer></script>
+<script src="../js/main.min.js?v=3" defer></script>
+<script>
+const API_BASE = window.location.origin;
+const WHATSAPP_NUMBER = '919321671416';
+function getToken() { return localStorage.getItem('pa_token'); }
+
+function escapeHtml(v) {
+  const d = document.createElement('div'); d.textContent = v == null ? '' : String(v); return d.innerHTML;
+}
+
+let enquiryProducts = [];
+
+function addToEnquiry(productId) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const ids = urlParams.get('products');
+  if (ids) {
+    enquiryProducts = ids.split(',').map(Number).filter(n => !isNaN(n));
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+  if (productId && !enquiryProducts.includes(productId)) {
+    enquiryProducts.push(productId);
+    showToast('Added to enquiry list');
+  }
+  renderEnquiryProducts();
+}
+
+function removeFromEnquiry(id) {
+  enquiryProducts = enquiryProducts.filter(p => p !== id);
+  renderEnquiryProducts();
+}
+
+function renderEnquiryProducts() {
+  const container = document.getElementById('enquirySelectedProducts');
+  if (!container) return;
+  if (enquiryProducts.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-secondary);font-size:14px;">Browse products and click "Add to Enquiry" to add them here.</p>';
+    return;
+  }
+  const names = enquiryProducts.map(id => {
+    try {
+      const p = typeof products !== 'undefined' ? products.find(x => x.id === id) : null;
+      return p ? escapeHtml(p.name) : 'Product #' + id;
+    } catch { return 'Product #' + id; }
+  });
+  container.innerHTML = enquiryProducts.map((id, i) =>
+    `<span class="enquiry-product-tag">${names[i]} <span class="remove" onclick="removeFromEnquiry(${id})">&times;</span></span>`
+  ).join('');
+}
+
+async function submitEnquiry() {
+  const name = document.getElementById('enqName').value.trim();
+  const email = document.getElementById('enqEmail').value.trim();
+  const phone = document.getElementById('enqPhone').value.trim();
+  const message = document.getElementById('enqMessage').value.trim();
+  const statusEl = document.getElementById('enquiryStatus');
+
+  if (!name || !email) { statusEl.innerHTML = '<span style="color:var(--red);">Name and email are required</span>'; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { statusEl.innerHTML = '<span style="color:var(--red);">Invalid email</span>'; return; }
+
+  let productsText = '';
+  if (enquiryProducts.length > 0) {
+    try {
+      productsText = enquiryProducts.map(id => {
+        const p = typeof products !== 'undefined' ? products.find(x => x.id === id) : null;
+        return p ? p.sku + ' - ' + p.name : 'ID: ' + id;
+      }).join(', ');
+    } catch { productsText = 'Product IDs: ' + enquiryProducts.join(', '); }
+  } else {
+    productsText = 'General enquiry (no specific products)';
+  }
+
+  statusEl.innerHTML = '<span style="color:var(--text-secondary);">Submitting...</span>';
+  try {
+    const res = await fetch(API_BASE + '/api/enquiries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(getToken() ? { 'Authorization': 'Bearer ' + getToken() } : {}) },
+      body: JSON.stringify({ name, email, phone, products: productsText, message })
+    });
+    const data = await res.json();
+    if (data.success) {
+      statusEl.innerHTML = '<span style="color:var(--green);font-weight:600;">Enquiry submitted! We will contact you shortly.</span>';
+      document.getElementById('enqName').value = '';
+      document.getElementById('enqEmail').value = '';
+      document.getElementById('enqPhone').value = '';
+      document.getElementById('enqMessage').value = '';
+      enquiryProducts = [];
+      renderEnquiryProducts();
+      const waMsg = encodeURIComponent(`New Enquiry!\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nProducts: ${productsText}\nMessage: ${message}`);
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${waMsg}`, '_blank');
+    } else {
+      statusEl.innerHTML = '<span style="color:var(--red);">' + escapeHtml(data.error || 'Submission failed') + '</span>';
+    }
+  } catch (err) {
+    statusEl.innerHTML = '<span style="color:var(--red);">Could not connect. Please try again.</span>';
+  }
+}
+
+(function init() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const ids = urlParams.get('products');
+  if (ids) {
+    enquiryProducts = ids.split(',').map(Number).filter(n => !isNaN(n));
+    renderEnquiryProducts();
+  }
+  const client = (() => { try { return JSON.parse(localStorage.getItem('pa_client')); } catch { return null; } })();
+  if (client) {
+    if (client.name) document.getElementById('enqName').value = client.name;
+    if (client.email) document.getElementById('enqEmail').value = client.email;
+  }
+})();
+</script>
+</body>
+</html>

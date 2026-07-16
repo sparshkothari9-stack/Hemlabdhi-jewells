@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Sign In | Hem Labdhi Jewels</title>
+  <meta name="description" content="B2B client login for Hem Labdhi Jewels wholesale jewellery pricing">
+  <link rel="canonical" href="https://jewellery-weld-iota.vercel.app/login.html">
+  <meta property="og:title" content="Sign In | Hem Labdhi Jewels">
+  <meta property="og:description" content="B2B client login for Hem Labdhi Jewels wholesale jewellery pricing">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jewellery-weld-iota.vercel.app/login.html">
+  <meta property="og:image" content="https://jewellery-weld-iota.vercel.app/images/product83.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Sign In | Hem Labdhi Jewels">
+  <meta name="twitter:description" content="B2B client login for Hem Labdhi Jewels wholesale jewellery pricing">
+  <meta name="twitter:image" content="https://jewellery-weld-iota.vercel.app/images/product83.jpeg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://cdnjs.cloudflare" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="css/style.min.css">
+  <link rel="shortcut icon" href="images/product83.jpeg" type="image/x-icon">
+</head>
+<body>
+
+<div class="login-page">
+  <div class="login-card">
+    <div class="logo">
+      <a href="index.html"><img src="images/logo.svg" alt="Hem Labdhi Jewels" class="logo-img"></a>
+    </div>
+    <h2>Sign In</h2>
+    <p>Enter your details to access wholesale pricing</p>
+
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('phone')">Phone Login</button>
+      <button class="login-tab" onclick="switchLoginTab('email')">Email Login</button>
+    </div>
+
+    <div class="login-error" id="loginError"></div>
+
+    <div id="loginTabOTP">
+      <div class="form-group">
+        <label for="loginPhone"><i class="fas fa-phone"></i> Phone Number</label>
+        <input type="tel" id="loginPhone" placeholder="+91 9876543210" autocomplete="tel">
+      </div>
+      <div class="form-group">
+        <label for="loginName"><i class="fas fa-user"></i> Your Name</label>
+        <input type="text" id="loginName" placeholder="Enter your name" autocomplete="name">
+      </div>
+      <button class="btn" onclick="handleQuickLogin()">Sign In</button>
+      <div class="login-loading" id="phoneLoggingIn">Signing in...</div>
+    </div>
+
+    <div id="loginTabEmail" style="display:none;">
+      <div class="form-group">
+        <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password" autocomplete="current-password">
+      </div>
+      <button class="btn" onclick="handleEmailLogin()">Sign In</button>
+      <div class="login-loading" id="emailLoggingIn">Signing in...</div>
+    </div>
+
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Store</a>
+  </div>
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+const PRODUCTS_URL = 'pages/products.html';
+const ADMIN_URL = 'admin.html';
+
+if (localStorage.getItem('pa_token')) {
+  redirectAfterLogin();
+}
+
+function redirectAfterLogin(client) {
+  let activeClient = client;
+  if (!activeClient) {
+    try { activeClient = JSON.parse(localStorage.getItem('pa_client') || 'null'); } catch { activeClient = null; }
+  }
+  window.location.href = activeClient && activeClient.is_admin ? ADMIN_URL : PRODUCTS_URL;
+}
+
+function normalizePhone(value) {
+  const digits = String(value || '').replace(/\D/g, '');
+  if (digits.length === 12 && digits.startsWith('91')) return digits.slice(2);
+  return digits;
+}
+
+function setLoading(id, isLoading) {
+  document.getElementById(id)?.classList.toggle('show', !!isLoading);
+}
+
+function showError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function hideError() {
+  document.getElementById('loginError').classList.remove('show');
+}
+
+function switchLoginTab(tab) {
+  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.login-tab[onclick*="' + tab + '"]').classList.add('active');
+  document.getElementById('loginTabOTP').style.display = tab === 'phone' ? 'block' : 'none';
+  document.getElementById('loginTabEmail').style.display = tab === 'email' ? 'block' : 'none';
+  hideError();
+}
+
+async function handleQuickLogin() {
+  const phoneInput = document.getElementById('loginPhone');
+  const phone = normalizePhone(phoneInput.value);
+  const name = document.getElementById('loginName').value.trim();
+  if (!/^\d{10}$/.test(phone)) {
+    showError('Please enter a valid 10-digit phone number');
+    phoneInput.focus();
+    return;
+  }
+  if (!name) {
+    showError('Please enter your name');
+    document.getElementById('loginName').focus();
+    return;
+  }
+  hideError();
+  setLoading('phoneLoggingIn', true);
+  try {
+    const res = await fetch(API_BASE + '/api/auth/quick-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, name })
+    });
+    const data = await res.json();
+    setLoading('phoneLoggingIn', false);
+    if (data.token) {
+      localStorage.setItem('pa_token', data.token);
+      localStorage.setItem('pa_client', JSON.stringify(data.client));
+      redirectAfterLogin(data.client);
+    } else {
+      showError(data.error || 'Login failed');
+    }
+  } catch (err) {
+    setLoading('phoneLoggingIn', false);
+    showError('Could not connect to server. Please try again.');
+  }
+}
+
+async function handleEmailLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) {
+    showError('Email and password required');
+    return;
+  }
+  hideError();
+  setLoading('emailLoggingIn', true);
+  try {
+    const res = await fetch(API_BASE + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    setLoading('emailLoggingIn', false);
+    if (data.token) {
+      localStorage.setItem('pa_token', data.token);
+      localStorage.setItem('pa_client', JSON.stringify(data.client));
+      redirectAfterLogin(data.client);
+    } else {
+      showError(data.error || 'Login failed');
+    }
+  } catch (err) {
+    setLoading('emailLoggingIn', false);
+    showError('Could not connect to server. Please try again.');
+  }
+}
+</script>
+
+</body>
+</html>

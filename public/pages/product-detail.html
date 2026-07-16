@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Browse premium fashion jewellery at Hem Labdhi Jewels. View product details, pricing, and ordering information.">
+  <link rel="canonical" href="https://jewellery-weld-iota.vercel.app/pages/product-detail.html">
+  <meta property="og:title" content="Product Detail | Hem Labdhi Jewels">
+  <meta property="og:description" content="Browse premium fashion jewellery at Hem Labdhi Jewels. View product details, pricing, and ordering information.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jewellery-weld-iota.vercel.app/pages/product-detail.html">
+  <meta property="og:image" content="https://jewellery-weld-iota.vercel.app/images/product83.jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Product Detail | Hem Labdhi Jewels">
+  <meta name="twitter:description" content="Browse premium fashion jewellery at Hem Labdhi Jewels. View product details, pricing, and ordering information.">
+  <meta name="twitter:image" content="https://jewellery-weld-iota.vercel.app/images/product83.jpeg">
+  <title>Product Detail | Hem Labdhi Jewels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="../css/style.min.css">
+  <link rel="shortcut icon" href="../images/product83.jpeg" type="image/x-icon">
+  <script>if (!localStorage.getItem('pa_token')) { window.location.replace('../login.html'); }</script>
+  <script>
+var _pdUrl = new URLSearchParams(window.location.search);
+var _pdId = _pdUrl.get('id');
+if (_pdId) {
+  document.title = 'Product | Hem Labdhi Jewels';
+  var _ogImg = 'https://jewellery-weld-iota.vercel.app/images/product' + _pdId + '.jpeg';
+  document.querySelector('meta[property="og:image"]').setAttribute('content', _ogImg);
+}
+</script>
+</head>
+<body>
+
+<div class="announcement-bar">
+  <div class="announcement-slider" id="announcementSlider">
+    <div class="announcement-slide">THESE ARE JUST A GLIMPSE OF FEW PRODUCTS WE HAVE PLENTY MORE DESIGNS IN EACH CATEGORY</div>
+  </div>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+      <a href="../index.html" style="font-size:13px;color:var(--text-secondary);"><i class="fas fa-chevron-left"></i> Home</a>
+    </div>
+    <div class="logo">
+      <a href="../index.html"><img src="../images/logo.svg" alt="Hem Labdhi Jewels" class="logo-img"></a>
+    </div>
+    <div class="header-right">
+      <button class="header-icon" id="searchIcon" aria-label="Search"><i class="fas fa-search"></i></button>
+      <button class="header-icon" id="wishlistIcon" aria-label="Wishlist" style="position:relative">
+        <i class="far fa-heart"></i>
+        <span class="cart-count wishlist-count" style="display:none" aria-live="polite">0</span>
+      </button>
+      <button class="header-icon" id="cartIcon" aria-label="Cart">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-count" aria-live="polite">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-item"><a href="../index.html" class="nav-link">Home</a></div>
+    <div class="nav-item"><a href="products.html?category=Necklace+Ad+Replica" class="nav-link">Necklace Ad Replica</a></div>
+    <div class="nav-item"><a href="products.html?category=Crowns" class="nav-link">Crowns</a></div>
+    <div class="nav-item"><a href="products.html?category=Brooch" class="nav-link">Brooch</a></div>
+    <div class="nav-item"><a href="products.html?category=Earring" class="nav-link">Earring</a></div>
+    <div class="nav-item"><a href="products.html?category=Kada" class="nav-link">Kada</a></div>
+    <div class="nav-item"><a href="products.html?category=Bracelet" class="nav-link">Bracelet</a></div>
+    <div class="nav-item"><a href="products.html?category=Hand+Panjas" class="nav-link">Hand Panjas</a></div>
+    <div class="nav-item"><a href="products.html?category=Maang+Tika" class="nav-link">Maang Tika</a></div>
+    <div class="nav-item"><a href="products.html" class="nav-link">All Products</a></div>
+  </div>
+</nav>
+
+<div id="productDetail" class="section"></div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>Hem Labdhi <span>Jewels</span></h3>
+        <p>We craft each piece with current trends in mind, ensuring our jewellery reflects our customers' unique style.</p>
+        <div class="footer-social">
+          <a href="https://facebook.com/pavanart" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://instagram.com/pavanart" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="https://wa.me/919321671416" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="https://youtube.com/@pavanart" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-title">Quick Links</h4>
+        <ul class="footer-links">
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="cart.html">Cart</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Categories</h4>
+        <ul class="footer-links">
+          <li><a href="products.html?category=Necklace+Ad+Replica">Necklace Ad Replica</a></li>
+          <li><a href="products.html?category=Crowns">Crowns</a></li>
+          <li><a href="products.html?category=Brooch">Brooch</a></li>
+          <li><a href="products.html?category=Earring">Earring</a></li>
+          <li><a href="products.html?category=Kada">Kada</a></li>
+          <li><a href="products.html?category=Bracelet">Bracelet</a></li>
+          <li><a href="products.html?category=Hand+Panjas">Hand Panjas</a></li>
+          <li><a href="products.html?category=Maang+Tika">Maang Tika</a></li>
+          <li><a href="products.html">All Products</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Customer Care</h4>
+        <div class="footer-contact">
+          <p><i class="fas fa-phone" style="color:var(--gold);margin-right:8px;"></i> +91 9321671416</p>
+          <p><i class="fas fa-envelope" style="color:var(--gold);margin-right:8px;"></i> hemlabdhijewels@gmail.com</p>
+          <p><i class="fas fa-clock" style="color:var(--gold);margin-right:8px;"></i> Mon-Sat: 10 AM - 6 PM</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 - Hem Labdhi Jewels. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-overlay-header">
+    <button class="search-close" id="searchClose" aria-label="Close">&times;</button>
+  </div>
+  <div class="search-input-wrap">
+    <input type="text" id="searchInput" placeholder="Search products..." autocomplete="off">
+    <button><i class="fas fa-search"></i></button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</div>
+
+<div class="wishlist-drawer" id="wishlistDrawer">
+  <div class="cart-drawer-header">
+    <h3>Wishlist</h3>
+    <button class="cart-drawer-close" id="wishlistDrawerClose" aria-label="Close">&times;</button>
+  </div>
+  <div class="cart-drawer-items" id="wishlistDrawerItems">
+    <div class="cart-drawer-empty"><div class="empty-icon">&#10084;</div><p>Your wishlist is empty</p></div>
+  </div>
+</div>
+
+<div class="overlay" id="wishlistOverlay"></div>
+
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-drawer-header">
+    <h3>Shopping Cart</h3>
+    <button class="cart-drawer-close" id="cartDrawerClose" aria-label="Close">&times;</button>
+  </div>
+  <div class="cart-drawer-items" id="cartDrawerItems">
+    <div class="cart-drawer-empty"><div class="empty-icon">&#128722;</div><p>Your cart is empty</p></div>
+  </div>
+  <div class="cart-drawer-footer" id="cartDrawerFooter" style="display:none;">
+    <div id="cartDrawerTotal"></div>
+    <a href="cart.html" class="btn btn-dark">View Cart</a>
+    <button type="button" class="btn whatsapp-cart-btn" onclick="openCartWhatsApp()"><i class="fab fa-whatsapp"></i><span>WhatsApp Prices</span></button>
+  </div>
+</div>
+
+<div class="overlay" id="cartOverlay"></div>
+
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-header">
+    <span style="font-family:'Jost',sans-serif;font-weight:600;font-size:18px;">Menu</span>
+    <button class="mobile-nav-close" id="mobileNavClose">&times;</button>
+  </div>
+  <div class="mobile-nav-links" id="mobileNavLinks"></div>
+</div>
+
+<div class="overlay" id="navOverlay"></div>
+
+<div class="video-call-float">
+  <a href="#" aria-label="Video Call" id="videoCallFloat">
+    <i class="fas fa-video"></i>
+    <span class="tooltip">Video Call</span>
+  </a>
+</div>
+
+<div class="whatsapp-float">
+  <a href="https://wa.me/919321671416" target="_blank" aria-label="WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+  </a>
+</div>
+
+<div class="quick-view-overlay" id="quickViewOverlay" onclick="closeQuickView()"></div>
+<div class="quick-view-modal" id="quickViewModal"></div>
+
+<script>var IMG_PREFIX = '../images/';</script>
+<script src="../js/products.min.js?v=3" defer></script>
+<script src="../js/main.min.js?v=3" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var floatBtn = document.getElementById('videoCallFloat');
+  if (floatBtn) {
+    floatBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var urlParams = new URLSearchParams(window.location.search);
+      var id = parseInt(urlParams.get('id'));
+      var product = products.find(function(p) { return p.id === id; });
+      videoCall(product ? product.name : null);
+    });
+  }
+});
+</script>
+</body>
+</html>

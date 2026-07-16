@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 80" width="280" height="80">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d0b070"/>
+      <stop offset="50%" stop-color="#e8d5a3"/>
+      <stop offset="100%" stop-color="#b8942e"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(8,6)">
+    <!-- Left upper wing -->
+    <path d="M30,38 C25,28 10,18 5,22 C0,26 5,40 15,44 C18,45 22,46 30,42 Z" fill="url(#goldGrad)" opacity="0.9"/>
+    <!-- Right upper wing -->
+    <path d="M30,38 C35,28 50,18 55,22 C60,26 55,40 45,44 C42,45 38,46 30,42 Z" fill="url(#goldGrad)" opacity="0.9"/>
+    <!-- Left lower wing -->
+    <path d="M25,44 C18,46 8,52 8,58 C8,62 16,66 22,64 C26,62 30,56 30,50 Z" fill="url(#goldGrad)" opacity="0.7"/>
+    <!-- Right lower wing -->
+    <path d="M35,44 C42,46 52,52 52,58 C52,62 44,66 38,64 C34,62 30,56 30,50 Z" fill="url(#goldGrad)" opacity="0.7"/>
+    <!-- Body -->
+    <ellipse cx="30" cy="44" rx="3" ry="12" fill="#b8942e"/>
+    <!-- Antennae -->
+    <path d="M30,32 C28,25 22,18 20,14" stroke="url(#goldGrad)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M30,32 C32,25 38,18 40,14" stroke="url(#goldGrad)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- Wing dots -->
+    <circle cx="16" cy="30" r="2" fill="white" opacity="0.5"/>
+    <circle cx="44" cy="30" r="2" fill="white" opacity="0.5"/>
+    <circle cx="14" cy="54" r="1.5" fill="white" opacity="0.4"/>
+    <circle cx="46" cy="54" r="1.5" fill="white" opacity="0.4"/>
+  </g>
+  <text x="75" y="32" font-family="Georgia, 'Times New Roman', serif" font-size="18" font-weight="bold" fill="#1c1c1c" letter-spacing="2">Hem Labdhi</text>
+  <text x="75" y="54" font-family="Georgia, 'Times New Roman', serif" font-size="14" fill="url(#goldGrad)" letter-spacing="6" font-weight="600">JEWELS</text>
+  <text x="75" y="70" font-family="Arial, sans-serif" font-size="7" fill="#999" letter-spacing="4">LUXURY REDEFINED</text>
+</svg>
