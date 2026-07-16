@@ -6,7 +6,9 @@ const BOX_QTY = {
   'Earring': 12,
   'Brooch': 12,
   'Bracelet': 10,
-  'Crowns': 1
+  'Crowns': 1,
+  'Hand Panjas': 10,
+  'Maang Tika': 10
 };
 
 const productVideos = {
@@ -288,13 +290,72 @@ for (let i = 0; i < 10; i++) {
   });
 }
 
+for (let i = 0; i < 1; i++) {
+  const id = 500 + i;
+  const seq = i + 1;
+  const imgCount = 64;
+  const handPanjasImgs = Array.from({ length: imgCount }, (_, j) => `${IMG}product${682 + j}.jpeg`);
+  products.push({
+    id,
+    name: `Designer Hand Panja ${String(seq).padStart(3, '0')}`,
+    category: "Hand Panjas",
+    images: handPanjasImgs,
+    video: null,
+    badge: "New",
+    description: `Elegant designer hand panja piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
+    sku: `PA-HP-${String(seq).padStart(3, '0')}`,
+    boxQty: 10
+  });
+}
+
+for (let i = 0; i < 1; i++) {
+  const id = 501 + i;
+  const seq = i + 1;
+  const imgCount = 6;
+  const maangTikaImgs = Array.from({ length: imgCount }, (_, j) => `${IMG}product${746 + j}.jpeg`);
+  products.push({
+    id,
+    name: `Designer Maang Tika ${String(seq + 1).padStart(3, '0')}`,
+    category: "Maang Tika",
+    images: maangTikaImgs,
+    video: null,
+    badge: "New",
+    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
+    sku: `PA-MT-${String(seq + 1).padStart(3, '0')}`,
+    boxQty: 10
+  });
+}
+
+for (let i = 0; i < 1; i++) {
+  const id = 502 + i;
+  const seq = i + 1;
+  const imgCount = 6;
+  const maangTikaImgs2 = Array.from({ length: imgCount }, (_, j) => `${IMG}product${752 + j}.jpeg`);
+  products.push({
+    id,
+    name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`,
+    category: "Maang Tika",
+    images: maangTikaImgs2,
+    video: null,
+    badge: "New",
+    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
+    sku: `PA-MT-${String(seq).padStart(3, '0')}`,
+    boxQty: 10
+  });
+}
+
 const categories = [
   { name: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `143 Designs`, boxQty: 10 },
   { name: "Crowns", image: `${IMG}product83.jpeg`, count: `16 Designs`, boxQty: 1 },
   { name: "Brooch", image: `${IMG}product99.jpeg`, count: `18 Designs`, boxQty: 12 },
   { name: "Earring", image: `${IMG}product335.jpeg`, count: `69 Designs`, boxQty: 12 },
   { name: "Kada", image: `${IMG}product444.jpeg`, count: `21 Designs`, boxQty: 10 },
-  { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs`, boxQty: 10 }
+  { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs`, boxQty: 10 },
+  { name: "Hand Panjas", image: `${IMG}product682.jpeg`, count: `1 Designs`, boxQty: 10 },
+  { name: "Maang Tika", image: `${IMG}product746.jpeg`, count: `2 Designs`, boxQty: 10 }
 ];
 
 const heroSlides = [

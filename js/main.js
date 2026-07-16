@@ -1466,6 +1466,8 @@ function populateMobileNav() {
     <a href="${PAGE_PREFIX}products.html?category=Earring">Earring</a>
     <a href="${PAGE_PREFIX}products.html?category=Kada">Kada</a>
     <a href="${PAGE_PREFIX}products.html?category=Bracelet">Bracelet</a>
+    <a href="${PAGE_PREFIX}products.html?category=Hand+Panjas">Hand Panjas</a>
+    <a href="${PAGE_PREFIX}products.html?category=Maang+Tika">Maang Tika</a>
     <a href="${PAGE_PREFIX}products.html">All Products</a>
     <a href="${PAGE_PREFIX}enquiry.html"><i class="fas fa-file-invoice"></i> Bulk Enquiry</a>
     <a href="${PAGE_PREFIX}about.html">About Us</a>

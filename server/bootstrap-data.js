@@ -118,6 +118,27 @@ function buildProducts() {
     extraProducts.push({ id, name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`, category: 'Necklace Ad Replica', images: JSON.stringify([`${IMG}product${539 + i}.jpeg`]), description: 'Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White.', sku: `PA-NR-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
+  for (let i = 0; i < 1; i++) {
+    const id = 500 + i;
+    const seq = i + 1;
+    const handPanjasImgs = Array.from({ length: 64 }, (_, j) => `${IMG}product${682 + j}.jpeg`);
+    extraProducts.push({ id, name: `Designer Hand Panja ${String(seq).padStart(3, '0')}`, category: 'Hand Panjas', images: JSON.stringify(handPanjasImgs), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer hand panja piece from our premium collection.', sku: `PA-HP-${String(seq).padStart(3, '0')}`, badge: 'New' });
+  }
+
+  for (let i = 0; i < 1; i++) {
+    const id = 501 + i;
+    const seq = i + 1;
+    const maangTikaImgs = Array.from({ length: 6 }, (_, j) => `${IMG}product${746 + j}.jpeg`);
+    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq + 1).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq + 1).padStart(3, '0')}`, badge: 'New' });
+  }
+
+  for (let i = 0; i < 1; i++) {
+    const id = 502 + i;
+    const seq = i + 1;
+    const maangTikaImgs2 = Array.from({ length: 6 }, (_, j) => `${IMG}product${752 + j}.jpeg`);
+    extraProducts.push({ id, name: `Designer Maang Tika ${String(seq).padStart(3, '0')}`, category: 'Maang Tika', images: JSON.stringify(maangTikaImgs2), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer maang tika piece from our premium collection.', sku: `PA-MT-${String(seq).padStart(3, '0')}`, badge: 'New' });
+  }
+
   return [...generated, ...extraProducts];
 }
 
@@ -146,7 +167,9 @@ async function ensureSeedData() {
     const baseByCategory = {
       Crowns: 12000, Brooch: 4500,
       Earring: 3200, Kada: 2800, Bracelet: 5500,
-      'Necklace Ad Replica': 3500
+      'Necklace Ad Replica': 3500,
+      'Hand Panjas': 4000,
+      'Maang Tika': 3500
     };
     const tierMultiplier = { wholesale: 0.9, distributor: 0.82, retailer: 1 };
     const priceRows = [];
