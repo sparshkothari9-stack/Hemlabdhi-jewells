@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server/server.js",
-    "build": "npx terser js/products.js -c -m -o js/products.min.js && npx terser js/main.js -c -m -o js/main.min.js && npx csso css/style.css -o css/style.min.css",
+    "build": "echo 'pre-built'",
     "vercel-build": "npm run build"
   },
   "dependencies": {
