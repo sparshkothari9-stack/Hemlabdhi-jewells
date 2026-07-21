@@ -67,6 +67,20 @@ router.get('/dashboard', requireAuth, requireAdmin, asyncHandler(async (req, res
   res.json({ totalOrders, totalRevenue, pendingOrders, totalClients, totalProducts, lowStock, recentOrders, revenueByMonth, topProducts });
 }));
 
+router.post('/subscribe', asyncHandler(async (req, res) => {
+  const email = asString(req.body.email, 254);
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'Valid email required' });
+  }
+  try {
+    await run(`CREATE TABLE IF NOT EXISTS subscribers (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT UNIQUE NOT NULL, created_at TEXT NOT NULL DEFAULT (datetime('now')))`);
+    await run('INSERT INTO subscribers (email) VALUES (?)', [email]);
+    res.json({ success: true, message: 'Subscribed! Welcome to Hem Labdhi Jewels.' });
+  } catch {
+    res.status(409).json({ error: 'Email already subscribed' });
+  }
+}));
+
 router.post('/enquiries', asyncHandler(async (req, res) => {
   const name = sanitize(asString(req.body.name, 120));
   const email = sanitize(asString(req.body.email, 254));

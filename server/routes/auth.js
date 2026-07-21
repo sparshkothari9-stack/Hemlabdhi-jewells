@@ -85,6 +85,57 @@ router.post('/quick-login', asyncHandler(async (req, res) => {
   });
 }));
 
+router.post('/register', asyncHandler(async (req, res) => {
+  const name = asString(req.body.name, 120);
+  const email = normalizeEmail(req.body.email);
+  const password = asString(req.body.password, 128);
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: 'Name, email, and password required' });
+  }
+  if (!isEmail(email)) {
+    return res.status(400).json({ error: 'Valid email address required' });
+  }
+  if (password.length < 8) {
+    return res.status(400).json({ error: 'Password must be at least 8 characters' });
+  }
+  if (!/[A-Z]/.test(password)) {
+    return res.status(400).json({ error: 'Password must contain an uppercase letter' });
+  }
+  if (!/[a-z]/.test(password)) {
+    return res.status(400).json({ error: 'Password must contain a lowercase letter' });
+  }
+  if (!/[0-9]/.test(password)) {
+    return res.status(400).json({ error: 'Password must contain a number' });
+  }
+
+  const existing = await get('SELECT id FROM clients WHERE email = ?', [email]);
+  if (existing) {
+    return res.status(409).json({ error: 'Email already registered' });
+  }
+
+  const hash = bcrypt.hashSync(password, 10);
+  const created = await run(
+    'INSERT INTO clients (name, email, password, tier) VALUES (?, ?, ?, ?)',
+    [name, email, hash, 'retailer']
+  );
+  let client = await get('SELECT * FROM clients WHERE id = ?', [created.lastInsertRowid]);
+  if (!client) return res.status(500).json({ error: 'Failed to create account' });
+
+  await setMissingPricesForClient(client);
+  const token = generateToken(client);
+  res.status(201).json({
+    token,
+    client: {
+      id: client.id,
+      name: client.name,
+      email: client.email,
+      tier: client.tier,
+      is_admin: !!client.is_admin
+    }
+  });
+}));
+
 router.post('/login', asyncHandler(async (req, res) => {
   const email = normalizeEmail(req.body.email);
   const password = asString(req.body.password, 128);

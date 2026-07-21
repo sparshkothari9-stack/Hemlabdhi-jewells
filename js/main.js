@@ -3,7 +3,6 @@ let wishlist = [];
 let serverPrices = null;
 let stockData = {};
 let appliedCoupon = null;
-let checkoutOtp = (() => { try { const s = localStorage.getItem('pa_checkout_otp'); return s ? JSON.parse(s) : { challengeId: null, phone: '', verified: false }; } catch { return { challengeId: null, phone: '', verified: false }; } })();
 
 const PAGE_PREFIX = window.location.pathname.includes('/pages/') ? '' : 'pages/';
 const ROOT_PREFIX = window.location.pathname.includes('/pages/') ? '../' : '';
@@ -37,33 +36,66 @@ function sanitize(str) {
 }
 const escapeHtml = sanitize;
 
-function initCart() {
+async function initCart() {
+  if (!isLoggedIn()) { cart = []; updateCartUI(); return; }
   try {
-    const saved = localStorage.getItem('jewelleryCart');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      cart = Array.isArray(parsed) ? parsed : [];
+    const res = await fetch(API_BASE + '/api/cart', {
+      headers: { 'Authorization': 'Bearer ' + getToken() }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      cart = Array.isArray(data.cart) ? data.cart : [];
     }
-  } catch (e) { cart = []; }
+  } catch { cart = []; }
   updateCartUI();
 }
 
-function saveCart() {
-  localStorage.setItem('jewelleryCart', JSON.stringify(cart));
-}
+function saveCart() {}
 
-function removeFromCart(productId) {
+async function removeFromCart(productId) {
   cart = cart.filter(item => item.id !== productId);
-  saveCart();
   updateCartUI();
   renderCartDrawer();
   renderCartPage();
+  if (!isLoggedIn()) return;
+  try {
+    await fetch(API_BASE + '/api/cart/remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ product_id: productId })
+    });
+  } catch {}
 }
 
-function updateQty(productId, newQty) {
-  if (newQty < 1) { removeFromCart(productId); return; }
+async function updateQty(productId, newQty) {
+  if (newQty < 1) { await removeFromCart(productId); return; }
   const item = cart.find(i => i.id === productId);
-  if (item) { item.qty = newQty; saveCart(); updateCartUI(); renderCartDrawer(); renderCartPage(); }
+  if (item) { item.qty = newQty; updateCartUI(); renderCartDrawer(); renderCartPage(); }
+  if (!isLoggedIn()) return;
+  try {
+    await fetch(API_BASE + '/api/cart/update-qty', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ product_id: productId, qty: newQty })
+    });
+  } catch {}
+  await syncCartCount();
+}
+
+async function syncCartCount() {
+  if (!isLoggedIn()) return;
+  try {
+    const res = await fetch(API_BASE + '/api/cart/count', {
+      headers: { 'Authorization': 'Bearer ' + getToken() }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      document.querySelectorAll('.cart-count').forEach(el => {
+        el.textContent = data.count;
+        el.style.display = data.count > 0 ? 'flex' : 'none';
+      });
+    }
+  } catch {}
 }
 
 function getCartCount() {
@@ -78,22 +110,23 @@ function updateCartUI() {
 }
 
 // ===== WISHLIST =====
-function initWishlist() {
+async function initWishlist() {
+  if (!isLoggedIn()) { wishlist = []; updateWishlistUI(); return; }
   try {
-    const saved = localStorage.getItem('jewelleryWishlist');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      wishlist = Array.isArray(parsed) ? parsed : [];
+    const res = await fetch(API_BASE + '/api/wishlist', {
+      headers: { 'Authorization': 'Bearer ' + getToken() }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      wishlist = Array.isArray(data.wishlist) ? data.wishlist.map(i => i.id) : [];
     }
-  } catch (e) { wishlist = []; }
+  } catch { wishlist = []; }
   updateWishlistUI();
 }
 
-function saveWishlist() {
-  localStorage.setItem('jewelleryWishlist', JSON.stringify(wishlist));
-}
+function saveWishlist() {}
 
-function toggleWishlist(productId) {
+async function toggleWishlist(productId) {
   const idx = wishlist.indexOf(productId);
   if (idx > -1) {
     wishlist.splice(idx, 1);
@@ -103,8 +136,15 @@ function toggleWishlist(productId) {
     const product = products.find(p => p.id === productId);
     showToast(`${product ? product.name : 'Item'} added to wishlist!`);
   }
-  saveWishlist();
   updateWishlistUI();
+  if (!isLoggedIn()) return;
+  try {
+    await fetch(API_BASE + '/api/wishlist/toggle', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ product_id: productId })
+    });
+  } catch {}
 }
 
 function isInWishlist(productId) {
@@ -404,21 +444,12 @@ function placeOrder() {
     firstError.focus();
     return;
   }
-  if (!checkoutOtp.verified || checkoutOtp.phone !== formData.phone) {
-    showToast('Please verify phone OTP before placing order');
-    document.getElementById('checkoutOtp')?.focus();
-    return;
-  }
 
-  let cartData = [];
-  try { cartData = JSON.parse(localStorage.getItem('jewelleryCart') || '[]'); } catch { cartData = []; }
-  if (!Array.isArray(cartData) || cartData.length === 0) {
-    showToast('Your cart is empty'); return;
-  }
+  if (cart.length === 0) { showToast('Your cart is empty'); return; }
 
   let subtotal = 0;
   const items = [];
-  for (const item of cartData) {
+  for (const item of cart) {
     const product = products.find(p => p.id === item.id);
     if (!product) continue;
     const price = getProductPrice(product);
@@ -439,7 +470,6 @@ function placeOrder() {
     city: formData.city,
     state: formData.state,
     pincode: formData.pincode,
-    otp_challenge_id: checkoutOtp.challengeId,
     items,
     subtotal,
     shipping,
@@ -466,7 +496,6 @@ function placeOrder() {
       const waMsg = encodeURIComponent(`New Order #${data.order?.id || ''}!\nName: ${formData.name}\nAmount: ₹${total}\nItems: ${items.length}`);
       window.open(`https://wa.me/919321671416?text=${waMsg}`, '_blank');
       cart = [];
-      saveCart();
       updateCartUI();
       appliedCoupon = null;
       setTimeout(() => { window.location.href = ROOT_PREFIX + 'index.html'; }, 2000);
@@ -647,7 +676,7 @@ function renderCategories() {
   const grid = document.getElementById('categoryGrid');
   if (!grid) return;
   grid.innerHTML = categories.map((cat, i) => `
-    <div class="category-card animate-on-scroll delay-${i + 1}" onclick="window.location.href='${PAGE_PREFIX}products.html?category=${encodeURIComponent(cat.name)}'">
+    <div class="category-card animate-on-scroll delay-${i + 1}" onclick="window.location.href='${PAGE_PREFIX}products.html?category=${encodeURIComponent(cat.filter || cat.name)}'">
       <img src="${cat.image}" alt="${cat.name}" loading="lazy" onclick="event.stopPropagation(); showImagePopup(this)">
       <div class="category-card-overlay">
         <h3>${cat.name}</h3>
@@ -673,32 +702,32 @@ let _productImages = [];
 let _currentImageIndex = 0;
 
 // ===== RECENTLY VIEWED =====
-function trackRecentlyViewed(id) {
-  let recent = [];
+async function trackRecentlyViewed(id) {
+  if (!isLoggedIn()) return;
   try {
-    const saved = localStorage.getItem('jewelleryRecent');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      recent = Array.isArray(parsed) ? parsed : [];
-    }
+    await fetch(API_BASE + '/api/products/recent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
+      body: JSON.stringify({ product_id: id })
+    });
   } catch {}
-  recent = recent.filter(i => typeof i === 'number');
-  recent.unshift(id);
-  if (recent.length > 8) recent = recent.slice(0, 8);
-  localStorage.setItem('jewelleryRecent', JSON.stringify(recent));
 }
 
-function renderRecentlyViewed() {
+async function renderRecentlyViewed() {
   const container = document.getElementById('recentlyViewed');
   if (!container) return;
   let recent = [];
-  try {
-    const saved = localStorage.getItem('jewelleryRecent');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      recent = Array.isArray(parsed) ? parsed : [];
-    }
-  } catch {}
+  if (isLoggedIn()) {
+    try {
+      const res = await fetch(API_BASE + '/api/products/recent', {
+        headers: { 'Authorization': 'Bearer ' + getToken() }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        recent = Array.isArray(data.recent) ? data.recent : [];
+      }
+    } catch {}
+  }
   if (recent.length === 0) { container.style.display = 'none'; return; }
   container.style.display = 'block';
   const items = recent.map(id => products.find(p => p.id === id)).filter(Boolean);
@@ -756,18 +785,10 @@ function shareOnWhatsApp(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
   const url = encodeURIComponent(window.location.origin + '/' + PAGE_PREFIX + 'product-detail.html?id=' + id);
-  const text = encodeURIComponent(`Check out this ${p.name} at Hem Labdhi Jewels!`);
+  const text = encodeURIComponent(`Check out this ${p.name} at Hem Labdhi Jewels by Pavan Art!`);
   window.open(`https://wa.me/919321671416?text=${text}%20${url}`, '_blank');
 }
 
-// ===== VIDEO CALL =====
-function videoCall(productName) {
-  let msg = 'Hi! I visited Hem Labdhi Jewels and would like a video call demonstration. Please video call me back.';
-  if (productName) {
-    msg = `Hi! I'm interested in ${productName} and would like a video call demonstration. Please video call me back.`;
-  }
-  window.open(`https://wa.me/919321671416?text=${encodeURIComponent(msg)}`, '_blank');
-}
 
 function getYouMayAlsoLike(product, count = 4) {
   const others = products.filter(p => p.id !== product.id);
@@ -790,7 +811,7 @@ function renderProductDetail() {
   const _cache = document.createElement('img'); _cache.src = product.images[0];
   _productImages.forEach((imgSrc) => preloadImage(imgSrc));
   trackRecentlyViewed(product.id);
-  document.title = `${product.name} - Hem Labdhi Jewels`;
+  document.title = `${product.name} - Hem Labdhi Jewels by Pavan Art`;
   const avgRating = getAverageRating(product.id);
   const reviews = getReviews(product.id);
   const related = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
@@ -877,7 +898,6 @@ function renderProductDetail() {
             </div>
             <button class="btn btn-dark whatsapp-cart-btn" onclick="window.open('${getPriceWhatsAppUrl(product)}', '_blank')"><i class="fab fa-whatsapp"></i><span>Message on WhatsApp for price</span></button>
             <button class="btn share-btn" onclick="shareOnWhatsApp(${product.id})"><i class="fab fa-whatsapp"></i> Share</button>
-            <button class="btn video-call-btn" onclick="videoCall('${product.name.replace(/'/g, "\\'")}')"><i class="fas fa-video"></i> Video Call</button>
             <button class="btn" onclick="window.location.href='${PAGE_PREFIX}enquiry.html?products=${product.id}'"><i class="fas fa-file-invoice"></i> Bulk Enquiry</button>
           </div>
         </div>
@@ -1232,92 +1252,7 @@ async function applyCoupon() {
   }
 }
 
-function setOtpMessage(message, type = 'info') {
-  const msg = document.getElementById('otpMessage');
-  if (!msg) return;
-  const color = type === 'success' ? 'var(--green)' : type === 'error' ? 'var(--red)' : 'var(--text-secondary)';
-  msg.innerHTML = `<span style="color:${color};">${message}</span>`;
-}
 
-function saveCheckoutOtp() {
-  localStorage.setItem('pa_checkout_otp', JSON.stringify(checkoutOtp));
-}
-
-function resetCheckoutOtp() {
-  checkoutOtp = { challengeId: null, phone: '', verified: false };
-  saveCheckoutOtp();
-  const otpInput = document.getElementById('checkoutOtp');
-  if (otpInput) otpInput.value = '';
-}
-
-async function requestCheckoutOtp() {
-  const phoneEl = document.getElementById('checkoutPhone');
-  const phone = normalizePhone(phoneEl ? phoneEl.value : '');
-  if (!/^\d{10}$/.test(phone)) {
-    if (phoneEl) phoneEl.style.borderColor = 'var(--red)';
-    setOtpMessage('Enter a valid 10-digit phone number. +91 format is also accepted.', 'error');
-    return;
-  }
-  if (phoneEl) {
-    phoneEl.value = phone;
-    phoneEl.style.borderColor = '';
-  }
-
-  resetCheckoutOtp();
-  setOtpMessage('Sending OTP...');
-
-  try {
-    const res = await fetch(API_BASE + '/api/orders/otp/request', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
-      body: JSON.stringify({ phone })
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) throw new Error(data.error || 'Could not send OTP');
-
-    checkoutOtp = { challengeId: data.challenge_id, phone, verified: false };
-    saveCheckoutOtp();
-    const demoText = data.dev_otp ? ` Demo OTP: <strong>${escapeHtml(data.dev_otp)}</strong>` : '';
-    setOtpMessage(`OTP sent. It expires in ${data.expires_in_minutes} minutes.${demoText}`, 'success');
-    document.getElementById('checkoutOtp')?.focus();
-  } catch (err) {
-    setOtpMessage(escapeHtml(err.message || 'Could not send OTP'), 'error');
-  }
-}
-
-async function verifyCheckoutOtp() {
-  const otpEl = document.getElementById('checkoutOtp');
-  const otp = otpEl ? otpEl.value.trim() : '';
-  if (!checkoutOtp.challengeId) {
-    setOtpMessage('Request OTP first.', 'error');
-    return;
-  }
-  if (!/^\d{6}$/.test(otp)) {
-    if (otpEl) otpEl.style.borderColor = 'var(--red)';
-    setOtpMessage('Enter the 6-digit OTP.', 'error');
-    return;
-  }
-
-  setOtpMessage('Verifying OTP...');
-  try {
-    const res = await fetch(API_BASE + '/api/orders/otp/verify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + getToken() },
-      body: JSON.stringify({ challenge_id: checkoutOtp.challengeId, otp })
-    });
-    const data = await res.json();
-    if (!res.ok || !data.success) throw new Error(data.error || 'OTP verification failed');
-
-    checkoutOtp.verified = true;
-    saveCheckoutOtp();
-    if (otpEl) otpEl.style.borderColor = 'var(--green)';
-    setOtpMessage('Phone verified. You can place the order now.', 'success');
-  } catch (err) {
-    checkoutOtp.verified = false;
-    saveCheckoutOtp();
-    setOtpMessage(escapeHtml(err.message || 'OTP verification failed'), 'error');
-  }
-}
 
 // ===== ENHANCED CHECKOUT =====
 function validateCheckoutField(id, errorMsg) {
@@ -1360,7 +1295,7 @@ async function initCheckoutValidation() {
     }
   }
 
-  document.querySelectorAll('#checkoutName, #checkoutPhone, #checkoutAddress, #checkoutCity, #checkoutState, #checkoutPincode, #checkoutOtp').forEach(el => {
+  document.querySelectorAll('#checkoutName, #checkoutPhone, #checkoutAddress, #checkoutCity, #checkoutState, #checkoutPincode').forEach(el => {
     const errorSpan = document.createElement('span');
     errorSpan.className = 'field-error';
     errorSpan.style.cssText = 'color:var(--red);font-size:12px;display:block;margin-top:4px;';
@@ -1378,25 +1313,16 @@ async function initCheckoutValidation() {
     });
   });
 
-  document.getElementById('checkoutPhone')?.addEventListener('input', function() {
-    if (checkoutOtp.phone && normalizePhone(this.value) !== checkoutOtp.phone) {
-      resetCheckoutOtp();
-      setOtpMessage('Phone changed. Please request a new OTP.');
-    }
-  });
 }
 
 function renderCheckoutOrderTotal() {
   const container = document.getElementById('checkoutOrderItems');
   if (!container) return;
-  let cartData = [];
-  try { cartData = JSON.parse(localStorage.getItem('jewelleryCart') || '[]'); } catch { cartData = []; }
-  if (!Array.isArray(cartData)) cartData = [];
-  if (cartData.length === 0) {
+  if (cart.length === 0) {
     container.innerHTML = '<p style="color:var(--text-secondary);">Your cart is empty. <a href="products.html" style="color:var(--gold);">Shop now</a></p>';
     return;
   }
-  const itemsHtml = cartData.map(item => {
+  const itemsHtml = cart.map(item => {
     const product = products.find(p => p.id === item.id);
     if (!product) return '';
     return `
@@ -1489,23 +1415,26 @@ function populateMobileNav() {
   `;
 }
 
-function subscribeNewsletter(form) {
+async function subscribeNewsletter(form) {
   const email = form.querySelector('input[type="email"]')?.value.trim();
   if (!email) { showToast('Please enter your email'); return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Please enter a valid email'); return; }
-  let subscribers = [];
   try {
-    const saved = localStorage.getItem('jewellerySubscribers');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      subscribers = Array.isArray(parsed) ? parsed : [];
+    const res = await fetch(API_BASE + '/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message || 'Subscribed! Welcome to Hem Labdhi Jewels by Pavan Art.');
+      form.querySelector('input[type="email"]').value = '';
+    } else {
+      showToast(data.error || 'Could not subscribe');
     }
-  } catch {}
-  if (subscribers.includes(email)) { showToast('You are already subscribed!'); return; }
-  subscribers.push(email);
-  localStorage.setItem('jewellerySubscribers', JSON.stringify(subscribers));
-  showToast('Subscribed! Welcome to Hem Labdhi Jewels.');
-  form.querySelector('input[type="email"]').value = '';
+  } catch {
+    showToast('Could not subscribe. Please try again.');
+  }
 }
 
 let _scrollObserver;

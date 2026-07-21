@@ -4,61 +4,64 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Sign In | Hem Labdhi Jewels</title>
-  <meta name="description" content="B2B client login for Hem Labdhi Jewels wholesale jewellery pricing">
+  <title>Sign In | Hem Labdhi Jewels by Pavan Art</title>
+  <meta name="description" content="B2B client login for Hem Labdhi Jewels by Pavan Art wholesale jewellery pricing">
   <link rel="canonical" href="https://jewellery-weld-iota.vercel.app/login.html">
-  <meta property="og:title" content="Sign In | Hem Labdhi Jewels">
-  <meta property="og:description" content="B2B client login for Hem Labdhi Jewels wholesale jewellery pricing">
+  <meta property="og:title" content="Sign In | Hem Labdhi Jewels by Pavan Art">
+  <meta property="og:description" content="B2B client login for Hem Labdhi Jewels by Pavan Art wholesale jewellery pricing">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://jewellery-weld-iota.vercel.app/login.html">
   <meta property="og:image" content="https://jewellery-weld-iota.vercel.app/images/product83.jpeg">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Sign In | Hem Labdhi Jewels">
-  <meta name="twitter:description" content="B2B client login for Hem Labdhi Jewels wholesale jewellery pricing">
+  <meta name="twitter:title" content="Sign In | Hem Labdhi Jewels by Pavan Art">
+  <meta name="twitter:description" content="B2B client login for Hem Labdhi Jewels by Pavan Art wholesale jewellery pricing">
   <meta name="twitter:image" content="https://jewellery-weld-iota.vercel.app/images/product83.jpeg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&family=Jost:wght@600&display=swap" rel="stylesheet">
-  <link rel="preconnect" href="https://cdnjs.cloudflare" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
   <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
   <link rel="stylesheet" href="css/style.min.css">
   <link rel="shortcut icon" href="images/product83.jpeg" type="image/x-icon">
+  <style>
+    .auth-toggle { margin-bottom: 20px; }
+    .auth-toggle button {
+      flex: 1; padding: 10px; border: 1px solid var(--border-color);
+      background: var(--white); font-family: var(--font-body); font-size: 13px;
+      font-weight: 600; cursor: pointer; color: var(--text-secondary); transition: var(--transition);
+    }
+    .auth-toggle button:first-child { border-radius: 6px 0 0 6px; }
+    .auth-toggle button:last-child { border-radius: 0 6px 6px 0; margin-left: -1px; }
+    .auth-toggle button.active { background: var(--gold); color: var(--white); border-color: var(--gold); }
+    .pw-strength { margin: -10px 0 12px; display: flex; gap: 4px; }
+    .pw-strength-bar { height: 4px; flex: 1; border-radius: 2px; background: var(--border-color); transition: var(--transition); }
+    .pw-strength-text { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    .pw-strength.weak .pw-strength-bar:nth-child(-n+1) { background: var(--red); }
+    .pw-strength.medium .pw-strength-bar:nth-child(-n+2) { background: #e6a817; }
+    .pw-strength.strong .pw-strength-bar { background: #307a07; }
+    .login-card .form-group { text-align: left; }
+  </style>
 </head>
 <body>
 
 <div class="login-page">
   <div class="login-card">
     <div class="logo">
-      <a href="index.html"><img src="images/logo.svg" alt="Hem Labdhi Jewels" class="logo-img"></a>
+      <a href="index.html"><img src="images/logo.svg" alt="Hem Labdhi Jewels by Pavan Art" class="logo-img"></a>
     </div>
-    <h2>Sign In</h2>
-    <p>Enter your details to access wholesale pricing</p>
 
-    <div class="login-tabs">
-      <button class="login-tab active" onclick="switchLoginTab('phone')">Phone Login</button>
-      <button class="login-tab" onclick="switchLoginTab('email')">Email Login</button>
+    <div class="auth-toggle" id="authToggle">
+      <button class="active" onclick="switchAuth('login')">Sign In</button>
+      <button onclick="switchAuth('register')">Create Account</button>
     </div>
 
     <div class="login-error" id="loginError"></div>
 
-    <div id="loginTabOTP">
-      <div class="form-group">
-        <label for="loginPhone"><i class="fas fa-phone"></i> Phone Number</label>
-        <input type="tel" id="loginPhone" placeholder="+91 9876543210" autocomplete="tel">
-      </div>
-      <div class="form-group">
-        <label for="loginName"><i class="fas fa-user"></i> Your Name</label>
-        <input type="text" id="loginName" placeholder="Enter your name" autocomplete="name">
-      </div>
-      <button class="btn" onclick="handleQuickLogin()">Sign In</button>
-      <div class="login-loading" id="phoneLoggingIn">Signing in...</div>
-    </div>
-
-    <div id="loginTabEmail" style="display:none;">
+    <div id="loginForm">
       <div class="form-group">
         <label for="loginEmail"><i class="fas fa-envelope"></i> Email</label>
-        <input type="email" id="loginEmail" placeholder="admin@email.com" autocomplete="email">
+        <input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email">
       </div>
       <div class="form-group">
         <label for="loginPassword"><i class="fas fa-lock"></i> Password</label>
@@ -66,6 +69,33 @@
       </div>
       <button class="btn" onclick="handleEmailLogin()">Sign In</button>
       <div class="login-loading" id="emailLoggingIn">Signing in...</div>
+    </div>
+
+    <div id="registerForm" style="display:none;">
+      <div class="form-group">
+        <label for="regName"><i class="fas fa-user"></i> Full Name</label>
+        <input type="text" id="regName" placeholder="Your name" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="regEmail"><i class="fas fa-envelope"></i> Email</label>
+        <input type="email" id="regEmail" placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="regPassword"><i class="fas fa-lock"></i> Password</label>
+        <input type="password" id="regPassword" placeholder="Min 8 chars, upper + lower + number" autocomplete="new-password" oninput="checkPasswordStrength(this.value)">
+      </div>
+      <div class="pw-strength" id="pwStrength">
+        <div class="pw-strength-bar"></div>
+        <div class="pw-strength-bar"></div>
+        <div class="pw-strength-bar"></div>
+        <div class="pw-strength-text" id="pwStrengthText"></div>
+      </div>
+      <div class="form-group">
+        <label for="regConfirm"><i class="fas fa-check"></i> Confirm Password</label>
+        <input type="password" id="regConfirm" placeholder="Re-enter password" autocomplete="new-password">
+      </div>
+      <button class="btn" onclick="handleRegister()">Create Account</button>
+      <div class="login-loading" id="registerLoading">Creating account...</div>
     </div>
 
     <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Store</a>
@@ -89,12 +119,6 @@ function redirectAfterLogin(client) {
   window.location.href = activeClient && activeClient.is_admin ? ADMIN_URL : PRODUCTS_URL;
 }
 
-function normalizePhone(value) {
-  const digits = String(value || '').replace(/\D/g, '');
-  if (digits.length === 12 && digits.startsWith('91')) return digits.slice(2);
-  return digits;
-}
-
 function setLoading(id, isLoading) {
   document.getElementById(id)?.classList.toggle('show', !!isLoading);
 }
@@ -109,49 +133,39 @@ function hideError() {
   document.getElementById('loginError').classList.remove('show');
 }
 
-function switchLoginTab(tab) {
-  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector('.login-tab[onclick*="' + tab + '"]').classList.add('active');
-  document.getElementById('loginTabOTP').style.display = tab === 'phone' ? 'block' : 'none';
-  document.getElementById('loginTabEmail').style.display = tab === 'email' ? 'block' : 'none';
+function switchAuth(mode) {
+  document.querySelectorAll('.auth-toggle button').forEach(b => b.classList.remove('active'));
+  document.querySelector('.auth-toggle button[onclick*="' + mode + '"]').classList.add('active');
+  document.getElementById('loginForm').style.display = mode === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = mode === 'register' ? 'block' : 'none';
   hideError();
 }
 
-async function handleQuickLogin() {
-  const phoneInput = document.getElementById('loginPhone');
-  const phone = normalizePhone(phoneInput.value);
-  const name = document.getElementById('loginName').value.trim();
-  if (!/^\d{10}$/.test(phone)) {
-    showError('Please enter a valid 10-digit phone number');
-    phoneInput.focus();
-    return;
+function checkPasswordStrength(password) {
+  const el = document.getElementById('pwStrength');
+  const text = document.getElementById('pwStrengthText');
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  el.className = 'pw-strength';
+  if (score === 0 || password.length === 0) {
+    text.textContent = '';
+  } else if (score === 1) {
+    el.classList.add('weak'); text.textContent = 'Weak';
+  } else if (score === 2) {
+    el.classList.add('medium'); text.textContent = 'Medium';
+  } else {
+    el.classList.add('strong'); text.textContent = 'Strong';
   }
-  if (!name) {
-    showError('Please enter your name');
-    document.getElementById('loginName').focus();
-    return;
-  }
-  hideError();
-  setLoading('phoneLoggingIn', true);
-  try {
-    const res = await fetch(API_BASE + '/api/auth/quick-login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone, name })
-    });
-    const data = await res.json();
-    setLoading('phoneLoggingIn', false);
-    if (data.token) {
-      localStorage.setItem('pa_token', data.token);
-      localStorage.setItem('pa_client', JSON.stringify(data.client));
-      redirectAfterLogin(data.client);
-    } else {
-      showError(data.error || 'Login failed');
-    }
-  } catch (err) {
-    setLoading('phoneLoggingIn', false);
-    showError('Could not connect to server. Please try again.');
-  }
+}
+
+function showToast(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.style.color = '#307a07';
+  el.classList.add('show');
+  setTimeout(() => { el.classList.remove('show'); el.style.color = ''; }, 3000);
 }
 
 async function handleEmailLogin() {
@@ -180,6 +194,42 @@ async function handleEmailLogin() {
     }
   } catch (err) {
     setLoading('emailLoggingIn', false);
+    showError('Could not connect to server. Please try again.');
+  }
+}
+
+async function handleRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const confirm = document.getElementById('regConfirm').value;
+
+  if (!name || !email || !password || !confirm) {
+    showError('All fields required'); return;
+  }
+  if (password !== confirm) {
+    showError('Passwords do not match'); return;
+  }
+  hideError();
+  setLoading('registerLoading', true);
+  try {
+    const res = await fetch(API_BASE + '/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+    const data = await res.json();
+    setLoading('registerLoading', false);
+    if (data.token) {
+      localStorage.setItem('pa_token', data.token);
+      localStorage.setItem('pa_client', JSON.stringify(data.client));
+      showToast('Account created! Welcome.');
+      redirectAfterLogin(data.client);
+    } else {
+      showError(data.error || 'Registration failed');
+    }
+  } catch (err) {
+    setLoading('registerLoading', false);
     showError('Could not connect to server. Please try again.');
   }
 }

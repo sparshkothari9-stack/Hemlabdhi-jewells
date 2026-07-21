@@ -327,7 +327,7 @@ for (let i = 0; i < 5; i++) {
 }
 
 const categories = [
-  { name: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `143 Designs`, boxQty: 10 },
+  { name: "Necklace", filter: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `143 Designs`, boxQty: 10 },
   { name: "Crowns", image: `${IMG}product83.jpeg`, count: `16 Designs`, boxQty: 1 },
   { name: "Brooch", image: `${IMG}product99.jpeg`, count: `18 Designs`, boxQty: 12 },
   { name: "Earring", image: `${IMG}product335.jpeg`, count: `69 Designs`, boxQty: 12 },

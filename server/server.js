@@ -17,6 +17,8 @@ const adminRoutes = require('./routes/admin');
 const orderRoutes = require('./routes/orders');
 const featureRoutes = require('./routes/features');
 const reviewRoutes = require('./routes/reviews');
+const cartRoutes = require('./routes/cart');
+const wishlistRoutes = require('./routes/wishlist');
 
 const app = express();
 const PORT = parseInt(process.env.PORT, 10) || 3000;
@@ -95,6 +97,8 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api', featureRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', env: isProduction ? 'production' : 'development' });

@@ -151,6 +151,37 @@ async function initTables() {
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`);
   } catch {}
+  try {
+    await client.execute(`CREATE TABLE IF NOT EXISTS cart_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL,
+      product_id INTEGER NOT NULL,
+      qty INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+      UNIQUE(client_id, product_id)
+    )`);
+  } catch {}
+  try {
+    await client.execute(`CREATE TABLE IF NOT EXISTS wishlist_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL,
+      product_id INTEGER NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+      UNIQUE(client_id, product_id)
+    )`);
+  } catch {}
+  try {
+    await client.execute(`CREATE TABLE IF NOT EXISTS recent_products (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      client_id INTEGER NOT NULL,
+      product_id INTEGER NOT NULL,
+      viewed_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+      UNIQUE(client_id, product_id)
+    )`);
+  } catch {}
 }
 
 module.exports = { getClient };
