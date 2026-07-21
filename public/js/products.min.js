@@ -7,8 +7,8 @@ const BOX_QTY = {
   'Brooch': 12,
   'Bracelet': 10,
   'Crowns': 1,
-  'Hand Panjas': 10,
-  'Maang Tika': 10
+  'Hand Panjas': 12,
+  'Maang Tika': 12
 };
 
 const productVideos = {
@@ -266,7 +266,7 @@ for (let i = 0; i < 21; i++) {
     images: [`${IMG}product${444 + i}.jpeg`],
     video: null,
     badge: "New",
-    description: `Elegant designer kada set from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    description: `Elegant designer kada set from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 8-10 pieces per box.`,
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
     sku: `PA-KD-${String(seq).padStart(3, '0')}`,
     boxQty: 10
@@ -301,10 +301,10 @@ for (let i = 0; i < 32; i++) {
     images: handPanjasImgs,
     video: null,
     badge: "New",
-    description: `Elegant designer hand panja piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    description: `Elegant designer hand panja piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.`,
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
     sku: `PA-HP-${String(seq).padStart(3, '0')}`,
-    boxQty: 10
+    boxQty: 12
   });
 }
 
@@ -319,10 +319,10 @@ for (let i = 0; i < 5; i++) {
     images: maangTikaImgs,
     video: null,
     badge: "New",
-    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.`,
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
     sku: `PA-MT-${String(seq).padStart(3, '0')}`,
-    boxQty: 10
+    boxQty: 12
   });
 }
 
@@ -333,8 +333,8 @@ const categories = [
   { name: "Earring", image: `${IMG}product335.jpeg`, count: `69 Designs`, boxQty: 12 },
   { name: "Kada", image: `${IMG}product444.jpeg`, count: `21 Designs`, boxQty: 10 },
   { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs`, boxQty: 10 },
-  { name: "Hand Panjas", image: `${IMG}product682.jpeg`, count: `32 Designs`, boxQty: 10 },
-  { name: "Maang Tika", image: `${IMG}product746.jpeg`, count: `5 Designs`, boxQty: 10 }
+  { name: "Hand Panjas", image: `${IMG}product682.jpeg`, count: `32 Designs`, boxQty: 12 },
+  { name: "Maang Tika", image: `${IMG}product746.jpeg`, count: `5 Designs`, boxQty: 12 }
 ];
 
 const heroSlides = [
