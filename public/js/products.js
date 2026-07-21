@@ -293,7 +293,7 @@ for (let i = 0; i < 10; i++) {
 for (let i = 0; i < 32; i++) {
   const id = 500 + i;
   const seq = i + 1;
-  const handPanjasImgs = [`${IMG}product${682 + i}.jpeg`, `${IMG}product${714 + i}.jpeg`];
+  const handPanjasImgs = [`${IMG}product${714 + i}.jpeg`, `${IMG}product${682 + i}.jpeg`];
   products.push({
     id,
     name: `Designer Hand Panja ${String(seq).padStart(3, '0')}`,
