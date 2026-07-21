@@ -3267,6 +3267,25 @@ img {
   object-position: center bottom;
 }
 
+.product-card[data-product-id="83"] .product-card-image img,
+.product-card[data-product-id="84"] .product-card-image img,
+.product-card[data-product-id="85"] .product-card-image img,
+.product-card[data-product-id="86"] .product-card-image img,
+.product-card[data-product-id="87"] .product-card-image img,
+.product-card[data-product-id="88"] .product-card-image img,
+.product-card[data-product-id="89"] .product-card-image img,
+.product-card[data-product-id="90"] .product-card-image img,
+.product-card[data-product-id="91"] .product-card-image img,
+.product-card[data-product-id="92"] .product-card-image img,
+.product-card[data-product-id="93"] .product-card-image img,
+.product-card[data-product-id="94"] .product-card-image img,
+.product-card[data-product-id="95"] .product-card-image img,
+.product-card[data-product-id="96"] .product-card-image img,
+.product-card[data-product-id="97"] .product-card-image img,
+.product-card[data-product-id="98"] .product-card-image img {
+  object-position: center top;
+}
+
 /* ===== MOBILE TOUCH IMPROVEMENTS ===== */
 @media (max-width: 768px) {
   .header-icon { min-height: 44px; min-width: 44px; display: flex; align-items: center; justify-content: center; }
