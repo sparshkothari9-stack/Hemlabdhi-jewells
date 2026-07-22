@@ -1351,7 +1351,7 @@ function initAnnouncementSlider() {
   setInterval(() => {
     idx = (idx + 1) % slides.length;
     slider.style.transform = `translateX(-${idx * 100}%)`;
-  }, 3000);
+  }, 10000);
 }
 
 function initHeroSlider() {
