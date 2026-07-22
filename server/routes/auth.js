@@ -25,7 +25,7 @@ async function setMissingPricesForClient(client) {
            WHEN 'Earring' THEN 3200
            WHEN 'Kada' THEN 2800
            WHEN 'Bracelet' THEN 5500
-            WHEN 'Necklace' THEN 8500
+           WHEN 'Necklace' THEN 8500
            ELSE 5000
          END + ((p.id % 11) * 75)
        ) * ?)

@@ -10,7 +10,7 @@ const API_BASE = window.location.origin;
 const WHATSAPP_NUMBER = '919321671416';
 
 if (!localStorage.getItem('pa_token')) {
-  const publicPages = ['index.html', 'about.html', 'contact.html', 'enquiry.html', 'products.html', 'product-detail.html', 'cart.html', 'checkout.html', 'my-orders.html'];
+  const publicPages = ['about.html', 'contact.html', 'enquiry.html'];
   const currentPage = window.location.pathname.split('/').pop();
   if (!publicPages.includes(currentPage)) {
     window.location.href = ROOT_PREFIX + 'login.html';

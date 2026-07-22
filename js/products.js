@@ -7,8 +7,8 @@ const BOX_QTY = {
   'Brooch': 12,
   'Bracelet': 10,
   'Crowns': 1,
-  'Hand Panjas': 12,
-  'Maang Tika': 12
+  'Hand Panjas': 10,
+  'Maang Tika': 10
 };
 
 const productVideos = {
@@ -23,7 +23,7 @@ const isNewNecklace = (id) => id >= 117;
 const isEarring = (id) => id >= 152 && id <= 216;
 const isKada = (id) => id >= 222 && id <= 242;
 const isBracelet = (id) => id >= 243 && id <= 252;
-const isReplica = (id) => id >= 253 && id <= 363;
+const isReplica = (id) => id >= 253 && id <= 395;
 
 const products = Array.from({ length: 216 }, (_, i) => {
   const id = i + 1;
@@ -93,7 +93,7 @@ const replicaColors = [
   { name: "White", color: "#FFFFFF" }
 ];
 
-for (let i = 0; i < 111; i++) {
+for (let i = 0; i < 120; i++) {
   const id = 253 + i;
   const seq = i + 1;
   products.push({
@@ -104,7 +104,23 @@ for (let i = 0; i < 111; i++) {
     colors: replicaColors,
     video: null,
     badge: "New",
-    description: `Exquisite necklace piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    description: `Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    sku: `PA-NR-${String(seq).padStart(3, '0')}`,
+    boxQty: 10
+  });
+}
+for (let i = 0; i < 23; i++) {
+  const id = 373 + i;
+  const seq = 121 + i;
+  products.push({
+    id,
+    name: `Necklace ${String(seq).padStart(3, '0')}`,
+    category: "Necklace",
+    images: [`${IMG}product${659 + i}.jpeg`],
+    colors: replicaColors,
+    video: null,
+    badge: "New",
+    description: `Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
     sku: `PA-NR-${String(seq).padStart(3, '0')}`,
     boxQty: 10
   });
@@ -250,7 +266,7 @@ for (let i = 0; i < 21; i++) {
     images: [`${IMG}product${444 + i}.jpeg`],
     video: null,
     badge: "New",
-    description: `Elegant designer kada set from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 8-10 pieces per box.`,
+    description: `Elegant designer kada set from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
     sku: `PA-KD-${String(seq).padStart(3, '0')}`,
     boxQty: 10
@@ -285,10 +301,10 @@ for (let i = 0; i < 32; i++) {
     images: handPanjasImgs,
     video: null,
     badge: "New",
-    description: `Elegant designer hand panja piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.`,
+    description: `Elegant designer hand panja piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
     sku: `PA-HP-${String(seq).padStart(3, '0')}`,
-    boxQty: 12
+    boxQty: 10
   });
 }
 
@@ -303,22 +319,22 @@ for (let i = 0; i < 5; i++) {
     images: maangTikaImgs,
     video: null,
     badge: "New",
-    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 12 pieces per box.`,
+    description: `Elegant designer maang tika piece from our premium collection. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
     features: ["Premium Finish", "Gold Plated", "Hypoallergenic", "Tarnish Resistant"],
     sku: `PA-MT-${String(seq).padStart(3, '0')}`,
-    boxQty: 12
+    boxQty: 10
   });
 }
 
 const categories = [
-  { name: "Necklace", filter: "Necklace", image: `${IMG}product539.jpeg`, count: `111 Designs`, boxQty: 10 },
+  { name: "Necklace", filter: "Necklace", image: `${IMG}product539.jpeg`, count: `143 Designs`, boxQty: 10 },
   { name: "Crowns", image: `${IMG}product83.jpeg`, count: `16 Designs`, boxQty: 1 },
   { name: "Brooch", image: `${IMG}product99.jpeg`, count: `18 Designs`, boxQty: 12 },
   { name: "Earring", image: `${IMG}product335.jpeg`, count: `69 Designs`, boxQty: 12 },
   { name: "Kada", image: `${IMG}product444.jpeg`, count: `21 Designs`, boxQty: 10 },
   { name: "Bracelet", image: `${IMG}product465.jpeg`, count: `10 Designs`, boxQty: 10 },
-  { name: "Hand Panjas", image: `${IMG}product682.jpeg`, count: `32 Designs`, boxQty: 12 },
-  { name: "Maang Tika", image: `${IMG}product746.jpeg`, count: `5 Designs`, boxQty: 12 }
+  { name: "Hand Panjas", image: `${IMG}product682.jpeg`, count: `32 Designs`, boxQty: 10 },
+  { name: "Maang Tika", image: `${IMG}product746.jpeg`, count: `5 Designs`, boxQty: 10 }
 ];
 
 const heroSlides = [

@@ -112,16 +112,16 @@ function buildProducts() {
     extraProducts.push({ id, name: `Designer Bracelet ${String(seq).padStart(3, '0')}`, category: 'Bracelet', images: JSON.stringify([`${IMG}product${465 + i}.jpeg`, `${IMG}product${475 + i}.jpeg`]), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer bracelet piece from our premium collection.', sku: `PA-BCL-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
-  for (let i = 0; i < 111; i++) {
+  for (let i = 0; i < 120; i++) {
     const id = 253 + i;
     const seq = i + 1;
-    extraProducts.push({ id, name: `Necklace ${String(seq).padStart(3, '0')}`, category: 'Necklace', images: JSON.stringify([`${IMG}product${539 + i}.jpeg`]), description: 'Exquisite necklace piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White.', sku: `PA-NR-${String(seq).padStart(3, '0')}`, badge: 'New' });
+    extraProducts.push({ id, name: `Necklace ${String(seq).padStart(3, '0')}`, category: 'Necklace', images: JSON.stringify([`${IMG}product${539 + i}.jpeg`]), description: 'Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White.', sku: `PA-NR-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
   for (let i = 0; i < 32; i++) {
     const id = 500 + i;
     const seq = i + 1;
-    const handPanjasImgs = [`${IMG}product${714 + i}.jpeg`, `${IMG}product${682 + i}.jpeg`];
+    const handPanjasImgs = [`${IMG}product${682 + i}.jpeg`, `${IMG}product${714 + i}.jpeg`];
     extraProducts.push({ id, name: `Designer Hand Panja ${String(seq).padStart(3, '0')}`, category: 'Hand Panjas', images: JSON.stringify(handPanjasImgs), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer hand panja piece from our premium collection.', sku: `PA-HP-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
