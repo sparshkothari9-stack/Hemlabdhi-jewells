@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { get, all, run, asyncHandler } = require('../db-helpers');
 const { generateToken, requireAuth } = require('../middleware/auth');
-const { asString, normalizeEmail, isEmail, isPhone, isPincode } = require('../validation');
+const { asString, sanitize, normalizeEmail, isEmail, isPhone, isPincode } = require('../validation');
 
 const router = express.Router();
 
@@ -40,7 +40,7 @@ async function setMissingPricesForClient(client) {
 
 router.post('/quick-login', asyncHandler(async (req, res) => {
   const phone = asString(req.body.phone, 20);
-  const name = asString(req.body.name, 120);
+  const name = sanitize(asString(req.body.name, 120));
   if (!phone || !isPhone(phone)) {
     return res.status(400).json({ error: 'Valid 10-digit phone number required' });
   }
@@ -86,7 +86,7 @@ router.post('/quick-login', asyncHandler(async (req, res) => {
 }));
 
 router.post('/register', asyncHandler(async (req, res) => {
-  const name = asString(req.body.name, 120);
+  const name = sanitize(asString(req.body.name, 120));
   const email = normalizeEmail(req.body.email);
   const password = asString(req.body.password, 128);
 
