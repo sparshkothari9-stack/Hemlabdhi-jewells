@@ -3320,12 +3320,14 @@ img {
   .new-collections-card { -webkit-tap-highlight-color: transparent; }
   .category-card { -webkit-tap-highlight-color: transparent; }
   .nav-inner { padding: 0 10px; }
-  .brand-hero-content { grid-template-columns: 1fr; gap: 24px; }
+  .brand-hero-content { grid-template-columns: 1fr; gap: 30px; }
   .brand-hero-visual { display: block; margin-top: 0; }
-  .brand-hero-grid { max-width: 500px; margin: 0 auto; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .brand-grid-item img { aspect-ratio: 1; object-fit: cover; width: 100%; }
+  .brand-hero-grid { max-width: 100%; margin: 0 auto; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .brand-grid-item:nth-child(n+3) { display: none; }
+  .brand-grid-item img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
   .brand-grid-main { grid-column: span 2; }
-  .brand-grid-main img { aspect-ratio: 16/9; }
+  .brand-grid-main img { aspect-ratio: 16/10; }
+  .brand-hero-badge--hot { font-size: 13px; padding: 8px 16px; }
   .brand-hero-text h1 { font-size: 30px; letter-spacing: 2px; }
   .brand-hero-text p { font-size: 14px; margin-bottom: 20px; }
   .brand-hero-actions { flex-direction: column; align-items: stretch; }
