@@ -121,7 +121,7 @@ function buildProducts() {
   for (let i = 0; i < 32; i++) {
     const id = 500 + i;
     const seq = i + 1;
-    const handPanjasImgs = [`${IMG}product${682 + i}.jpeg`, `${IMG}product${714 + i}.jpeg`];
+    const handPanjasImgs = [`${IMG}product${714 + i}.jpeg`, `${IMG}product${682 + i}.jpeg`];
     extraProducts.push({ id, name: `Designer Hand Panja ${String(seq).padStart(3, '0')}`, category: 'Hand Panjas', images: JSON.stringify(handPanjasImgs), features: JSON.stringify(['Premium Finish', 'Gold Plated', 'Hypoallergenic', 'Tarnish Resistant']), description: 'Elegant designer hand panja piece from our premium collection.', sku: `PA-HP-${String(seq).padStart(3, '0')}`, badge: 'New' });
   }
 
