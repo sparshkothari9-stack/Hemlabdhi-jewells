@@ -2,7 +2,7 @@ const IMG = typeof IMG_PREFIX !== 'undefined' ? IMG_PREFIX : 'images/';
 
 const BOX_QTY = {
   'Kada': 10,
-  'Necklace Ad Replica': 10,
+  'Necklace': 10,
   'Earring': 12,
   'Brooch': 12,
   'Bracelet': 10,
@@ -23,7 +23,7 @@ const isNewNecklace = (id) => id >= 117;
 const isEarring = (id) => id >= 152 && id <= 216;
 const isKada = (id) => id >= 222 && id <= 242;
 const isBracelet = (id) => id >= 243 && id <= 252;
-const isReplica = (id) => id >= 253 && id <= 395;
+const isReplica = (id) => id >= 253 && id <= 363;
 
 const products = Array.from({ length: 216 }, (_, i) => {
   const id = i + 1;
@@ -93,34 +93,18 @@ const replicaColors = [
   { name: "White", color: "#FFFFFF" }
 ];
 
-for (let i = 0; i < 120; i++) {
+for (let i = 0; i < 111; i++) {
   const id = 253 + i;
   const seq = i + 1;
   products.push({
     id,
-    name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`,
-    category: "Necklace Ad Replica",
+    name: `Necklace ${String(seq).padStart(3, '0')}`,
+    category: "Necklace",
     images: [`${IMG}product${539 + i}.jpeg`],
     colors: replicaColors,
     video: null,
     badge: "New",
-    description: `Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
-    sku: `PA-NR-${String(seq).padStart(3, '0')}`,
-    boxQty: 10
-  });
-}
-for (let i = 0; i < 23; i++) {
-  const id = 373 + i;
-  const seq = 121 + i;
-  products.push({
-    id,
-    name: `Necklace Ad Replica ${String(seq).padStart(3, '0')}`,
-    category: "Necklace Ad Replica",
-    images: [`${IMG}product${659 + i}.jpeg`],
-    colors: replicaColors,
-    video: null,
-    badge: "New",
-    description: `Exquisite necklace replica piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
+    description: `Exquisite necklace piece from our premium collection. Available in Maroon, Green, Pink, Rani, Black, Montana, Rose, Mint, Rose mint, White. Crafted with attention to detail and high-quality materials. Box packing: 10 pieces per box.`,
     sku: `PA-NR-${String(seq).padStart(3, '0')}`,
     boxQty: 10
   });
@@ -327,7 +311,7 @@ for (let i = 0; i < 5; i++) {
 }
 
 const categories = [
-  { name: "Necklace", filter: "Necklace Ad Replica", image: `${IMG}product539.jpeg`, count: `143 Designs`, boxQty: 10 },
+  { name: "Necklace", filter: "Necklace", image: `${IMG}product539.jpeg`, count: `111 Designs`, boxQty: 10 },
   { name: "Crowns", image: `${IMG}product83.jpeg`, count: `16 Designs`, boxQty: 1 },
   { name: "Brooch", image: `${IMG}product99.jpeg`, count: `18 Designs`, boxQty: 12 },
   { name: "Earring", image: `${IMG}product335.jpeg`, count: `69 Designs`, boxQty: 12 },

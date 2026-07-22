@@ -10,7 +10,7 @@ const API_BASE = window.location.origin;
 const WHATSAPP_NUMBER = '919321671416';
 
 if (!localStorage.getItem('pa_token')) {
-  const publicPages = ['about.html', 'contact.html', 'enquiry.html'];
+  const publicPages = ['index.html', 'about.html', 'contact.html', 'enquiry.html', 'products.html', 'product-detail.html', 'cart.html', 'checkout.html', 'my-orders.html'];
   const currentPage = window.location.pathname.split('/').pop();
   if (!publicPages.includes(currentPage)) {
     window.location.href = ROOT_PREFIX + 'login.html';
@@ -1397,7 +1397,7 @@ function populateMobileNav() {
   const ordersLink = isLoggedIn() ? `<a href="${PAGE_PREFIX}my-orders.html"><i class="fas fa-box"></i> My Orders</a>` : '';
   links.innerHTML = `
     <a href="${ROOT_PREFIX}index.html">Home</a>
-    <a href="${PAGE_PREFIX}products.html?category=Necklace+Ad+Replica">Necklace Ad Replica</a>
+    <a href="${PAGE_PREFIX}products.html?category=Necklace">Necklace</a>
     <a href="${PAGE_PREFIX}products.html?category=Crowns">Crowns</a>
     <a href="${PAGE_PREFIX}products.html?category=Brooch">Brooch</a>
     <a href="${PAGE_PREFIX}products.html?category=Earring">Earring</a>
