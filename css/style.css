@@ -3126,7 +3126,7 @@ img {
 }
 
 @media (max-width: 480px) {
-  .product-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .product-grid { grid-template-columns: 1fr; gap: 12px; }
   .category-grid { grid-template-columns: 1fr; }
   .new-collections-grid { grid-template-columns: 1fr; gap: 12px; }
   .new-collections-card img { aspect-ratio: 16/10; }
@@ -3322,8 +3322,10 @@ img {
   .nav-inner { padding: 0 10px; }
   .brand-hero-content { grid-template-columns: 1fr; gap: 24px; }
   .brand-hero-visual { display: block; margin-top: 0; }
-  .brand-hero-grid { max-width: 400px; margin: 0 auto; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .brand-grid-item img { aspect-ratio: 1; object-fit: cover; }
+  .brand-hero-grid { max-width: 500px; margin: 0 auto; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .brand-grid-item img { aspect-ratio: 1; object-fit: cover; width: 100%; }
+  .brand-grid-main { grid-column: span 2; }
+  .brand-grid-main img { aspect-ratio: 16/9; }
   .brand-hero-text h1 { font-size: 30px; letter-spacing: 2px; }
   .brand-hero-text p { font-size: 14px; margin-bottom: 20px; }
   .brand-hero-actions { flex-direction: column; align-items: stretch; }
